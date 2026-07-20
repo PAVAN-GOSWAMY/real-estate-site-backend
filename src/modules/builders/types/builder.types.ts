@@ -1,0 +1,30 @@
+export interface BuilderEntity {
+  id: string;
+  name: string;
+  slug: string;
+  short_description: string | null;
+  detailed_description: string | null;
+  logo_url: string | null;
+  website: string | null;
+  email: string | null;
+  phone: string | null;
+  rera_number: string | null;
+  founded_year: number | null;
+  experience_years: number | null;
+  projects_delivered: number | null;
+  projects_ongoing: number | null;
+  awards_count: number | null;
+  google_map_link: string | null;
+  display_order: number;
+  is_featured: boolean;
+  is_active: boolean;
+  seo_title: string | null;
+  seo_description: string | null;
+  seo_keywords: string | null;
+  canonical_url: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+}

@@ -1,0 +1,19 @@
+-- Phase 3.2: PostgreSQL Custom Types (Enums) & Core Database Foundation
+-- These ENUMs establish reusable business states across the entire database schema.
+-- Strict adherence to lowercase snake_case naming conventions.
+
+CREATE TYPE property_status AS ENUM ('PRE_LAUNCH', 'UNDER_CONSTRUCTION', 'READY_TO_MOVE', 'SOLD_OUT', 'ARCHIVED');
+CREATE TYPE property_type AS ENUM ('APARTMENT', 'VILLA', 'PENTHOUSE', 'PLOT', 'COMMERCIAL', 'OFFICE', 'RETAIL');
+CREATE TYPE property_availability AS ENUM ('AVAILABLE', 'LIMITED', 'SOLD', 'COMING_SOON');
+CREATE TYPE lead_status AS ENUM ('NEW', 'ASSIGNED', 'CONTACTED', 'FOLLOW_UP', 'SITE_VISIT_SCHEDULED', 'SITE_VISIT_COMPLETED', 'NEGOTIATION', 'BOOKED', 'LOST');
+CREATE TYPE lead_source AS ENUM ('WEBSITE', 'PHONE', 'WHATSAPP', 'FACEBOOK', 'INSTAGRAM', 'GOOGLE', 'REFERRAL', 'WALK_IN');
+CREATE TYPE job_status AS ENUM ('OPEN', 'PAUSED', 'CLOSED', 'FILLED');
+CREATE TYPE employment_type AS ENUM ('FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'FREELANCE');
+CREATE TYPE user_role AS ENUM ('SUPER_ADMIN', 'ADMIN', 'SALES_MANAGER', 'SALES_EXECUTIVE', 'HR', 'CONTENT_MANAGER', 'MARKETING', 'VIEWER');
+CREATE TYPE media_type AS ENUM ('IMAGE', 'VIDEO', 'PDF', 'BROCHURE', 'FLOOR_PLAN', 'LOGO');
+CREATE TYPE blog_status AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+CREATE TYPE notification_type AS ENUM ('EMAIL', 'SMS', 'WHATSAPP', 'PUSH', 'SYSTEM');
+CREATE TYPE notification_status AS ENUM ('PENDING', 'SENT', 'FAILED', 'READ');
+CREATE TYPE site_visit_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED', 'RESCHEDULED');
+CREATE TYPE crm_priority AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+CREATE TYPE inquiry_type AS ENUM ('PROPERTY', 'GENERAL', 'CAREER', 'PARTNERSHIP', 'OTHER');

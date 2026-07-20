@@ -1,0 +1,31 @@
+export interface PropertyVideoEntity {
+  id: string;
+  property_id: string;
+  video_name: string;
+  title: string;
+  video_code: string;
+  video_type: string;
+  video_provider: string;
+  provider_video_id: string | null;
+  storage_bucket: string | null;
+  storage_path: string | null;
+  public_url: string | null;
+  thumbnail_url: string | null;
+  duration_seconds: number | null;
+  resolution: string | null;
+  frame_rate: string | null;
+  bitrate: string | null;
+  mime_type: string | null;
+  file_size: number | null;
+  language: string | null;
+  has_subtitles: boolean;
+  view_count: number;
+  display_order: number;
+  is_primary: boolean;
+  is_downloadable: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  created_by: string | null;
+  updated_by: string | null;
+}

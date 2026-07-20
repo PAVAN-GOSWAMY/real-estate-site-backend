@@ -1,0 +1,43 @@
+export interface SiteVisitEntity {
+  id: string;
+  lead_id: string;
+  project_id: string | null;
+  tower_id: string | null;
+  property_id: string | null;
+  visit_title: string;
+  visit_type: string;
+  visit_status: string;
+  scheduled_date: string;
+  scheduled_start_time: string;
+  scheduled_end_time: string | null;
+  actual_start_time: string | null;
+  actual_end_time: string | null;
+  visit_duration_minutes: number | null;
+  meeting_location: string | null;
+  meeting_latitude: number | null;
+  meeting_longitude: number | null;
+  is_virtual: boolean;
+  meeting_link: string | null;
+  transport_required: boolean;
+  refreshments_required: boolean;
+  assigned_sales_executive: string | null;
+  customer_attended: boolean;
+  sales_executive_attended: boolean;
+  feedback_rating: number | null;
+  customer_feedback: string | null;
+  sales_notes: string | null;
+  visit_outcome: string | null; // From the upgrade migration
+  documents_shared: boolean;
+  brochures_shared: boolean;
+  price_discussed: boolean;
+  negotiation_started: boolean;
+  booking_interest: boolean;
+  visit_photos_uploaded: boolean;
+  next_action: string | null;
+  follow_up_required: boolean;
+  follow_up_date: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
