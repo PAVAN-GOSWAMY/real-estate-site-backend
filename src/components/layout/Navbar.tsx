@@ -19,13 +19,33 @@ import { Container } from "./wrappers";
 import { cn } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { useEnquiryModal } from "@/contexts/EnquiryModalContext";
+import { createClient } from "@/lib/supabase/client";
 
 export function Navbar() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isAdminAuth, setIsAdminAuth] = React.useState(false);
   
   const { openModal } = useEnquiryModal();
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const supabase = createClient();
+      
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setIsAdminAuth(!!session);
+      });
+      
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setIsAdminAuth(!!session);
+      });
+      
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -96,6 +116,15 @@ export function Navbar() {
             );
           })}
           
+          {process.env.NODE_ENV === 'development' && (
+            <Link
+              href={isAdminAuth ? "/admin" : "/login"}
+              className="relative text-sm font-medium transition-colors text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm px-1 py-1 flex items-center"
+            >
+              {isAdminAuth ? "Dashboard" : "Admin"}
+            </Link>
+          )}
+
           <Button 
             onClick={() => openModal("Navbar Desktop")}
             className="h-10 px-6 transition-all duration-300 bg-white text-primary hover:bg-white/90 font-bold"
@@ -150,6 +179,16 @@ export function Navbar() {
                     </Link>
                   );
                 })}
+                
+                {process.env.NODE_ENV === 'development' && (
+                  <Link
+                    href={isAdminAuth ? "/admin" : "/login"}
+                    onClick={() => setIsOpen(false)}
+                    className="text-xl font-medium transition-colors text-foreground hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm w-fit"
+                  >
+                    {isAdminAuth ? "Dashboard" : "Admin"}
+                  </Link>
+                )}
               </nav>
               
               <div className="mt-8 pt-8 border-t border-border">
