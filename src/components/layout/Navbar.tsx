@@ -26,35 +26,35 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isAdminAuth, setIsAdminAuth] = React.useState(false);
-  
+
   const { openModal } = useEnquiryModal();
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      const supabase = createClient();
-      
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setIsAdminAuth(!!session);
-      });
-      
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setIsAdminAuth(!!session);
-      });
-      
-      return () => {
-        subscription.unsubscribe();
-      };
-    }
+    const supabase = createClient();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAdminAuth(!!session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdminAuth(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    
+
     // Initial check
     handleScroll();
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -72,18 +72,18 @@ export function Navbar() {
       )}
     >
       <Container className="flex items-center justify-between h-auto">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
           aria-label="Home"
         >
           <span className="sr-only">{siteConfig.name}</span>
-          <Image 
-            src="/logo.svg" 
-            alt={siteConfig.name} 
-            width={140} 
-            height={40} 
-            className="object-contain h-8 md:h-10 w-auto" 
+          <Image
+            src="/logo.svg"
+            alt={siteConfig.name}
+            width={140}
+            height={40}
+            className="object-contain h-8 md:h-10 w-auto"
             priority
           />
         </Link>
@@ -115,7 +115,7 @@ export function Navbar() {
               </Link>
             );
           })}
-          
+
           {process.env.NODE_ENV === 'development' && (
             <Link
               href={isAdminAuth ? "/admin" : "/login"}
@@ -125,7 +125,7 @@ export function Navbar() {
             </Link>
           )}
 
-          <Button 
+          <Button
             onClick={() => openModal("Navbar Desktop")}
             className="h-10 px-6 transition-all duration-300 bg-white text-primary hover:bg-white/90 font-bold"
           >
@@ -137,8 +137,8 @@ export function Navbar() {
         <div className="md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
                 className="text-white hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Open menu"
@@ -150,16 +150,16 @@ export function Navbar() {
               <SheetHeader className="mb-8">
                 <SheetTitle className="text-left">
                   <span className="sr-only">{siteConfig.name}</span>
-                  <Image 
-                    src="/logo.svg" 
-                    alt={siteConfig.name} 
-                    width={140} 
-                    height={40} 
-                    className="object-contain" 
+                  <Image
+                    src="/logo.svg"
+                    alt={siteConfig.name}
+                    width={140}
+                    height={40}
+                    className="object-contain"
                   />
                 </SheetTitle>
               </SheetHeader>
-              
+
               <nav className="flex flex-col space-y-6" aria-label="Mobile Navigation">
                 {mainNav.map((link) => {
                   const isActive = pathname === link.href;
@@ -179,7 +179,7 @@ export function Navbar() {
                     </Link>
                   );
                 })}
-                
+
                 {process.env.NODE_ENV === 'development' && (
                   <Link
                     href={isAdminAuth ? "/admin" : "/login"}
@@ -190,14 +190,14 @@ export function Navbar() {
                   </Link>
                 )}
               </nav>
-              
+
               <div className="mt-8 pt-8 border-t border-border">
-                <Button 
+                <Button
                   onClick={() => {
                     setIsOpen(false);
                     openModal("Navbar Mobile");
                   }}
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                   size="lg"
                 >
                   Enquire Now
