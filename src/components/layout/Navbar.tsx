@@ -116,14 +116,12 @@ export function Navbar() {
             );
           })}
 
-          {process.env.NODE_ENV === 'development' && (
-            <Link
-              href={isAdminAuth ? "/admin" : "/login"}
-              className="relative text-sm font-medium transition-colors text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm px-1 py-1 flex items-center"
-            >
-              {isAdminAuth ? "Dashboard" : "Admin"}
-            </Link>
-          )}
+          <Link
+            href={isAdminAuth ? "/admin" : "/login"}
+            className="relative text-sm font-medium transition-colors text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm px-1 py-1 flex items-center"
+          >
+            {isAdminAuth ? "Dashboard" : "Admin"}
+          </Link>
 
           <Button
             onClick={() => openModal("Navbar Desktop")}
@@ -180,15 +178,13 @@ export function Navbar() {
                   );
                 })}
 
-                {process.env.NODE_ENV === 'development' && (
-                  <Link
-                    href={isAdminAuth ? "/admin" : "/login"}
-                    onClick={() => setIsOpen(false)}
-                    className="text-xl font-medium transition-colors text-foreground hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm w-fit"
-                  >
-                    {isAdminAuth ? "Dashboard" : "Admin"}
-                  </Link>
-                )}
+                <Link
+                  href={isAdminAuth ? "/admin" : "/login"}
+                  onClick={() => setIsOpen(false)}
+                  className="text-xl font-medium transition-colors text-foreground hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm w-fit"
+                >
+                  {isAdminAuth ? "Dashboard" : "Admin"}
+                </Link>
               </nav>
 
               <div className="mt-8 pt-8 border-t border-border">
