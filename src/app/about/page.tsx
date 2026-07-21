@@ -41,12 +41,13 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
+              {/* [Placeholder awaiting official client data] */}
               <h2 className="font-heading text-3xl md:text-5xl font-bold text-primary mb-6">Our Heritage</h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                Founded with a vision to transform the luxury real estate landscape in Noida and Greater Noida, {siteConfig.name} has grown into the most trusted name for premium properties. We believe that a home is more than just a place to live—it is a statement, a sanctuary, and a legacy.
+                Founded with a vision to transform the luxury real estate landscape in Noida and Greater Noida, {siteConfig.name} has grown into the most trusted name for premium properties. We believe that a home is more than just a place to live—it is a statement, a sanctuary, and a legacy. Our core philosophy is simple: <strong className="font-medium text-foreground">{siteConfig.tagline}</strong>
               </p>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                With exclusive partnerships with top-tier developers and an unparalleled understanding of the local market, we curate only the finest residences in the most sought-after neighborhoods.
+                With exclusive partnerships with top-tier developers and an unparalleled understanding of the local market, we curate only the finest residences in the most sought-after neighborhoods. We ensure a seamless experience for our clients, providing end-to-end guidance from the first viewing to the final handover.
               </p>
             </div>
             <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">

@@ -67,10 +67,10 @@ export function Hero() {
         >
           <motion.div variants={itemVariants} className="space-y-4">
             <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.1]">
-              Find Your Perfect Property in <span className="opacity-70">Noida & Greater Noida</span>
+              See it. Feel it. Own it. with <span className="opacity-70">Square AR Spaces</span>
             </h1>
             <p className="text-lg md:text-xl text-white/85 font-light leading-relaxed max-w-xl">
-              Discover verified residential and commercial projects from trusted developers across Noida, Greater Noida, Greater Noida West, Noida Extension, and the Yamuna Expressway corridor.
+              Discover premium, verified residential and commercial properties curated by Square AR Spaces across Noida, Greater Noida, and the Yamuna Expressway corridor.
             </p>
           </motion.div>
 

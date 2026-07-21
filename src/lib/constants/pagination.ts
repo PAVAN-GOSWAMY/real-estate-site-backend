@@ -1,6 +1,0 @@
-export const PaginationConstants = {
-  DEFAULT_PAGE: 1,
-  DEFAULT_LIMIT: 20,
-  MAX_LIMIT: 100,
-  MIN_LIMIT: 1,
-} as const;
