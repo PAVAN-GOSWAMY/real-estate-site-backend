@@ -6,9 +6,13 @@ import { ArrowRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/wrappers";
 import { HeroSearchPanel } from "./HeroSearchPanel";
-import { trustMetrics } from "@/data/home";
 
-export function Hero() {
+interface HeroProps {
+  stats: { propertyCount: number; developerCount: number };
+  filterOptions: { locations: string[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
+}
+
+export function Hero({ stats, filterOptions }: HeroProps) {
   // Stagger variants for smooth sequence animations
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -39,6 +43,13 @@ export function Hero() {
       transition: { duration: 0.8, delay: 0.6, ease: [0.22, 1, 0.36, 1] }
     },
   };
+
+  const dynamicTrustMetrics = [
+    { id: "tm-projects", value: `${stats.propertyCount}+`, label: "Verified Projects" },
+    { id: "tm-developers", value: `${stats.developerCount}+`, label: "Trusted Developers" },
+    { id: "tm-clients", value: "2,000+", label: "Happy Clients" }, // Static fallback
+    { id: "tm-experience", value: "10+", label: "Years of Experience" }, // Static fallback
+  ];
 
   return (
     <section className="relative min-h-[90vh] flex flex-col justify-center pb-8 overflow-hidden bg-primary">
@@ -88,7 +99,7 @@ export function Hero() {
 
           {/* Trust Indicators */}
           <motion.div variants={itemVariants} className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {trustMetrics.map((metric) => (
+            {dynamicTrustMetrics.map((metric) => (
               <div key={metric.id} className="flex flex-col space-y-1 border-l-2 border-accent/50 pl-4">
                 <span className="text-2xl md:text-3xl font-bold text-white font-heading tracking-tight">
                   {metric.value}
@@ -108,7 +119,7 @@ export function Hero() {
           animate="visible"
           className="w-full"
         >
-          <HeroSearchPanel />
+          <HeroSearchPanel filterOptions={filterOptions} />
         </motion.div>
         
       </Container>

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { contactInfo, businessHours } from "@/data/contact";
+import { contactInfo, businessHours, getWhatsAppLink, getMailtoLink } from "@/data/contact";
 import { MapPin, Phone, Mail, Clock, Zap, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -33,13 +33,13 @@ export function ContactInfo() {
           <div>
             <h4 className="font-bold text-foreground mb-0.5 text-xs">Direct Line & WhatsApp</h4>
             <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, "")}`} className="text-muted-foreground hover:text-primary transition-colors block text-xs mb-1">{contactInfo.phone}</a>
-            <div className="flex gap-2 mt-1">
-              <Button asChild size="sm" className="h-7 text-[10px] px-2.5 bg-primary/10 text-primary hover:bg-primary/20">
-                <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, "")}`}>Call</a>
-              </Button>
-              <Button asChild size="sm" className="h-7 text-[10px] px-2.5 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-700">
-                <a href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-              </Button>
+            <div className="flex items-center gap-3 mt-3">
+              <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, "")}`} className="inline-flex items-center justify-center px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors rounded-md text-sm font-medium">
+                Call
+              </a>
+              <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center px-4 py-2 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors rounded-md text-sm font-medium">
+                WhatsApp
+              </a>
             </div>
           </div>
         </div>
@@ -49,8 +49,8 @@ export function ContactInfo() {
             <Mail className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <h4 className="font-bold text-foreground mb-0.5 text-xs">Email Address</h4>
-            <a href={`mailto:${contactInfo.email}`} className="text-muted-foreground hover:text-primary transition-colors text-xs">{contactInfo.email}</a>
+            <h3 className="font-heading font-semibold text-foreground mb-1">Email Us</h3>
+            <a href={getMailtoLink()} className="text-muted-foreground hover:text-primary transition-colors text-xs">{contactInfo.email}</a>
           </div>
         </div>
 

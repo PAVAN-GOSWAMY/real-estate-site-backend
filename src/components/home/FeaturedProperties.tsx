@@ -2,10 +2,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Section, Container, SectionHeader, SectionTitle, SectionDescription } from "@/components/layout/wrappers";
 import { PropertyCard } from "@/components/properties/PropertyCard";
-import { properties } from "@/data/properties";
+import { PublicProperty } from "@/modules/public/types/property";
 
-export function FeaturedProperties() {
-  const featured = properties.filter((p) => p.featured);
+export function FeaturedProperties({ properties }: { properties: PublicProperty[] }) {
+  if (!properties || properties.length === 0) return null;
 
   return (
     <Section className="bg-muted/30">
@@ -30,7 +30,7 @@ export function FeaturedProperties() {
 
         {/* Property Grid: 1 col mobile, 2 col tablet, 3 col desktop */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featured.map((property) => (
+          {properties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>

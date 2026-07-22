@@ -1,17 +1,16 @@
 import * as React from "react";
 import { Builder } from "@/types";
 import { PropertyCard } from "@/components/properties/PropertyCard";
-import { properties } from "@/data/properties";
+import { getFilteredProperties } from "@/core/queries/properties";
 
 interface BuilderProjectsProps {
   builder: Builder;
 }
 
-export function BuilderProjects({ builder }: BuilderProjectsProps) {
+export async function BuilderProjects({ builder }: BuilderProjectsProps) {
   // Find projects that belong to this builder
-  const builderProjects = properties.filter(
-    (prop) => builder.featuredProjects.includes(prop.id) || prop.builder === builder.name
-  );
+  const { properties } = await getFilteredProperties({ builder: builder.name });
+  const builderProjects = properties;
 
   if (builderProjects.length === 0) return null;
 

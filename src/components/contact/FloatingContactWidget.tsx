@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Phone, MessageCircle, FileText, X } from "lucide-react";
-import { contactInfo } from "@/data/contact";
+import { contactInfo, getWhatsAppLink, getMailtoLink } from "@/data/contact";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export function FloatingContactWidget() {
           <span className="text-[10px] font-semibold uppercase tracking-wider">Call</span>
         </a>
         <a 
-          href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`}
+          href={getWhatsAppLink()}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 flex flex-col items-center justify-center gap-1 text-emerald-600 hover:text-emerald-700 transition-colors"
@@ -53,7 +53,7 @@ export function FloatingContactWidget() {
             <span className="font-semibold text-sm">Request Callback</span>
           </a>
           <a 
-            href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`}
+            href={getWhatsAppLink()}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-accent/10 transition-colors group"
@@ -63,15 +63,15 @@ export function FloatingContactWidget() {
             </div>
             <span className="font-semibold text-sm">Chat on WhatsApp</span>
           </a>
-          <Link 
-            href="/contact"
+          <a 
+            href={getMailtoLink()}
             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-accent/10 transition-colors group"
           >
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors text-primary group-hover:text-primary-foreground">
               <FileText className="w-4 h-4" />
             </div>
             <span className="font-semibold text-sm">Submit Enquiry</span>
-          </Link>
+          </a>
         </div>
 
         <button 

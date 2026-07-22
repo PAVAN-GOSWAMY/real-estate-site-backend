@@ -4,8 +4,9 @@ export const siteConfig = {
   description: "Find your dream luxury home or investment property with Square AR Spaces.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://squarearspaces.com",
   contact: {
-    email: "info@squarearspaces.com", // [Placeholder awaiting official client data]
-    phone: "+91 98765 43210", // [Placeholder awaiting official client data]
+    email: "pavangoswamy017@gmail.com",
+    phone: "+91 93470 00368",
+    whatsapp: "+91 93470 00368",
     address: "Noida, UP, India", // [Placeholder awaiting official client data]
   },
   socials: {

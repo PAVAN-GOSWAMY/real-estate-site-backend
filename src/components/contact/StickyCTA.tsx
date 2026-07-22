@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getWhatsAppLink } from "@/data/contact";
 
 interface StickyCTAProps {
   title?: string;
@@ -37,13 +38,13 @@ export function StickyCTA({ title, price, type = "property" }: StickyCTAProps) {
         </div>
 
         <div className="flex w-full md:w-auto items-center gap-3">
-          <Link href="/contact" className="flex-1 md:flex-none">
-            <Button variant="outline" className="w-full rounded-full border-border/50 hover:bg-accent/5 hover:text-primary">
+          <a href={getWhatsAppLink(title)} target="_blank" rel="noopener noreferrer" className="flex-1 md:flex-none">
+            <Button variant="outline" className="w-full rounded-full border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 hover:text-[#25D366]">
               <MessageCircle className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Enquire Now</span>
-              <span className="sm:hidden">Enquire</span>
+              <span className="hidden sm:inline">WhatsApp</span>
+              <span className="sm:hidden">WhatsApp</span>
             </Button>
-          </Link>
+          </a>
           <Link href="/contact" className="flex-1 md:flex-none">
             <Button className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
               <Calendar className="w-4 h-4 mr-2" />

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { PropertyGrid } from "@/components/property/PropertyGrid";
 import { PropertyFilters } from "@/components/property/PropertyFilters";
 import { PropertySkeleton } from "@/components/property/PropertySkeleton";
+import { getPublicFilterOptions } from "@/modules/public/services/public-property.service";
 import { PropertySearchParams } from "@/core/queries/properties";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export default async function PropertiesPage({
 }) {
   // Await the params for server component usage
   const params = await searchParams;
+  const filterOptions = await getPublicFilterOptions();
 
   return (
     <div className="min-h-screen bg-surface">
@@ -53,7 +55,7 @@ export default async function PropertiesPage({
                 Filters
               </h3>
               <div className="flex-1 overflow-y-auto pr-3 -mr-3 custom-scrollbar">
-                <PropertyFilters />
+                <PropertyFilters {...filterOptions} />
               </div>
             </div>
           </div>
@@ -72,7 +74,7 @@ export default async function PropertiesPage({
                   <SheetHeader className="mb-6">
                     <SheetTitle className="font-heading text-xl text-left">Filters</SheetTitle>
                   </SheetHeader>
-                  <PropertyFilters />
+                  <PropertyFilters {...filterOptions} />
                 </SheetContent>
               </Sheet>
             </div>

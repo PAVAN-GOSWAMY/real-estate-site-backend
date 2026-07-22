@@ -2,22 +2,39 @@ import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 
-export function PropertyBrochure() {
+import { PropertyDocument } from "@/modules/properties/types/assets";
+
+interface PropertyDocumentsProps {
+  documents: PropertyDocument[];
+}
+
+export function PropertyDocuments({ documents }: PropertyDocumentsProps) {
+  if (!documents || documents.length === 0) return null;
+
   return (
-    <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <div className="bg-primary/10 p-3 rounded-full">
-          <FileText className="h-6 w-6 text-primary" />
-        </div>
-        <div>
-          <h4 className="font-semibold text-foreground">Project e-Brochure</h4>
-          <p className="text-sm text-muted-foreground">Download the official brochure for complete floor plans and specifications.</p>
-        </div>
+    <div className="space-y-6">
+      <h3 className="font-heading text-2xl font-bold text-primary">Project Documents</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {documents.map((doc) => (
+          <div key={doc.id} className="bg-primary/5 rounded-2xl p-6 border border-primary/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/10 p-3 rounded-full">
+                <FileText className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground">{doc.name}</h4>
+                <p className="text-sm text-muted-foreground">{doc.documentType}</p>
+              </div>
+            </div>
+            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+              <Button className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </Button>
+            </a>
+          </div>
+        ))}
       </div>
-      <Button className="shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground">
-        <Download className="mr-2 h-4 w-4" />
-        Download PDF
-      </Button>
     </div>
   );
 }

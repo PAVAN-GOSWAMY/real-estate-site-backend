@@ -15,14 +15,21 @@ import { X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
-// Configuration data
-const locations = ["Noida", "Greater Noida", "Greater Noida West", "Yamuna Expressway"];
-const builders = ["M3M India", "Godrej Properties", "ATS Group", "ACE Group", "CRC Group", "Mahagun", "Eldeco", "Gaursons"];
-const types = ["Apartment", "Villa"];
-const configs = ["2 BHK", "3 BHK", "4 BHK", "5 BHK"];
-const statuses = ["Under Construction", "Ready to Move", "New Launch"];
+interface PropertyFiltersProps {
+  locations?: string[];
+  builders?: string[];
+  types?: string[];
+  configs?: string[];
+  statuses?: string[];
+}
 
-export function PropertyFilters() {
+export function PropertyFilters({
+  locations = [],
+  builders = [],
+  types = [],
+  configs = [],
+  statuses = []
+}: PropertyFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

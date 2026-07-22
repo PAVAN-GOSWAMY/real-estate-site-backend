@@ -21,6 +21,7 @@ export function BuilderHero({ builder }: BuilderHeroProps) {
                 alt={builder.name}
                 fill
                 className="object-contain"
+                priority
               />
             </div>
           </div>

@@ -3,14 +3,21 @@ import { ChevronRight, Home } from "lucide-react";
 import { locations } from "@/data/locations";
 
 interface PropertyBreadcrumbProps {
-  location: string;
-  sector: string;
+  city?: string | null;
+  locality?: string | null;
   title: string;
 }
 
-export function PropertyBreadcrumb({ location, sector, title }: PropertyBreadcrumbProps) {
+export function PropertyBreadcrumb({ city, locality, title }: PropertyBreadcrumbProps) {
+  const normalizedLocality = locality?.toLowerCase() ?? "";
+  const normalizedCity = city?.toLowerCase() ?? "";
+
   const match = locations.find(
-    (l) => l.name.toLowerCase() === sector.toLowerCase() || l.name.toLowerCase() === location.toLowerCase()
+    (l) => {
+      const lName = l.name.toLowerCase();
+      return (normalizedLocality && lName === normalizedLocality) || 
+             (normalizedCity && lName === normalizedCity);
+    }
   );
 
   return (
@@ -22,16 +29,21 @@ export function PropertyBreadcrumb({ location, sector, title }: PropertyBreadcru
       <Link href="/properties" className="hover:text-primary transition-colors">
         Properties
       </Link>
-      <ChevronRight className="h-4 w-4 shrink-0" />
       {match ? (
-        <Link href={`/locations/${match.slug}`} className="hover:text-primary transition-colors">
-          {match.name}
-        </Link>
-      ) : (
-        <Link href={`/properties?location=${location.toLowerCase().replace(/ /g, '-')}`} className="hover:text-primary transition-colors">
-          {location}
-        </Link>
-      )}
+        <>
+          <ChevronRight className="h-4 w-4 shrink-0" />
+          <Link href={`/locations/${match.slug}`} className="hover:text-primary transition-colors">
+            {match.name}
+          </Link>
+        </>
+      ) : city ? (
+        <>
+          <ChevronRight className="h-4 w-4 shrink-0" />
+          <Link href={`/properties?location=${normalizedCity.replace(/ /g, '-')}`} className="hover:text-primary transition-colors">
+            {city}
+          </Link>
+        </>
+      ) : null}
       <ChevronRight className="h-4 w-4 shrink-0" />
       <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-none">
         {title}

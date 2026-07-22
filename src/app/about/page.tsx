@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { properties } from "@/data/properties";
-import { developers } from "@/data/legacy";
+import { getSiteStats } from "@/modules/public/services/public-property.service";
 
 import { siteConfig } from "@/config/site";
 
@@ -13,7 +12,9 @@ export const metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const stats = await getSiteStats();
+
   return (
     <div className="min-h-screen bg-surface">
       {/* Hero Section */}
@@ -67,7 +68,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <p className="text-5xl font-heading font-bold text-accent mb-2">{properties.length}+</p>
+              <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.propertyCount}+</p>
               <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Exclusive Listings</p>
             </div>
             <div>
@@ -79,7 +80,7 @@ export default function AboutPage() {
               <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Sales Volume</p>
             </div>
             <div>
-              <p className="text-5xl font-heading font-bold text-accent mb-2">{developers.length}+</p>
+              <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.developerCount}+</p>
               <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Developer Partners</p>
             </div>
           </div>

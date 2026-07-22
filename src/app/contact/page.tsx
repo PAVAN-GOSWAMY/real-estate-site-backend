@@ -7,7 +7,7 @@ import { ContactFAQ } from "@/components/contact/ContactFAQ";
 import { siteConfig } from "@/config/site";
 import { ShieldCheck, MapPin, Building, Star, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { contactInfo } from "@/data/contact";
+import { contactInfo, getWhatsAppLink } from "@/data/contact";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -131,7 +131,7 @@ export default function ContactPage() {
               <a href={`tel:${contactInfo.phone.replace(/[^0-9+]/g, "")}`}>Call Now</a>
             </Button>
             <Button asChild size="lg" variant="outline" className="w-full sm:w-auto rounded-full bg-emerald-500/10 hover:bg-emerald-500 border-emerald-500/50 text-emerald-400 hover:text-white font-semibold px-8 h-12 transition-colors">
-              <a href={`https://wa.me/${contactInfo.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
+              <a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer">WhatsApp Us</a>
             </Button>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { Building2, Calendar, Trophy, ArrowRight } from "lucide-react";
 
 interface DeveloperProfile {
   name: string;
-  logo: string;
+  logo: string | null;
   experience: string;
   delivered: string;
   description: string;
@@ -20,52 +20,62 @@ export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-heading text-2xl font-bold text-primary">About the Developer</h3>
+      <h3 className="font-heading text-3xl font-bold text-foreground">About the Builder</h3>
       
-      <div className="bg-surface rounded-2xl p-6 border border-border/50">
-        <div className="flex flex-col sm:flex-row gap-6 items-start">
+      <div className="bg-card rounded-[2rem] p-6 md:p-8 border border-border/50 shadow-sm">
+        <div className="flex flex-col sm:flex-row gap-8 items-start">
           
-          <div className="relative h-24 w-24 sm:h-32 sm:w-32 shrink-0 bg-surface rounded-xl border border-border overflow-hidden p-2">
-            <Image 
-              src={profile.logo} 
-              alt={profile.name} 
-              fill 
-              className="object-contain p-2"
-            />
+          <div className="relative h-32 w-32 sm:h-40 sm:w-40 shrink-0 bg-surface/50 rounded-[1.5rem] border border-border/50 p-4 flex items-center justify-center">
+            {profile.logo && profile.logo.trim() !== "" ? (
+              <Image 
+                src={profile.logo} 
+                alt={profile.name} 
+                fill 
+                className="object-contain p-4"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full w-full bg-muted/20 rounded-xl">
+                <Building2 className="h-12 w-12 text-muted-foreground/30" />
+              </div>
+            )}
           </div>
           
-          <div className="flex-1 space-y-4">
-            <h4 className="font-heading text-xl font-bold text-foreground">{profile.name}</h4>
-            <p className="text-muted-foreground text-sm leading-relaxed">{profile.description}</p>
+          <div className="flex-1 space-y-6 w-full">
+            <div>
+              <h4 className="font-heading text-2xl font-bold text-foreground mb-3">{profile.name}</h4>
+              {profile.description && (
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-3xl">{profile.description}</p>
+              )}
+            </div>
             
-            <div className="flex flex-wrap gap-6 pt-4 border-t border-border/50">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-accent" />
+            <div className="flex flex-wrap gap-x-12 gap-y-6 py-6 border-y border-border/40">
+              <div className="flex items-start gap-3">
+                <Calendar className="h-6 w-6 text-muted-foreground/30 shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Experience</p>
-                  <p className="font-semibold text-foreground">{profile.experience}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Experience</p>
+                  <p className="font-semibold text-foreground text-base">{profile.experience}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-accent" />
+              <div className="flex items-start gap-3">
+                <Trophy className="h-6 w-6 text-muted-foreground/30 shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Delivered</p>
-                  <p className="font-semibold text-foreground">{profile.delivered}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Delivered</p>
+                  <p className="font-semibold text-foreground text-base">{profile.delivered}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-accent" />
+              <div className="flex items-start gap-3">
+                <Building2 className="h-6 w-6 text-muted-foreground/30 shrink-0 mt-0.5" strokeWidth={1.5} />
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Status</p>
-                  <p className="font-semibold text-foreground">Premium Builder</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Status</p>
+                  <p className="font-semibold text-foreground text-base">Premium Builder</p>
                 </div>
               </div>
             </div>
             
             <div className="pt-2">
               <Link href={`/builders/${profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
-                <Button variant="link" className="text-accent hover:text-accent-foreground p-0 h-auto font-semibold">
-                  View All Projects by {profile.name} <ArrowRight className="ml-1 h-4 w-4" />
+                <Button variant="link" className="text-muted-foreground/70 hover:text-foreground p-0 h-auto font-medium transition-colors">
+                  View All Projects by {profile.name} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             </div>

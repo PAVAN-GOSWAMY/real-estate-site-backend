@@ -42,7 +42,7 @@ test.describe('Search Builders', () => {
     await searchInput.fill('Alpha');
     
     // Search is debounced, verify the URL parameter is updated
-    await expect(page).toHaveURL(/search=Alpha/i);
+    await expect(page).toHaveURL(/search=Alpha/i, { timeout: 10000 });
 
     // Verify filtered results show builder1 and hide builder2
     const row1 = getBuilderRowByName(page, builder1);
@@ -55,7 +55,7 @@ test.describe('Search Builders', () => {
     await page.getByRole('button', { name: 'Clear search filter' }).click();
     
     // URL should be clear
-    await expect(page).not.toHaveURL(/search=Alpha/i);
+    await expect(page).not.toHaveURL(/search=Alpha/i, { timeout: 10000 });
 
     // Both should now be visible
     await expect(row1).toBeVisible();

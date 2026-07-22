@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { UploadCloud, X, Image as ImageIcon } from "lucide-react";
 import { Button } from "./button";
+import Image from "next/image";
 
 interface ImageUploadProps {
   name: string;
@@ -49,7 +50,7 @@ export function ImageUpload({ name, defaultValue, onRemove, disabled }: ImageUpl
     }
 
     // Check dimensions (optional, just throwing a warning or assuming it's valid if it passes size)
-    const img = new Image();
+    const img = new window.Image();
     img.onload = () => {
       if (img.width < 200 || img.height < 200) {
         // We'll still allow it but could add a warning here
@@ -123,10 +124,11 @@ export function ImageUpload({ name, defaultValue, onRemove, disabled }: ImageUpl
         {previewUrl ? (
           <div className="relative flex w-full flex-col items-center justify-center space-y-4">
             <div className="relative h-32 w-32 overflow-hidden rounded-lg border bg-background shadow-sm">
-              <img 
+              <Image 
                 src={previewUrl} 
                 alt="Preview" 
-                className="h-full w-full object-contain"
+                fill
+                className="object-contain"
               />
             </div>
             <div className="flex gap-2 z-50">

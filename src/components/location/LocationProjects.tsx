@@ -1,17 +1,16 @@
 import * as React from "react";
 import { Location } from "@/types";
-import { properties } from "@/data/properties";
+import { getFilteredProperties } from "@/core/queries/properties";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 
 interface LocationProjectsProps {
   location: Location;
 }
 
-export function LocationProjects({ location }: LocationProjectsProps) {
+export async function LocationProjects({ location }: LocationProjectsProps) {
   // Find projects that match this location's featured list or city/micromarket
-  const locationProjects = properties.filter(
-    (prop) => location.featuredProjects.includes(prop.id) || prop.location.toLowerCase() === location.name.toLowerCase() || prop.sector.toLowerCase() === location.name.toLowerCase()
-  );
+  const { properties } = await getFilteredProperties({ location: location.slug });
+  const locationProjects = properties;
 
   if (locationProjects.length === 0) return null;
 

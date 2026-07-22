@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import * as buildersService from "../services/builders.service";
 import { CreateBuilderInput, Builder } from "../types/builder";
 import { handleActionError } from "@/lib/actions/action-error";
+import { ensureAdminAuth } from "@/lib/auth/utils";
 
 /**
  * Type defining the standard response envelope for this action.
@@ -23,6 +24,7 @@ export async function createBuilderAction(
   formData: FormData
 ): Promise<CreateBuilderResult> {
   try {
+    await ensureAdminAuth();
     const inputString = formData.get("input") as string;
     if (!inputString) throw new Error("Validation Error: Missing input data");
     

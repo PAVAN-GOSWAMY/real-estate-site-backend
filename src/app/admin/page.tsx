@@ -5,6 +5,10 @@ import { PageHeader } from '@/components/admin/ui/PageHeader';
 import { StatsCard } from '@/components/admin/ui/StatsCard';
 import { SectionCard } from '@/components/admin/ui/SectionCard';
 import { EmptyState } from '@/components/admin/ui/EmptyState';
+import { LeadsService } from '@/modules/leads/services/leads.service';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import { StatusBadge } from '@/components/admin/ui/StatusBadge';
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
@@ -16,6 +20,10 @@ export default async function AdminDashboardPage() {
   if (!user) {
     redirect('/login');
   }
+
+  const crmStats = await LeadsService.getDashboardMetrics();
+  const recentLeadsRes = await LeadsService.getLeads({}, 1, 5);
+  const recentLeads = recentLeadsRes.leads;
 
   return (
     <div className="space-y-6">
@@ -33,22 +41,20 @@ export default async function AdminDashboardPage() {
           trend={{ value: 12, label: "from last month", isPositive: true }}
         />
         <StatsCard
-          title="Active Builders"
-          value="45"
-          icon={Building2}
-          trend={{ value: 4, label: "from last month", isPositive: true }}
-        />
-        <StatsCard
-          title="Pending Leads"
-          value="89"
+          title="Total Leads"
+          value={crmStats.totalLeads.toString()}
           icon={Users}
-          trend={{ value: 2, label: "from last month", isPositive: false }}
+          trend={{ value: crmStats.newLeads, label: "new leads pending", isPositive: true }}
         />
         <StatsCard
-          title="Open Jobs"
-          value="12"
+          title="Today's Follow-ups"
+          value={crmStats.todaysFollowUps.toString()}
+          icon={Users}
+        />
+        <StatsCard
+          title="Won Leads"
+          value={crmStats.wonLeads.toString()}
           icon={Briefcase}
-          trend={{ value: 8, label: "from last month", isPositive: true }}
         />
       </div>
 
@@ -71,11 +77,28 @@ export default async function AdminDashboardPage() {
           description="Latest inquiries from potential clients"
           className="col-span-1 lg:col-span-3"
         >
-          <EmptyState 
-            title="No recent leads" 
-            description="New leads will be displayed here as they come in."
-            className="border-0 rounded-none border-t"
-          />
+          {recentLeads.length === 0 ? (
+            <EmptyState 
+              title="No recent leads" 
+              description="New leads will be displayed here as they come in."
+              className="border-0 rounded-none border-t"
+            />
+          ) : (
+            <div className="divide-y divide-border/50">
+              {recentLeads.map(lead => (
+                <Link key={lead.id} href={`/admin/leads/${lead.id}`} className="block hover:bg-muted/30 transition-colors p-4">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="font-medium text-foreground text-sm">{lead.fullName}</span>
+                    <span className="text-xs text-muted-foreground">{format(new Date(lead.createdAt), "MMM d, h:mm a")}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-xs text-muted-foreground line-clamp-1">{lead.source} - {lead.propertyName || "General Inquiry"}</span>
+                    <StatusBadge status={lead.status} />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </SectionCard>
       </div>
     </div>

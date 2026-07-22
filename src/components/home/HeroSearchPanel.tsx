@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, MapPin, Home, IndianRupee, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,12 +12,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { locations, propertyTypes, budgets, configurations } from "@/data/search";
+import { budgets } from "@/data/search"; // We only keep static budgets
 
-export function HeroSearchPanel() {
+interface HeroSearchPanelProps {
+  filterOptions: { locations: string[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
+}
+
+export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
+  const router = useRouter();
+  
+  const [location, setLocation] = useState<string>("all");
+  const [type, setType] = useState<string>("all");
+  const [config, setConfig] = useState<string>("all");
+  const [budget, setBudget] = useState<string>("all");
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Search initiated from Hero");
+    const params = new URLSearchParams();
+    
+    if (location && location !== "all") params.set('location', location);
+    if (type && type !== "all") params.set('type', type);
+    if (config && config !== "all") params.set('config', config);
+    if (budget && budget !== "all") params.set('budget', budget);
+
+    router.push(`/properties?${params.toString()}`);
   };
 
   return (
@@ -27,16 +47,20 @@ export function HeroSearchPanel() {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-accent" /> Location
           </label>
-          <Select>
+          <Select value={location} onValueChange={setLocation}>
             <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
-              {locations.map((loc) => (
-                <SelectItem key={loc.value} value={loc.value}>
-                  {loc.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">All Locations</SelectItem>
+              {filterOptions.locations.map((loc) => {
+                const val = loc.toLowerCase().replace(/ /g, '-');
+                return (
+                  <SelectItem key={val} value={val}>
+                    {loc}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -46,16 +70,20 @@ export function HeroSearchPanel() {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <Home className="w-3.5 h-3.5 text-accent" /> Property Type
           </label>
-          <Select>
+          <Select value={type} onValueChange={setType}>
             <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
-              {propertyTypes.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">All Types</SelectItem>
+              {filterOptions.types.map((t) => {
+                const val = t.toLowerCase().replace(/ /g, '-');
+                return (
+                  <SelectItem key={val} value={val}>
+                    {t}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -65,16 +93,20 @@ export function HeroSearchPanel() {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-accent" /> Configuration
           </label>
-          <Select>
+          <Select value={config} onValueChange={setConfig}>
             <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
               <SelectValue placeholder="Any BHK" />
             </SelectTrigger>
             <SelectContent>
-              {configurations.map((config) => (
-                <SelectItem key={config.value} value={config.value}>
-                  {config.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="all">Any Configuration</SelectItem>
+              {filterOptions.configs.map((c) => {
+                const val = c.toLowerCase().replace(/ /g, '-');
+                return (
+                  <SelectItem key={val} value={val}>
+                    {c}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>
@@ -84,14 +116,15 @@ export function HeroSearchPanel() {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <IndianRupee className="w-3.5 h-3.5 text-accent" /> Budget
           </label>
-          <Select>
+          <Select value={budget} onValueChange={setBudget}>
             <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
               <SelectValue placeholder="Any Budget" />
             </SelectTrigger>
             <SelectContent>
-              {budgets.map((budget) => (
-                <SelectItem key={budget.value} value={budget.value}>
-                  {budget.label}
+              <SelectItem value="all">Any Budget</SelectItem>
+              {budgets.map((b) => (
+                <SelectItem key={b.value} value={b.value}>
+                  {b.label}
                 </SelectItem>
               ))}
             </SelectContent>

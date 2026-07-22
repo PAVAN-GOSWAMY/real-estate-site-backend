@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Container } from "./wrappers";
 import { footerQuickLinks, footerLocations, socialLinks } from "@/data/navigation";
 import { siteConfig } from "@/config/site";
+import { getMailtoLink } from "@/data/contact";
+import { Mail, Phone } from "lucide-react";
 
 export function Footer() {
   return (
@@ -71,15 +73,21 @@ export function Footer() {
             <h4 className="font-semibold text-accent text-lg">Connect With Us</h4>
             
             <div className="space-y-4">
-              <address className="not-italic text-sm text-primary-foreground/70 space-y-1">
-                <p>123 Luxury Avenue, Sector 150</p>
-                <p>Noida, Uttar Pradesh 201310</p>
-                <p className="pt-2">
-                  <a href={`mailto:${siteConfig.contact.email}`} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.email}</a>
-                </p>
-                <p>
-                  <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.phone}</a>
-                </p>
+              <address className="not-italic text-sm text-primary-foreground/70 space-y-4">
+                <li className="flex items-start gap-3 list-none">
+                  <Mail className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-white font-bold text-sm mb-1">Email</h4>
+                    <a href={getMailtoLink()} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.email}</a>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3 list-none">
+                  <Phone className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-white font-bold text-sm mb-1">Phone</h4>
+                    <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.phone}</a>
+                  </div>
+                </li>
               </address>
               
               <nav aria-label="Social Links" className="pt-2">

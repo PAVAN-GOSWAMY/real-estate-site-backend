@@ -1,60 +1,61 @@
 import { notFound } from "next/navigation";
-import { properties } from "@/data/properties";
+import { getPublicPropertyBySlug, getRelatedProperties } from "@/modules/public/services/public-property.service";
 import { PropertyBreadcrumb } from "@/components/property/PropertyBreadcrumb";
 import { PropertyGallery } from "@/components/property/PropertyGallery";
 import { PropertySummary } from "@/components/property/PropertySummary";
-import { PropertyHighlights } from "@/components/property/PropertyHighlights";
-import { PropertyPricing } from "@/components/property/PropertyPricing";
 import { PropertyAmenities } from "@/components/property/PropertyAmenities";
 import { PropertyFloorPlans } from "@/components/property/PropertyFloorPlans";
-import { PropertyLocationAdvantages } from "@/components/property/PropertyLocationAdvantages";
-import { PropertyDeveloper } from "@/components/property/PropertyDeveloper";
-import { PropertyFAQ } from "@/components/property/PropertyFAQ";
 import { PropertyInquiryCard } from "@/components/property/PropertyInquiryCard";
-import { PropertyBrochure, PropertyDisclaimer } from "@/components/property/PropertyExtras";
+import { PropertyDocuments, PropertyDisclaimer } from "@/components/property/PropertyExtras";
+import { PropertyLocation } from "@/components/property/PropertyLocation";
 import { StickyCTA } from "@/components/contact/StickyCTA";
+import { PropertyDeveloper } from "@/components/property/PropertyDeveloper";
+import { PropertyCard } from "@/components/properties/PropertyCard";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const property = properties.find((p) => p.slug === resolvedParams.slug);
+  const property = await getPublicPropertyBySlug(resolvedParams.slug);
   if (!property) return { title: "Property Not Found" };
 
   return {
-    title: `${property.title} | Luxury Real Estate in ${property.location}`,
-    description: property.description || `Explore ${property.title} in ${property.sector}, ${property.location}.`,
+    title: property.metaTitle || `${property.title} | Luxury Real Estate in ${property.locality}, ${property.city}`,
+    description: property.metaDescription || property.description || `Explore ${property.title} in ${property.locality}, ${property.city}.`,
     openGraph: {
-      title: `${property.title} | Luxury Real Estate in ${property.location}`,
-      description: property.description || `Explore ${property.title} in ${property.sector}, ${property.location}.`,
-      images: [{ url: property.thumbnail, width: 1200, height: 630 }],
+      title: property.metaTitle || `${property.title} | Luxury Real Estate in ${property.locality}, ${property.city}`,
+      description: property.metaDescription || property.description || `Explore ${property.title} in ${property.locality}, ${property.city}.`,
+      images: property.thumbnail ? [{ url: property.thumbnail, width: 1200, height: 630 }] : [],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${property.title} | Luxury Real Estate in ${property.location}`,
-      description: property.description || `Explore ${property.title} in ${property.sector}, ${property.location}.`,
-      images: [property.thumbnail],
+      title: property.metaTitle || `${property.title} | Luxury Real Estate in ${property.locality}, ${property.city}`,
+      description: property.metaDescription || property.description || `Explore ${property.title} in ${property.locality}, ${property.city}.`,
+      images: property.thumbnail ? [property.thumbnail] : [],
     },
   };
 }
 
 export default async function PropertyDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const property = properties.find((p) => p.slug === resolvedParams.slug);
+  const property = await getPublicPropertyBySlug(resolvedParams.slug);
 
   if (!property) {
     notFound();
   }
 
-  // Ensure we have an images array
-  const images = property.images && property.images.length > 0 ? property.images : [property.thumbnail];
+  // Ensure we have an images array. `images` is populated by DB service.
+  const images = property.images && property.images.length > 0 ? property.images : (property.thumbnail ? [property.thumbnail] : []);
+  const priceDisplay = property.priceDisplay || "Price on Request";
+
+  const relatedProperties = await getRelatedProperties(property.id, property.builderId, 4);
 
   return (
     <main className="min-h-screen bg-surface pb-24">
-      <StickyCTA title={property.title} price={property.price} type="property" />
+      <StickyCTA title={property.title} price={priceDisplay} type="property" />
       <div className="container mx-auto px-4 md:px-8 py-8 md:py-12">
         
         <PropertyBreadcrumb 
-          location={property.location} 
-          sector={property.sector} 
+          city={property.city} 
+          locality={property.locality} 
           title={property.title} 
         />
 
@@ -71,65 +72,73 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
               <PropertySummary property={property} />
             </section>
 
-            {property.highlights && (
-              <section id="highlights">
-                <PropertyHighlights highlights={property.highlights} />
-              </section>
-            )}
-
-            {property.configurationsList && (
-              <section id="pricing">
-                <PropertyPricing configurations={property.configurationsList} />
-              </section>
-            )}
-
-            <section id="brochure">
-              <PropertyBrochure />
+            <section id="location">
+              <PropertyLocation property={property} />
             </section>
 
-            {property.amenityGroups && (
+            {/* Hidden: Highlights (Future Phase) */}
+            
+            {/* Hidden: Pricing Configurations (Future Phase) */}
+
+            {property.documents && property.documents.length > 0 && (
+              <section id="brochure">
+                <PropertyDocuments documents={property.documents} />
+              </section>
+            )}
+
+            {property.amenityGroups && property.amenityGroups.length > 0 && (
               <section id="amenities">
                 <PropertyAmenities groups={property.amenityGroups} />
               </section>
             )}
 
-            {property.floorPlans && (
+            {property.floorPlans && property.floorPlans.length > 0 && (
               <section id="floor-plans">
                 <PropertyFloorPlans floorPlans={property.floorPlans} />
               </section>
             )}
 
-            {property.locationAdvantages && (
-              <section id="location">
-                <PropertyLocationAdvantages advantages={property.locationAdvantages} />
-              </section>
-            )}
-
-            {property.developerProfile && (
+            {/* Hidden: Location Advantages (Future Phase) */}
+            
+            {property.builderProfile && (
               <section id="developer">
-                <PropertyDeveloper profile={property.developerProfile} />
+                <PropertyDeveloper profile={{
+                  name: property.builderProfile.name,
+                  logo: property.builderProfile.logoUrl || '',
+                  description: property.builderProfile.description || '',
+                  experience: property.builderProfile.establishedYear ? `${new Date().getFullYear() - property.builderProfile.establishedYear} Years` : 'N/A',
+                  delivered: 'Multiple Projects' // DB fallback
+                }} />
               </section>
             )}
-
-            {property.faqs && (
-              <section id="faqs">
-                <PropertyFAQ faqs={property.faqs} />
-              </section>
-            )}
+            
+            {/* Hidden: FAQs (Future Phase) */}
             
             <PropertyDisclaimer />
           </div>
 
           {/* Sticky Right Sidebar */}
           <div className="lg:col-span-4 relative">
-            {/* The Inquiry Card uses sticky top-24 internally */}
             <PropertyInquiryCard 
               title={property.title} 
-              price={property.price} 
+              price={priceDisplay} 
+              propertyId={property.id}
+              builderId={property.builderId || undefined}
             />
           </div>
           
         </div>
+
+        {relatedProperties.length > 0 && (
+          <section id="related-properties" className="mt-24 border-t border-border/50 pt-16">
+            <h2 className="font-heading text-3xl font-bold text-primary mb-8">Related Properties</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {relatedProperties.map(prop => (
+                <PropertyCard key={prop.id} property={prop} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );

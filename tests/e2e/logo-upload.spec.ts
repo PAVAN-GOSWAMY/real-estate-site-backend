@@ -26,7 +26,7 @@ test.describe('Logo Upload', () => {
     await row.getByTestId(TestIds.ROW_ACTIONS_TRIGGER).click();
     await page.getByTestId(TestIds.ACTION_EDIT).click();
     
-    await page.waitForURL('**/admin/builders/*/edit');
+    await expect(page).toHaveURL(/.*\/admin\/builders\/.*\/edit/);
 
     // 1. Upload Logo
     const fileInput = page.getByTestId(TestIds.IMAGE_UPLOAD_INPUT);
@@ -46,12 +46,12 @@ test.describe('Logo Upload', () => {
     await page.getByRole('button', { name: 'Save Changes' }).click();
 
     // Verify persistence (redirect back to list)
-    await page.waitForURL('**/admin/builders');
+    await expect(page).toHaveURL(/.*\/admin\/builders/);
 
     // 2. Remove Logo
     await row.getByTestId(TestIds.ROW_ACTIONS_TRIGGER).click();
     await page.getByTestId(TestIds.ACTION_EDIT).click();
-    await page.waitForURL('**/admin/builders/*/edit');
+    await expect(page).toHaveURL(/.*\/admin\/builders\/.*\/edit/);
 
     // Click remove
     await page.getByTestId(TestIds.IMAGE_UPLOAD_REMOVE).click();
@@ -60,6 +60,6 @@ test.describe('Logo Upload', () => {
     await expect(page.getByText(/Click or drag image to upload/i)).toBeVisible();
     
     await page.getByRole('button', { name: 'Save Changes' }).click();
-    await page.waitForURL('**/admin/builders');
+    await expect(page).toHaveURL(/.*\/admin\/builders/);
   });
 });

@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { locations } from "@/data/legacy";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -11,7 +10,16 @@ import { Section, Container, SectionHeader, SectionTitle, SectionDescription } f
 const MotionSectionTitle = motion.create(SectionTitle);
 const MotionSectionDescription = motion.create(SectionDescription);
 
-export function TopLocations() {
+interface LocationItem {
+  name: string;
+  slug: string;
+  image: string;
+  propertyCount: number;
+}
+
+export function TopLocations({ locations }: { locations: LocationItem[] }) {
+  if (!locations || locations.length === 0) return null;
+
   return (
     <Section className="bg-surface pt-4 md:pt-6">
       <Container>
