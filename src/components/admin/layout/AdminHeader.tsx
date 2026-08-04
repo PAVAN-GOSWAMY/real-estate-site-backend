@@ -16,8 +16,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { AdminSidebar } from "./AdminSidebar";
+import { logout } from "@/lib/auth/actions";
 
-export function AdminHeader() {
+export function AdminHeader({ role }: { role: string }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -32,7 +33,7 @@ export function AdminHeader() {
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-72">
             <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-            <AdminSidebar onNavigate={() => setIsMobileMenuOpen(false)} />
+            <AdminSidebar role={role} onNavigate={() => setIsMobileMenuOpen(false)} />
           </SheetContent>
         </Sheet>
       </div>
@@ -80,7 +81,7 @@ export function AdminHeader() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <form action="/auth/logout" method="post">
+            <form action={logout}>
               <DropdownMenuItem asChild>
                 <button type="submit" className="w-full cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />

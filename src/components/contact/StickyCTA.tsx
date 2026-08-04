@@ -7,13 +7,20 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getWhatsAppLink } from "@/data/contact";
 
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
 interface StickyCTAProps {
   title?: string;
   price?: string;
   type?: "property" | "builder" | "location";
 }
 
-export function StickyCTA({ title, price, type = "property" }: StickyCTAProps) {
+import { Suspense } from "react";
+
+function StickyCTAContent({ title, price, type = "property" }: StickyCTAProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isVisible, setIsVisible] = React.useState(false);
 
   React.useEffect(() => {
@@ -28,7 +35,7 @@ export function StickyCTA({ title, price, type = "property" }: StickyCTAProps) {
 
   return (
     <div className={cn(
-      "fixed top-20 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-border/50 shadow-sm z-40 transition-transform duration-300 px-4 py-3 hidden md:block",
+      "fixed top-[106px] left-0 right-0 bg-white/95 backdrop-blur-md border-b border-border/50 shadow-sm z-40 transition-transform duration-300 px-4 py-3 hidden md:block",
       isVisible ? "translate-y-0" : "-translate-y-full"
     )}>
       <div className="container mx-auto flex items-center justify-between gap-4">
@@ -45,15 +52,25 @@ export function StickyCTA({ title, price, type = "property" }: StickyCTAProps) {
               <span className="sm:hidden">WhatsApp</span>
             </Button>
           </a>
-          <Link href="/contact" className="flex-1 md:flex-none">
-            <Button className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
-              <Calendar className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Schedule Visit</span>
-              <span className="sm:hidden">Visit</span>
-            </Button>
-          </Link>
+          <Button onClick={() => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("modal", "schedule-visit");
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+          }} className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold">
+            <Calendar className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Schedule Visit</span>
+            <span className="sm:hidden">Visit</span>
+          </Button>
         </div>
       </div>
     </div>
+  );
+}
+
+export function StickyCTA(props: StickyCTAProps) {
+  return (
+    <Suspense fallback={null}>
+      <StickyCTAContent {...props} />
+    </Suspense>
   );
 }

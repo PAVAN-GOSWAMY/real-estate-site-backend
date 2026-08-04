@@ -63,6 +63,12 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
           <Badge variant="outline" className={cn("backdrop-blur-md bg-white/95 font-semibold", getStatusColor(property.status))}>
             {property.status}
           </Badge>
+          {property.reraNumber && (
+            <Badge variant="outline" className="bg-white/95 text-zinc-800 border-zinc-200 font-semibold shadow-sm backdrop-blur-md flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+              RERA
+            </Badge>
+          )}
         </div>
 
         {/* Bottom Image Info */}

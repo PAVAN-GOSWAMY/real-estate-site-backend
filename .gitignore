@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Deployment
+deploy.zip
+
+# Database exports
+schema.sql
+supabase_schema.sql
+
+# Scratch & test scripts
+scratch/
+all_files.txt
+test-*.ts
+test-*.mjs
+migrate-locations.ts

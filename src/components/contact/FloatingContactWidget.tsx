@@ -6,8 +6,15 @@ import { contactInfo, getWhatsAppLink, getMailtoLink } from "@/data/contact";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+import { usePathname } from "next/navigation";
+
 export function FloatingContactWidget() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <>

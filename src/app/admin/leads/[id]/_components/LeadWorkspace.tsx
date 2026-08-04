@@ -15,13 +15,16 @@ import {
   DropdownMenuRadioItem
 } from "@/components/ui/dropdown-menu";
 import { LEAD_STATUSES } from "@/modules/leads/types";
-import { updateLeadStatusAction } from "@/modules/leads/actions/leads.actions";
+import { updateLeadStatusAction, logCommunicationAction, updateLeadPriorityAction } from "@/modules/leads/actions/leads.actions";
 import { toast } from "sonner";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { NotesTab } from "./tabs/NotesTab";
 import { ActivityTab } from "./tabs/ActivityTab";
 import { FollowUpsTab } from "./tabs/FollowUpsTab";
+import { FollowUpNoteModal } from "./FollowUpNoteModal";
+import { isValidPhone, isValidEmail, generateCallLink, generateWhatsAppLink, generateEmailLink } from "@/modules/leads/utils/communication";
+import { format } from "date-fns";
 
 interface LeadWorkspaceProps {
   lead: Lead;
@@ -33,6 +36,17 @@ interface LeadWorkspaceProps {
 
 export function LeadWorkspace({ lead, activities, notes, followUps, attachments }: LeadWorkspaceProps) {
   const [activeTab, setActiveTab] = useState("overview");
+  const [showNoteModal, setShowNoteModal] = useState(false);
+
+  const hasUrgentNote = notes.some(n => n.priority === "Urgent" || n.priority === "High");
+
+  const handleCommunication = async (type: "Phone Call Initiated" | "WhatsApp Opened" | "Email Draft Opened") => {
+    try {
+      await logCommunicationAction(lead.id, type, `Initiated via Lead Workspace`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -69,7 +83,14 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
             </div>
             
             <div className="flex flex-col items-end gap-2">
-              <StatusBadge status={lead.status} />
+              <div className="flex gap-2 items-center">
+                {hasUrgentNote && (
+                  <Badge variant="destructive" className="animate-pulse shadow-sm">
+                    🔥 Follow-up Pending
+                  </Badge>
+                )}
+                <StatusBadge status={lead.status} />
+              </div>
               <Badge variant="outline" className="text-xs">
                 Priority: {lead.priority}
               </Badge>
@@ -85,9 +106,9 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
                   <TabsTrigger value="activity" className="data-[state=active]:bg-background px-4 py-2">Activity</TabsTrigger>
                   <TabsTrigger value="notes" className="data-[state=active]:bg-background px-4 py-2">Notes</TabsTrigger>
                   <TabsTrigger value="follow-ups" className="data-[state=active]:bg-background px-4 py-2">Follow-ups</TabsTrigger>
-                  <TabsTrigger value="property" className="data-[state=active]:bg-background px-4 py-2">Property</TabsTrigger>
+                  {/* <TabsTrigger value="property" className="data-[state=active]:bg-background px-4 py-2">Property</TabsTrigger>
                   <TabsTrigger value="communication" className="data-[state=active]:bg-background px-4 py-2">Communication</TabsTrigger>
-                  <TabsTrigger value="attachments" className="data-[state=active]:bg-background px-4 py-2">Attachments</TabsTrigger>
+                  <TabsTrigger value="attachments" className="data-[state=active]:bg-background px-4 py-2">Attachments</TabsTrigger> */}
                 </TabsList>
               </div>
 
@@ -104,7 +125,7 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
                 <TabsContent value="follow-ups" className="m-0 focus-visible:outline-none">
                   <FollowUpsTab leadId={lead.id} followUps={followUps} />
                 </TabsContent>
-                <TabsContent value="property" className="m-0 focus-visible:outline-none">
+                {/* <TabsContent value="property" className="m-0 focus-visible:outline-none">
                   <div className="text-center py-12 text-muted-foreground">Property Tab (Coming Soon)</div>
                 </TabsContent>
                 <TabsContent value="communication" className="m-0 focus-visible:outline-none">
@@ -112,14 +133,98 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
                 </TabsContent>
                 <TabsContent value="attachments" className="m-0 focus-visible:outline-none">
                   <div className="text-center py-12 text-muted-foreground">Attachments Tab (Coming Soon)</div>
-                </TabsContent>
+                </TabsContent> */}
               </div>
             </div>
           </Tabs>
         </div>
 
-        {/* Right Sidebar - Quick Actions */}
+        {/* Right Sidebar */}
         <div className="xl:col-span-1 space-y-6">
+          
+          {/* Communication Center */}
+          <div className="bg-card border border-border/50 rounded-xl p-6">
+            <h3 className="font-semibold text-foreground mb-4">Communication</h3>
+            
+            <div className="space-y-4 mb-6">
+              <div>
+                <span className="text-xs text-muted-foreground block mb-1">Customer Phone</span>
+                <span className="font-medium text-sm text-foreground">{lead.phone || "Not provided"}</span>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground block mb-1">Customer Email</span>
+                <span className="font-medium text-sm text-foreground">{lead.email || "Not provided"}</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start hover:text-amber-500 disabled:opacity-50" 
+                disabled={!isValidPhone(lead.phone)}
+                title={!isValidPhone(lead.phone) ? "No valid phone number" : "Call Customer"}
+                asChild={isValidPhone(lead.phone)}
+              >
+                {isValidPhone(lead.phone) ? (
+                  <a href={generateCallLink(lead.phone!)} onClick={() => handleCommunication("Phone Call Initiated")}>
+                    <Phone className="mr-2 h-4 w-4 text-amber-500" />
+                    Call
+                  </a>
+                ) : (
+                  <div>
+                    <Phone className="mr-2 h-4 w-4" />
+                    Call
+                  </div>
+                )}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="w-full justify-start hover:text-emerald-500 disabled:opacity-50" 
+                disabled={!isValidPhone(lead.phone)}
+                title={!isValidPhone(lead.phone) ? "No valid phone number" : "WhatsApp Customer"}
+                asChild={isValidPhone(lead.phone)}
+              >
+                {isValidPhone(lead.phone) ? (
+                  <a 
+                    href={generateWhatsAppLink(lead.phone!, lead.propertyName)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={() => handleCommunication("WhatsApp Opened")}
+                  >
+                    <MessageSquare className="mr-2 h-4 w-4 text-emerald-500" />
+                    WhatsApp
+                  </a>
+                ) : (
+                  <div>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    WhatsApp
+                  </div>
+                )}
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="w-full justify-start hover:text-blue-500 disabled:opacity-50" 
+                disabled={!isValidEmail(lead.email)}
+                title={!isValidEmail(lead.email) ? "No valid email" : "Email Customer"}
+                asChild={isValidEmail(lead.email)}
+              >
+                {isValidEmail(lead.email) ? (
+                  <a href={generateEmailLink(lead.email!, lead.propertyName)} onClick={() => handleCommunication("Email Draft Opened")}>
+                    <Mail className="mr-2 h-4 w-4 text-blue-500" />
+                    Email
+                  </a>
+                ) : (
+                  <div>
+                    <Mail className="mr-2 h-4 w-4" />
+                    Email
+                  </div>
+                )}
+              </Button>
+            </div>
+          </div>
+
           <div className="bg-card border border-border/50 rounded-xl p-6 sticky top-6">
             <h3 className="font-semibold text-foreground mb-4">Quick Actions</h3>
             
@@ -155,22 +260,40 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {lead.phone && (
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href={`tel:${lead.phone.replace(/[^0-9+]/g, '')}`}>
-                    <Phone className="mr-2 h-4 w-4 text-amber-500" />
-                    Call Customer
-                  </a>
-                </Button>
-              )}
-              {lead.email && (
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <a href={`mailto:${lead.email}`}>
-                    <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                    Email Customer
-                  </a>
-                </Button>
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start">
+                    <CheckCircle className="mr-2 h-4 w-4 text-orange-500" />
+                    Change Priority
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuRadioGroup 
+                    value={lead.priority} 
+                    onValueChange={(val) => {
+                      toast.promise(updateLeadPriorityAction(lead.id, val), {
+                        loading: "Updating priority...",
+                        success: "Priority updated successfully",
+                        error: "Failed to update priority",
+                      });
+                    }}
+                  >
+                    {["Low", "Medium", "High", "Urgent"].map(p => (
+                      <DropdownMenuRadioItem key={p} value={p}>{p}</DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => setShowNoteModal(true)}
+              >
+                <FileText className="mr-2 h-4 w-4 text-blue-500" />
+                Add Follow-up Note
+              </Button>
+
               <div className="pt-4 border-t border-border/50">
                 <Button 
                   variant="outline" 
@@ -197,13 +320,19 @@ export function LeadWorkspace({ lead, activities, notes, followUps, attachments 
               </div>
               <div className="text-sm">
                 <span className="text-muted-foreground block mb-1">Created</span>
-                <span className="font-medium text-foreground">{new Date(lead.createdAt).toLocaleDateString()}</span>
+                <span className="font-medium text-foreground">{format(new Date(lead.createdAt), "MMM d, yyyy")}</span>
               </div>
             </div>
           </div>
         </div>
-
       </div>
+      
+      {showNoteModal && (
+        <FollowUpNoteModal 
+          leadId={lead.id} 
+          onClose={() => setShowNoteModal(false)} 
+        />
+      )}
     </div>
   );
 }

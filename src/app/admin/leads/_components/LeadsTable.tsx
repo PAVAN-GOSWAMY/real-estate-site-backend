@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, ExternalLink, Calendar, Phone, Mail } from "lucide-react";
+import { MoreHorizontal, ExternalLink, Calendar, Phone, Mail, MessageSquare } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
 import { LEAD_STATUSES } from "@/modules/leads/types";
-import { updateLeadStatusAction } from "@/modules/leads/actions/leads.actions";
+import { updateLeadStatusAction, logCommunicationAction } from "@/modules/leads/actions/leads.actions";
 import { toast } from "sonner";
+import { isValidPhone, isValidEmail, generateCallLink, generateWhatsAppLink, generateEmailLink } from "@/modules/leads/utils/communication";
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -35,6 +36,14 @@ export function LeadsTable({ leads }: LeadsTableProps) {
       success: "Status updated successfully",
       error: "Failed to update status",
     });
+  };
+
+  const handleCommunication = async (leadId: string, type: "Phone Call Initiated" | "WhatsApp Opened" | "Email Draft Opened") => {
+    try {
+      await logCommunicationAction(leadId, type, `Initiated via Leads Table`);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   if (leads.length === 0) {
@@ -134,58 +143,104 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                 </div>
               </td>
               <td className="px-6 py-4 text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/admin/leads/${lead.id}`}>
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        View Workspace
-                      </Link>
-                    </DropdownMenuItem>
-                    
-                    {lead.phone && (
-                      <DropdownMenuItem asChild>
-                        <a href={`tel:${lead.phone.replace(/[^0-9+]/g, '')}`}>
-                          <Phone className="mr-2 h-4 w-4" />
-                          Call Customer
-                        </a>
-                      </DropdownMenuItem>
+                <div className="flex items-center justify-end gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-amber-500 disabled:opacity-30"
+                    disabled={!isValidPhone(lead.phone)}
+                    title={!isValidPhone(lead.phone) ? "No valid phone number" : "Call Customer"}
+                    asChild={isValidPhone(lead.phone)}
+                  >
+                    {isValidPhone(lead.phone) ? (
+                      <a 
+                        href={generateCallLink(lead.phone!)} 
+                        onClick={() => handleCommunication(lead.id, "Phone Call Initiated")}
+                      >
+                        <Phone className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <Phone className="h-4 w-4" />
                     )}
-                    
-                    {lead.email && (
-                      <DropdownMenuItem asChild>
-                        <a href={`mailto:${lead.email}`}>
-                          <Mail className="mr-2 h-4 w-4" />
-                          Email Customer
-                        </a>
-                      </DropdownMenuItem>
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-emerald-500 disabled:opacity-30"
+                    disabled={!isValidPhone(lead.phone)}
+                    title={!isValidPhone(lead.phone) ? "No valid phone number" : "WhatsApp Customer"}
+                    asChild={isValidPhone(lead.phone)}
+                  >
+                    {isValidPhone(lead.phone) ? (
+                      <a 
+                        href={generateWhatsAppLink(lead.phone!, lead.propertyName)} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        onClick={() => handleCommunication(lead.id, "WhatsApp Opened")}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <MessageSquare className="h-4 w-4" />
                     )}
-                    
-                    <DropdownMenuSeparator />
-                    
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger>
-                        <span>Change Status</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        <DropdownMenuRadioGroup value={lead.status} onValueChange={(val) => handleStatusChange(lead.id, val)}>
-                          {LEAD_STATUSES.map(status => (
-                            <DropdownMenuRadioItem key={status} value={status}>
-                              {status}
-                            </DropdownMenuRadioItem>
-                          ))}
-                        </DropdownMenuRadioGroup>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-blue-500 disabled:opacity-30"
+                    disabled={!isValidEmail(lead.email)}
+                    title={!isValidEmail(lead.email) ? "No valid email" : "Email Customer"}
+                    asChild={isValidEmail(lead.email)}
+                  >
+                    {isValidEmail(lead.email) ? (
+                      <a 
+                        href={generateEmailLink(lead.email!, lead.propertyName)}
+                        onClick={() => handleCommunication(lead.id, "Email Draft Opened")}
+                      >
+                        <Mail className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <Mail className="h-4 w-4" />
+                    )}
+                  </Button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0 ml-1">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/admin/leads/${lead.id}`}>
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          View Workspace
+                        </Link>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator />
+                      
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <span>Change Status</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuRadioGroup value={lead.status} onValueChange={(val) => handleStatusChange(lead.id, val)}>
+                            {LEAD_STATUSES.map(status => (
+                              <DropdownMenuRadioItem key={status} value={status}>
+                                {status}
+                              </DropdownMenuRadioItem>
+                            ))}
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </td>
             </tr>
           ))}

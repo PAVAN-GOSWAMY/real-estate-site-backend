@@ -2,7 +2,7 @@
 
 import { LeadActivity } from "@/modules/leads/types";
 import { format } from "date-fns";
-import { Circle, User, Settings, FileText, Calendar, CheckCircle } from "lucide-react";
+import { Circle, User, Settings, FileText, Calendar, CheckCircle, Phone, MessageSquare, Mail } from "lucide-react";
 
 interface ActivityTabProps {
   activities: LeadActivity[];
@@ -17,6 +17,9 @@ export function ActivityTab({ activities }: ActivityTabProps) {
       case "Follow-up Scheduled": return <Calendar className="h-4 w-4 text-purple-500" />;
       case "Lead Assigned": return <User className="h-4 w-4 text-indigo-500" />;
       case "Follow-up Updated": return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+      case "Phone Call Initiated": return <Phone className="h-4 w-4 text-amber-500" />;
+      case "WhatsApp Opened": return <MessageSquare className="h-4 w-4 text-emerald-500" />;
+      case "Email Draft Opened": return <Mail className="h-4 w-4 text-blue-500" />;
       default: return <Circle className="h-4 w-4 text-muted-foreground" />;
     }
   };

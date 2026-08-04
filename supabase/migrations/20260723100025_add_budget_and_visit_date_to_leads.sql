@@ -1,0 +1,3 @@
+ALTER TABLE public.leads
+ADD COLUMN IF NOT EXISTS budget TEXT,
+ADD COLUMN IF NOT EXISTS preferred_visit_date TIMESTAMPTZ;

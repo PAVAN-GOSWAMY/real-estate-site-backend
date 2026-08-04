@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Home, IndianRupee, Layers } from "lucide-react";
+import { Search, MapPin, Home, IndianRupee, Layers, HardHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,54 +13,94 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { budgets } from "@/data/search"; // We only keep static budgets
+import { getLocationsByCityAction } from "@/modules/locations/locations.actions";
 
 interface HeroSearchPanelProps {
-  filterOptions: { locations: string[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
+  filterOptions: { cities: { id: string; name: string; slug: string }[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
 }
 
 export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
   const router = useRouter();
-  
-  const [location, setLocation] = useState<string>("all");
+
+  const [cityId, setCityId] = useState<string>("all");
+  const [locationId, setLocationId] = useState<string>("all");
+  const [locations, setLocations] = useState<{ id: string; name: string; type: string; slug: string }[]>([]);
+
   const [type, setType] = useState<string>("all");
   const [config, setConfig] = useState<string>("all");
   const [budget, setBudget] = useState<string>("all");
+  const [builder, setBuilder] = useState<string>("all");
+
+  React.useEffect(() => {
+    if (cityId && cityId !== "all") {
+      getLocationsByCityAction(cityId).then(data => setLocations(data));
+    } else {
+      setLocations([]);
+    }
+    setLocationId("all");
+  }, [cityId]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    
-    if (location && location !== "all") params.set('location', location);
+    if (cityId && cityId !== "all") {
+      const cityData = filterOptions.cities.find(c => c.id === cityId);
+      if (cityData) params.set('city', cityData.slug);
+    }
+
+    if (locationId && locationId !== "all") {
+      const locData = locations.find(l => l.id === locationId);
+      if (locData) params.set('location', locData.slug);
+    }
+
     if (type && type !== "all") params.set('type', type);
     if (config && config !== "all") params.set('config', config);
     if (budget && budget !== "all") params.set('budget', budget);
+    if (builder && builder !== "all") params.set('builder', builder);
 
     router.push(`/properties?${params.toString()}`);
   };
 
   return (
     <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-4 md:p-6 w-full border border-white/20 relative z-20">
-      <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-5 items-end">
-        
+      <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-4 md:gap-5 items-end">
+
+        {/* City Select */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-accent" /> City
+          </label>
+          <Select value={cityId} onValueChange={setCityId}>
+            <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
+              <SelectValue placeholder="All Cities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Cities</SelectItem>
+              {filterOptions.cities.map((city) => (
+                <SelectItem key={city.id} value={city.id}>
+                  {city.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Location Select */}
         <div className="space-y-2">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-accent" /> Location
           </label>
-          <Select value={location} onValueChange={setLocation}>
+          <Select value={locationId} onValueChange={setLocationId} disabled={cityId === "all"}>
             <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Locations</SelectItem>
-              {filterOptions.locations.map((loc) => {
-                const val = loc.toLowerCase().replace(/ /g, '-');
-                return (
-                  <SelectItem key={val} value={val}>
-                    {loc}
-                  </SelectItem>
-                );
-              })}
+              {locations.map((loc) => (
+                <SelectItem key={loc.id} value={loc.id}>
+                  {loc.name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -81,6 +121,29 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
                 return (
                   <SelectItem key={val} value={val}>
                     {t}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Builder Select */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+            <HardHat className="w-3.5 h-3.5 text-accent" /> Builder
+          </label>
+          <Select value={builder} onValueChange={setBuilder}>
+            <SelectTrigger className="w-full bg-muted/30 border-input h-14 text-base focus:ring-accent rounded-xl">
+              <SelectValue placeholder="All Builders" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Builders</SelectItem>
+              {filterOptions.builders.map((b) => {
+                const val = b.toLowerCase().replace(/ /g, '-');
+                return (
+                  <SelectItem key={val} value={val}>
+                    {b}
                   </SelectItem>
                 );
               })}
@@ -132,12 +195,12 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
         </div>
 
         {/* Submit Button */}
-        <div className="md:col-span-2 lg:col-span-1">
-          <Button 
-            type="submit" 
+        <div className="md:col-span-2 lg:col-span-3 xl:col-span-1 xl:col-start-auto">
+          <Button
+            type="submit"
             className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-base font-semibold group transition-all rounded-xl shadow-lg"
           >
-            Search Properties
+            Search
             <Search className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>

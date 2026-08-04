@@ -15,50 +15,61 @@ import {
   FileText,
   MapPin,
   Image as ImageIcon,
-  HeartHandshake
+  HeartHandshake,
+  CheckSquare
 } from "lucide-react";
 import { siteConfig } from "@/config/site";
+
+import { AdminRole } from "@/lib/auth/utils";
 
 const sidebarNav = [
   {
     title: "Overview",
+    roles: ["Super Admin", "Admin", "Sales Executive"],
     items: [
       { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
     ],
   },
   {
     title: "Property Management",
+    roles: ["Super Admin", "Admin", "Sales Executive"],
     items: [
       { title: "Properties", href: "/admin/properties", icon: Home },
-      { title: "Property Types", href: "/admin/property-types", icon: Building2 },
-      { title: "Amenities", href: "/admin/amenities", icon: HeartHandshake },
+      // { title: "Property Types", href: "/admin/property-types", icon: Building2 }, // Coming Soon
+      // { title: "Amenities", href: "/admin/amenities", icon: HeartHandshake }, // Coming Soon
       { title: "Locations", href: "/admin/locations", icon: MapPin },
-      { title: "Media Library", href: "/admin/media", icon: ImageIcon },
+      // { title: "Media Library", href: "/admin/media", icon: ImageIcon }, // Coming Soon
     ],
   },
   {
     title: "Builder Management",
+    roles: ["Super Admin", "Admin", "Sales Executive"],
     items: [
       { title: "Builders", href: "/admin/builders", icon: Building2 },
     ],
   },
   {
     title: "Lead Management",
+    roles: ["Super Admin", "Admin", "Sales Executive"],
     items: [
       { title: "Contact Leads", href: "/admin/leads", icon: Users },
-      { title: "Property Inquiries", href: "/admin/property-inquiries", icon: MessageSquare },
+      { title: "Tasks & Follow-ups", href: "/admin/leads/follow-ups", icon: CheckSquare },
+      // { title: "Property Inquiries", href: "/admin/property-inquiries", icon: MessageSquare }, // Coming Soon
       { title: "Site Visits", href: "/admin/site-visits", icon: MapPin },
     ],
   },
   {
     title: "Careers",
+    roles: ["Super Admin", "Admin"],
     items: [
       { title: "Jobs", href: "/admin/jobs", icon: Briefcase },
       { title: "Applications", href: "/admin/applications", icon: FileText },
     ],
   },
+  /* 
   {
-    title: "Content",
+    title: "Content", // Entire module Coming Soon
+    roles: ["Super Admin", "Admin"],
     items: [
       { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
       { title: "FAQs", href: "/admin/faqs", icon: FileText },
@@ -67,10 +78,18 @@ const sidebarNav = [
     ],
   },
   {
-    title: "System",
+    title: "System", // Entire module Coming Soon
+    roles: ["Super Admin"],
     items: [
       { title: "Users", href: "/admin/users", icon: Users },
       { title: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
+  */
+  {
+    title: "Account",
+    roles: ["Super Admin", "Admin", "Sales Executive"],
+    items: [
       { title: "Profile", href: "/admin/profile", icon: User },
     ],
   },
@@ -79,9 +98,10 @@ const sidebarNav = [
 interface AdminSidebarProps {
   className?: string;
   onNavigate?: () => void;
+  role: string;
 }
 
-export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
+export function AdminSidebar({ className, onNavigate, role }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -93,12 +113,15 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
       </div>
       <div className="flex-1 overflow-auto py-4">
         <nav className="grid gap-6 px-4">
-          {sidebarNav.map((group, index) => (
-            <div key={index} className="flex flex-col gap-2">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
-                {group.title}
-              </h4>
-              <div className="flex flex-col gap-1">
+          {sidebarNav.map((group, index) => {
+            if (!group.roles.includes(role)) return null;
+
+            return (
+              <div key={index} className="flex flex-col gap-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                  {group.title}
+                </h4>
+                <div className="flex flex-col gap-1">
                 {group.items.map((item, itemIndex) => {
                   const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                   return (
@@ -120,7 +143,8 @@ export function AdminSidebar({ className, onNavigate }: AdminSidebarProps) {
                 })}
               </div>
             </div>
-          ))}
+            );
+          })}
         </nav>
       </div>
     </div>

@@ -10,6 +10,7 @@ import { CareerFAQ } from "@/components/career/CareerFAQ";
 import { CareerCTA } from "@/components/career/CareerCTA";
 
 import { siteConfig } from "@/config/site";
+import { JobsRepository } from "@/modules/jobs/repository/jobs.repository";
 
 export const metadata: Metadata = {
   title: `Careers & Job Openings | ${siteConfig.name}`,
@@ -23,13 +24,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CareerPage() {
+export default async function CareerPage() {
+  const jobs = await JobsRepository.findAll(true); // activeOnly = true
+
   return (
     <main className="min-h-screen">
       <CareerHero />
       <CareerWhyJoin />
       <CareerBenefits />
-      <CareerJobs />
+      <CareerJobs jobs={jobs} />
       
       {/* Retained legacy sections for future career-specific content substitution */}
       <CareerServicesGrid />

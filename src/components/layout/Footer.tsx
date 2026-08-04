@@ -18,7 +18,7 @@ export function Footer() {
             <Link href="/" className="inline-block">
               <span className="sr-only">{siteConfig.name}</span>
               <Image 
-                src="/logo.svg" 
+                src="/logo.jpg" 
                 alt={siteConfig.name} 
                 width={160} 
                 height={50} 

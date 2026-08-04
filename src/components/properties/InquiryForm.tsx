@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 export function InquiryForm({ propertyName }: { propertyName: string }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -13,7 +14,7 @@ export function InquiryForm({ propertyName }: { propertyName: string }) {
     // Mock API call
     setTimeout(() => {
       setIsSubmitted(false);
-      alert("Thank you! Our luxury property consultant will contact you shortly.");
+      toast.success("Thank you! Our luxury property consultant will contact you shortly.");
     }, 1500);
   };
 

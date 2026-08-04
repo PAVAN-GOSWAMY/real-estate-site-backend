@@ -1,24 +1,16 @@
 import Link from "next/link";
 import { ChevronRight, Home } from "lucide-react";
-import { locations } from "@/data/locations";
 
 interface PropertyBreadcrumbProps {
   city?: string | null;
   locality?: string | null;
   title: string;
+  citySlug?: string | null;
+  locationSlug?: string | null;
 }
 
-export function PropertyBreadcrumb({ city, locality, title }: PropertyBreadcrumbProps) {
-  const normalizedLocality = locality?.toLowerCase() ?? "";
+export function PropertyBreadcrumb({ city, locality, title, citySlug, locationSlug }: PropertyBreadcrumbProps) {
   const normalizedCity = city?.toLowerCase() ?? "";
-
-  const match = locations.find(
-    (l) => {
-      const lName = l.name.toLowerCase();
-      return (normalizedLocality && lName === normalizedLocality) || 
-             (normalizedCity && lName === normalizedCity);
-    }
-  );
 
   return (
     <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6 overflow-x-auto whitespace-nowrap pb-2 scrollbar-hide">
@@ -29,18 +21,25 @@ export function PropertyBreadcrumb({ city, locality, title }: PropertyBreadcrumb
       <Link href="/properties" className="hover:text-primary transition-colors">
         Properties
       </Link>
-      {match ? (
+      {city ? (
         <>
           <ChevronRight className="h-4 w-4 shrink-0" />
-          <Link href={`/locations/${match.slug}`} className="hover:text-primary transition-colors">
-            {match.name}
+          <Link 
+            href={`/properties?${citySlug ? `city=${citySlug}` : `location=${normalizedCity.replace(/ /g, '-')}`}`} 
+            className="hover:text-primary transition-colors"
+          >
+            {city}
           </Link>
         </>
-      ) : city ? (
+      ) : null}
+      {locality ? (
         <>
           <ChevronRight className="h-4 w-4 shrink-0" />
-          <Link href={`/properties?location=${normalizedCity.replace(/ /g, '-')}`} className="hover:text-primary transition-colors">
-            {city}
+          <Link 
+            href={`/properties?${locationSlug ? `location=${locationSlug}` : `location=${locality.toLowerCase().replace(/ /g, '-')}`}`} 
+            className="hover:text-primary transition-colors"
+          >
+            {locality}
           </Link>
         </>
       ) : null}

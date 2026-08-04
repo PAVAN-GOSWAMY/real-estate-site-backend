@@ -3,7 +3,16 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 
+import { toast } from "sonner";
+
 export function NewsletterCTA() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    toast.success("Thank you for subscribing to our newsletter!");
+    form.reset();
+  };
+
   return (
     <section className="py-16 bg-accent/5 my-12 rounded-3xl border border-border/40">
       <div className="container px-4 md:px-6 mx-auto text-center max-w-2xl">
@@ -14,7 +23,7 @@ export function NewsletterCTA() {
           Join 10,000+ investors who receive our weekly insights, property alerts, and expert analysis directly in their inbox.
         </p>
         
-        <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+        <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={handleSubmit}>
           <input 
             type="email" 
             placeholder="Enter your email address" 

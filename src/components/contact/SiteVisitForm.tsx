@@ -37,7 +37,19 @@ export function SiteVisitForm({ projectName }: SiteVisitFormProps) {
             </div>
             <div className="space-y-2">
               <label htmlFor="preferredTime" className="text-sm font-medium text-foreground">Preferred Time *</label>
-              <input id="preferredTime" name="preferredTime" type="time" required className="w-full px-4 py-3 rounded-xl border border-border/50 bg-surface outline-none focus:border-primary transition-colors text-foreground" />
+              <select id="preferredTime" name="preferredTime" required className="w-full px-4 py-3 rounded-xl border border-border/50 bg-surface outline-none focus:border-primary transition-colors text-foreground appearance-none">
+                <option value="" disabled selected>Select a time</option>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="12:00 PM">12:00 PM</option>
+                <option value="01:00 PM">01:00 PM</option>
+                <option value="02:00 PM">02:00 PM</option>
+                <option value="03:00 PM">03:00 PM</option>
+                <option value="04:00 PM">04:00 PM</option>
+                <option value="05:00 PM">05:00 PM</option>
+                <option value="06:00 PM">06:00 PM</option>
+              </select>
             </div>
           </div>
 

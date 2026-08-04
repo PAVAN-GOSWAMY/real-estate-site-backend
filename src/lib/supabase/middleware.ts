@@ -35,10 +35,12 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // Protected routes logic
+  // Protected routes logic
   if (request.nextUrl.pathname.startsWith('/admin') && !user) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('error', 'Your session has expired. Please sign in again.')
     return NextResponse.redirect(url)
   }
 

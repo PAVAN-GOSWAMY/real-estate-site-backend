@@ -17,6 +17,7 @@ import Link from "next/link";
 interface CreatePropertyFormProps {
   initialCode: string;
   builders: Builder[];
+  cities: import("@/modules/locations/types").City[];
 }
 
 const MinimalCreateSchema = z.object({
@@ -25,13 +26,17 @@ const MinimalCreateSchema = z.object({
   propertyType: z.nativeEnum(PropertyType),
   status: z.nativeEnum(PropertyStatus),
   price: z.number().min(0, "Price must be positive").optional(),
-  locality: z.string().min(2, "Locality is required"),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
+  city_id: z.string().uuid("Please select a city"),
+  location_id: z.string().uuid("Please select a location"),
+  reraNumber: z.string().optional().or(z.literal("")),
   propertyCode: z.string(),
 });
 
-export function CreatePropertyForm({ initialCode, builders }: CreatePropertyFormProps) {
+import { getLocationsByCityAction } from "@/modules/locations/locations.actions";
+import { useEffect } from "react";
+import { LocationCombobox } from "./LocationCombobox";
+
+export function CreatePropertyForm({ initialCode, builders, cities }: CreatePropertyFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string>();
@@ -41,6 +46,17 @@ export function CreatePropertyForm({ initialCode, builders }: CreatePropertyForm
   const [builderId, setBuilderId] = useState("");
   const [propertyType, setPropertyType] = useState<PropertyType | "">("");
   const [status, setStatus] = useState<PropertyStatus>(PropertyStatus.ACTIVE);
+  const [cityId, setCityId] = useState("");
+  const [locationId, setLocationId] = useState("");
+  const [locations, setLocations] = useState<import("@/modules/locations/types").Location[]>([]);
+
+  useEffect(() => {
+    if (cityId) {
+      getLocationsByCityAction(cityId).then(setLocations);
+    } else {
+      setLocations([]);
+    }
+  }, [cityId]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -55,7 +71,7 @@ export function CreatePropertyForm({ initialCode, builders }: CreatePropertyForm
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData.entries());
     
-    const payload = {
+    const payload: any = {
       ...data,
       builderId,
       propertyType: propertyType === "" ? undefined : propertyType,
@@ -65,7 +81,30 @@ export function CreatePropertyForm({ initialCode, builders }: CreatePropertyForm
       isFeatured: formData.get("isFeatured") === "on",
       isVerified: formData.get("isVerified") === "on",
       isPremium: formData.get("isPremium") === "on",
+      city_id: cityId,
+      location_id: locationId,
+      reraNumber: data.reraNumber === "" ? undefined : data.reraNumber,
     };
+
+    // Dual-write legacy text fields based on selection
+    if (cityId) {
+      const cityData = cities.find(c => c.id === cityId);
+      if (cityData) {
+        payload.city = cityData.name;
+        payload.state = cityData.state;
+      }
+    }
+    if (locationId) {
+      const locData = locations.find(l => l.id === locationId);
+      if (locData) {
+        if (locData.type === 'SECTOR') {
+          payload.sector = locData.name;
+          payload.locality = locData.name; // Provide locality fallback if needed
+        } else {
+          payload.locality = locData.name;
+        }
+      }
+    }
 
     const result = MinimalCreateSchema.safeParse(payload);
     
@@ -89,6 +128,10 @@ export function CreatePropertyForm({ initialCode, builders }: CreatePropertyForm
           isFeatured: payload.isFeatured,
           isVerified: payload.isVerified,
           isPremium: payload.isPremium,
+          city: payload.city,
+          state: payload.state,
+          locality: payload.locality,
+          sector: payload.sector,
         } as CreatePropertyInput;
         
         const actionResult = await createPropertyAction(fullPayload);
@@ -193,37 +236,47 @@ export function CreatePropertyForm({ initialCode, builders }: CreatePropertyForm
                 {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="locality">Locality <span className="text-destructive">*</span></Label>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="reraNumber">RERA Number (Optional)</Label>
                 <Input
-                  id="locality"
-                  name="locality"
+                  id="reraNumber"
+                  name="reraNumber"
+                  placeholder="e.g. PRM/KA/RERA/1251/446/PR/190809/002766"
                   disabled={isPending}
-                  aria-invalid={!!errors.locality}
+                  aria-invalid={!!errors.reraNumber}
                 />
-                {errors.locality && <p className="text-sm text-destructive">{errors.locality}</p>}
+                {errors.reraNumber && <p className="text-sm text-destructive">{errors.reraNumber}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="city">City <span className="text-destructive">*</span></Label>
-                <Input
-                  id="city"
-                  name="city"
-                  disabled={isPending}
-                  aria-invalid={!!errors.city}
-                />
-                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+                <Label>City <span className="text-destructive">*</span></Label>
+                <Select value={cityId} onValueChange={(val) => {
+                  setCityId(val);
+                  setLocationId(""); // reset location when city changes
+                }} disabled={isPending}>
+                  <SelectTrigger aria-invalid={!!errors.city_id}>
+                    <SelectValue placeholder="Select City" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map((city) => (
+                      <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.city_id && <p className="text-sm text-destructive">{errors.city_id}</p>}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="state">State <span className="text-destructive">*</span></Label>
-                <Input
-                  id="state"
-                  name="state"
-                  disabled={isPending}
-                  aria-invalid={!!errors.state}
+              <div className="space-y-2 relative z-10">
+                <Label>Location (Locality/Sector) <span className="text-destructive">*</span></Label>
+                <LocationCombobox
+                  locations={locations}
+                  cityId={cityId}
+                  value={locationId}
+                  onChange={setLocationId}
+                  disabled={isPending || !cityId}
+                  onLocationCreated={(newLoc) => setLocations(prev => [...prev, newLoc].sort((a, b) => a.name.localeCompare(b.name)))}
                 />
-                {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
+                {errors.location_id && <p className="text-sm text-destructive">{errors.location_id}</p>}
               </div>
 
               <div className="space-y-4 md:col-span-2 pt-4 border-t">

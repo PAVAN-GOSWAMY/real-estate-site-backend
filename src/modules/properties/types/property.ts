@@ -22,6 +22,8 @@ export interface Property {
   
   address: string | null;
   landmark: string | null;
+  city_id: string | null;
+  location_id: string | null;
   locality: string | null;
   sector: string | null;
   city: string | null;
@@ -54,6 +56,7 @@ export interface Property {
   isFeatured: boolean;
   isVerified: boolean;
   isPremium: boolean;
+  reraNumber: string | null;
   
   metaTitle: string | null;
   metaDescription: string | null;
@@ -80,6 +83,8 @@ export interface CreatePropertyInput {
   
   address?: string | null;
   landmark?: string | null;
+  city_id?: string | null;
+  location_id?: string | null;
   locality?: string | null;
   sector?: string | null;
   city?: string | null;
@@ -112,6 +117,7 @@ export interface CreatePropertyInput {
   isFeatured?: boolean;
   isVerified?: boolean;
   isPremium?: boolean;
+  reraNumber?: string | null;
   
   metaTitle?: string | null;
   metaDescription?: string | null;

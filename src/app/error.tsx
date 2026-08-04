@@ -26,7 +26,10 @@ export default function Error({
       </p>
       <button
         className="px-4 py-2 bg-primary text-primary-foreground text-sm rounded-md font-medium hover:bg-primary/90 transition-colors mt-4"
-        onClick={() => reset()}
+        onClick={() => {
+          reset()
+          window.location.href = '/login'
+        }}
       >
         Try again
       </button>

@@ -15,7 +15,7 @@ export const LEAD_SOURCES = [
   "Email"
 ] as const;
 
-export const LEAD_PRIORITIES = ["Low", "Medium", "High"] as const;
+export const LEAD_PRIORITIES = ["Low", "Medium", "High", "Urgent"] as const;
 
 export const LEAD_STATUSES = [
   "New",
@@ -30,13 +30,19 @@ export const LEAD_STATUSES = [
 ] as const;
 
 export const FOLLOW_UP_TYPES = [
-  "Call",
+  "Phone Call",
+  "WhatsApp",
   "Email",
-  "Meeting",
-  "Site Visit"
+  "Site Visit",
+  "Office Meeting",
+  "Document Collection",
+  "Loan Discussion",
+  "Other"
 ] as const;
 
-export const FOLLOW_UP_STATUSES = ["Pending", "Completed", "Cancelled"] as const;
+export const FOLLOW_UP_STATUSES = ["Scheduled", "Completed", "Missed", "Cancelled"] as const;
+
+export const FOLLOW_UP_PRIORITIES = ["Low", "Medium", "High", "Urgent"] as const;
 
 // ============================================================================
 // Database Entity Types (Matches DB schema)
@@ -78,8 +84,10 @@ export interface LeadActivity {
 export interface LeadNote {
   id: string;
   leadId: string;
-  content: string;
-  createdByEmail: string;
+  note: string;
+  userId: string;
+  priority: typeof LEAD_PRIORITIES[number];
+  followUpDate: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -91,9 +99,11 @@ export interface LeadFollowUp {
   reminderType: typeof FOLLOW_UP_TYPES[number];
   comment: string | null;
   status: typeof FOLLOW_UP_STATUSES[number];
+  priority: typeof FOLLOW_UP_PRIORITIES[number];
   createdByEmail: string;
   createdAt: string;
   updatedAt: string;
+  completedAt: string | null;
 }
 
 export interface LeadAttachment {
@@ -133,14 +143,26 @@ export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;
 
 export const createLeadNoteSchema = z.object({
   leadId: z.string().uuid(),
-  content: z.string().min(1, "Note content is required"),
+  note: z.string().min(10, "Note must be at least 10 characters").max(2000, "Note cannot exceed 2000 characters"),
+  priority: z.enum(LEAD_PRIORITIES).default("Medium"),
+  followUpDate: z.string().datetime().optional().nullable(),
 });
 export type CreateLeadNoteInput = z.infer<typeof createLeadNoteSchema>;
+
+export const updateLeadNoteSchema = createLeadNoteSchema.partial().extend({
+  id: z.string().uuid(),
+});
+export type UpdateLeadNoteInput = z.infer<typeof updateLeadNoteSchema>;
+
+export const deleteLeadNoteSchema = z.object({
+  id: z.string().uuid(),
+});
 
 export const createLeadFollowUpSchema = z.object({
   leadId: z.string().uuid(),
   followUpDate: z.string().datetime(), // Requires full ISO string
   reminderType: z.enum(FOLLOW_UP_TYPES),
+  priority: z.enum(FOLLOW_UP_PRIORITIES).default("Medium"),
   comment: z.string().optional().or(z.literal("")),
 });
 export type CreateLeadFollowUpInput = z.infer<typeof createLeadFollowUpSchema>;
@@ -157,5 +179,10 @@ export const updateLeadStatusSchema = z.object({
 
 export const updateLeadAssignmentSchema = z.object({
   id: z.string().uuid(),
-  assignedToEmail: z.string().email().optional().or(z.literal("")),
+  assignedToEmail: z.string().email().or(z.literal("")),
+});
+
+export const updateLeadPrioritySchema = z.object({
+  id: z.string().uuid(),
+  priority: z.enum(LEAD_PRIORITIES),
 });

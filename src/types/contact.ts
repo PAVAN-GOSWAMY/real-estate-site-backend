@@ -3,7 +3,7 @@ export interface ContactInfo {
   phone: string;
   email: string;
   whatsapp: string;
-  googleMapsUrl: string;
+  googleMapsUrl?: string | null;
 }
 
 export interface BusinessHours {

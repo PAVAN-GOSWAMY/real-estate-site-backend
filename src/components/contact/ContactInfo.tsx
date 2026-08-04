@@ -60,7 +60,7 @@ export function ContactInfo() {
           </div>
           <div>
             <h4 className="font-bold text-foreground mb-0.5 text-xs">Corporate Office</h4>
-            <p className="text-muted-foreground leading-relaxed text-xs">{contactInfo.address}</p>
+            <p className="text-muted-foreground leading-relaxed text-xs whitespace-pre-line">{contactInfo.address}</p>
           </div>
         </div>
         

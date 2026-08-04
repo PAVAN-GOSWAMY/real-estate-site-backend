@@ -21,6 +21,7 @@ const BasicInfoSchema = z.object({
   availability: z.nativeEnum(PropertyAvailability),
   shortDescription: z.string().optional().or(z.literal("")),
   description: z.string().optional().or(z.literal("")),
+  reraNumber: z.string().optional().or(z.literal("")),
 });
 
 interface BasicInfoTabProps {
@@ -63,7 +64,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
       isPremium: formData.get("isPremium") === "on",
     };
 
-    const textFields = ["slug", "shortDescription", "description"];
+    const textFields = ["slug", "shortDescription", "description", "reraNumber"];
     textFields.forEach(key => {
       if (payload[key] === "") payload[key] = undefined;
     });
@@ -143,6 +144,19 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
                   aria-invalid={!!errors.slug}
                 />
                 {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
+              </div>
+
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="reraNumber">RERA Number (Optional)</Label>
+                <Input
+                  id="reraNumber"
+                  name="reraNumber"
+                  placeholder="e.g. PRM/KA/RERA/1251/446/PR/190809/002766"
+                  defaultValue={property.reraNumber || ""}
+                  disabled={isPending}
+                  aria-invalid={!!errors.reraNumber}
+                />
+                {errors.reraNumber && <p className="text-sm text-destructive">{errors.reraNumber}</p>}
               </div>
 
               <div className="space-y-2">

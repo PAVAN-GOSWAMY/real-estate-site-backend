@@ -28,7 +28,7 @@ export function CareerHero() {
             </Button>
           </a>
           <a href="#why-join" className="w-full sm:w-auto">
-            <Button size="lg" variant="outline" className="w-full rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white px-8 py-6 text-lg transition-colors">
+            <Button size="lg" variant="outline" className="w-full rounded-full bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white px-8 py-6 text-lg transition-colors">
               Why Join Us <ArrowDown className="w-4 h-4 ml-2" />
             </Button>
           </a>

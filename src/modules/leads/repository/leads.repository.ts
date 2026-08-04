@@ -52,9 +52,12 @@ export class LeadsRepository {
 
   static async createLead(input: CreateLeadInput) {
     const supabase = await createClient();
-    const { data, error } = await supabase
+    const id = crypto.randomUUID();
+
+    const { error } = await supabase
       .from("leads")
       .insert({
+        id,
         full_name: input.fullName,
         email: input.email || null,
         phone: input.phone || null,
@@ -67,12 +70,12 @@ export class LeadsRepository {
         status: input.status,
         preferred_visit_date: input.preferredVisitDate || null,
         budget: input.budget || null,
-      })
-      .select()
-      .single();
+      });
 
     if (error) throw new Error(`Database error: ${error.message}`);
-    return this.mapLeadRow(data);
+    
+    // Return a partial lead object sufficient for the service layer
+    return { id, source: input.source } as Lead;
   }
 
   static async updateLead(input: UpdateLeadInput) {
@@ -135,38 +138,6 @@ export class LeadsRepository {
     if (error) throw new Error(`Database error: ${error.message}`);
   }
 
-  // Notes
-  static async getLeadNotes(leadId: string) {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("lead_notes")
-      .select("*")
-      .eq("lead_id", leadId)
-      .order("created_at", { ascending: false });
-
-    if (error) throw new Error(`Database error: ${error.message}`);
-    return data.map((row: any) => ({
-      id: row.id,
-      leadId: row.lead_id,
-      content: row.content,
-      createdByEmail: row.created_by_email,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    })) as LeadNote[];
-  }
-
-  static async createNote(input: CreateLeadNoteInput, createdByEmail: string) {
-    const supabase = await createClient();
-    const { error } = await supabase
-      .from("lead_notes")
-      .insert({
-        lead_id: input.leadId,
-        content: input.content,
-        created_by_email: createdByEmail,
-      });
-
-    if (error) throw new Error(`Database error: ${error.message}`);
-  }
 
   // Follow-ups
   static async getLeadFollowUps(leadId: string) {

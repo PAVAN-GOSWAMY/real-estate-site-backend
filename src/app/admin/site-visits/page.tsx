@@ -1,12 +1,19 @@
 import { PageHeader } from "@/components/admin/ui/PageHeader";
-import { EmptyState } from "@/components/admin/ui/EmptyState";
-import { Settings } from "lucide-react";
+import { SiteVisitService } from "@/modules/site-visits/services/site-visit.service";
+import { SiteVisitsClient } from "./_components/SiteVisitsClient";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+export default async function SiteVisitsPage() {
+  const visits = await SiteVisitService.getSiteVisits();
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Site Visits" description="Manage Site Visits." />
-      <EmptyState title="Coming Soon" description="The Site Visits module is currently under development." icon={Settings} className="bg-card shadow-sm" />
+      <PageHeader 
+        title="Site Visits" 
+        description="Manage all property site visits requested by customers."
+      />
+      <SiteVisitsClient initialVisits={visits} />
     </div>
   );
 }

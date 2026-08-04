@@ -22,8 +22,12 @@ export interface PublicProperty {
   builderLogo: string | null;
   landmark: string | null;
   locality: string;
+  locationSlug?: string | null;
   sector: string | null;
   city: string;
+  citySlug?: string | null;
+  cityId?: string | null;
+  locationId?: string | null;
   state: string;
   country: string | null;
   address: string | null;

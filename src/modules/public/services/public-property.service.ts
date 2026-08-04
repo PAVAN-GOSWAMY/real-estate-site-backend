@@ -1,7 +1,12 @@
-import { createClient } from '@/lib/supabase/server';
+import { createPublicClient } from '@/lib/supabase/public';
 import { PublicProperty, PublicAmenityGroup } from '../types/property';
 import { PublicFeaturedBuilder } from '../types/builder';
-import { PropertySearchParams } from '@/core/queries/properties';
+import { PropertyFilterOptions } from '../types/search';
+import { 
+  buildPropertySelect, 
+  applyPropertyFilters, 
+  applyPropertySort 
+} from './property-filter.helper';
 import { PropertyFloorPlan, PropertyDocument } from '../../properties/types/assets';
 
 function mapToPublicProperty(row: any): PublicProperty {
@@ -74,8 +79,18 @@ function mapToPublicProperty(row: any): PublicProperty {
   })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   // Formatting price display if price exists
-  let priceDisplay = row.price ? `₹ ${(row.price / 10000000).toFixed(2)} Cr Onwards` : null;
-
+  let priceDisplay = null;
+  if (row.price) {
+    if (row.price >= 10000000) {
+      const cr = row.price / 10000000;
+      priceDisplay = `₹ ${cr.toFixed(2).replace(/\.00$/, '')} Cr Onwards`;
+    } else if (row.price >= 100000) {
+      const lakhs = row.price / 100000;
+      priceDisplay = `₹ ${lakhs.toFixed(2).replace(/\.00$/, '')} Lakhs Onwards`;
+    } else {
+      priceDisplay = `₹ ${row.price.toLocaleString('en-IN')} Onwards`;
+    }
+  }
   return {
     id: row.id,
     slug: row.slug,
@@ -85,10 +100,14 @@ function mapToPublicProperty(row: any): PublicProperty {
     builderName,
     builderLogo,
     landmark: row.landmark,
-    locality: row.locality,
-    sector: row.sector,
-    city: row.city,
-    state: row.state,
+    locality: row.locations ? row.locations.name : row.locality,
+    locationSlug: row.locations ? row.locations.slug : null,
+    sector: row.locations && row.locations.type === 'SECTOR' ? row.locations.name : row.sector,
+    city: row.cities ? row.cities.name : row.city,
+    citySlug: row.cities ? row.cities.slug : null,
+    cityId: row.city_id,
+    locationId: row.location_id,
+    state: row.cities ? row.cities.state : row.state,
     country: row.country,
     address: row.address,
     pincode: row.pincode,
@@ -103,7 +122,7 @@ function mapToPublicProperty(row: any): PublicProperty {
     bathrooms: row.bathrooms,
     carpetArea: row.carpet_area ? Number(row.carpet_area) : null,
     possessionDate: row.possession_date ? new Date(row.possession_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : null,
-    reraNumber: row.rera_number,
+    reraNumber: row.rera_number || null,
     isFeatured: row.is_featured,
     isVerified: row.is_verified,
     isPremium: row.is_premium,
@@ -120,100 +139,57 @@ function mapToPublicProperty(row: any): PublicProperty {
   };
 }
 
-export async function getPublicProperties(searchParams: PropertySearchParams): Promise<{
+export async function getPublicProperties(filters: PropertyFilterOptions): Promise<{
   properties: PublicProperty[];
   totalPages: number;
   totalCount: number;
 }> {
-  const supabase = await createClient();
-  const ITEMS_PER_PAGE = 6;
-  const page = parseInt(searchParams.page || "1");
+  const supabase = createPublicClient();
+  const ITEMS_PER_PAGE = filters.limit || 6;
+  const page = filters.page || 1;
   const offset = (page - 1) * ITEMS_PER_PAGE;
+
+  let cityId = filters.cityId;
+  let locationId = filters.locationId;
+
+  // Resolve City Slug to ID
+  if (!cityId && filters.city && filters.city !== 'all') {
+    const { data: cityData } = await supabase
+      .from('cities')
+      .select('id')
+      .eq('slug', filters.city)
+      .single();
+    if (cityData) cityId = cityData.id;
+  }
+
+  // Resolve Location Slug to ID
+  if (!locationId && filters.location && filters.location !== 'all') {
+    const { data: locData } = await supabase
+      .from('locations')
+      .select('id')
+      .eq('slug', filters.location)
+      .single();
+    if (locData) locationId = locData.id;
+  }
+
+  const resolvedFilters = {
+    ...filters,
+    cityId,
+    locationId,
+  };
+
+  const selectString = buildPropertySelect(resolvedFilters);
 
   let query = supabase
     .from('properties')
-    .select(`
-      *,
-      builders (name, logo_url),
-      property_media (url, is_featured, display_order)
-    `, { count: 'exact' })
+    .select(selectString, { count: 'exact' })
     .eq('status', 'ACTIVE');
 
-  if (searchParams.isFeatured) {
-    query = query.eq('is_featured', searchParams.isFeatured === 'true' || searchParams.isFeatured === true);
-  }
+  query = applyPropertyFilters(query, resolvedFilters);
+  query = applyPropertySort(query, resolvedFilters.sort);
 
-  if (searchParams.isPremium) {
-    query = query.eq('is_premium', searchParams.isPremium === 'true' || searchParams.isPremium === true);
-  }
-
-  // Filters
-  if (searchParams.q) {
-    query = query.or(`title.ilike.%${searchParams.q}%,locality.ilike.%${searchParams.q}%,city.ilike.%${searchParams.q}%`);
-  }
-  
-  if (searchParams.location && searchParams.location !== 'all') {
-    const loc = searchParams.location.replace(/-/g, ' ');
-    query = query.or(`locality.ilike.%${loc}%,city.ilike.%${loc}%`);
-  }
-
-  if (searchParams.builder && searchParams.builder !== 'all') {
-    // Requires a builder ID or name. For simplicity if slug is passed, we might need a subquery, 
-    // but assuming builder filter currently passes name in mock, we use ilike on joined table?
-    // Supabase JS doesn't support ilike on joined tables easily at the top level without inner joins.
-    // Let's filter on the properties side or just fetch all and filter in memory if strictly needed,
-    // but better to use an inner join or view. 
-    // For now, we will assume builder is the exact builder_id if it's a UUID, otherwise we might skip it 
-    // or we can just fetch and filter. Actually, the mock UI passes sluggified names. 
-    // We'll leave it out of the direct query if it's complex, or do a subselect.
-    // Let's do a subselect for builder id if it's not a UUID.
-    // Since we don't know, we'll try to match it. If we skip it here, we filter in memory.
-  }
-
-  if (searchParams.type && searchParams.type !== 'all') {
-    const t = searchParams.type.replace(/-/g, ' ');
-    query = query.ilike('property_type', `%${t}%`);
-  }
-
-  if (searchParams.status && searchParams.status !== 'all') {
-    const s = searchParams.status.replace(/-/g, ' ');
-    query = query.ilike('status', `%${s}%`);
-  }
-
-  if (searchParams.budget && searchParams.budget !== 'all') {
-    const b = searchParams.budget;
-    if (b === "under-3") query = query.lt('price', 30000000);
-    if (b === "3-5") query = query.gte('price', 30000000).lt('price', 50000000);
-    if (b === "5-10") query = query.gte('price', 50000000).lte('price', 100000000);
-    if (b === "above-10") query = query.gt('price', 100000000);
-  }
-
-  // Ordering
-  if (searchParams.sort) {
-    switch (searchParams.sort) {
-      case "price-asc":
-        query = query.order('price', { ascending: true, nullsFirst: false });
-        break;
-      case "price-desc":
-        query = query.order('price', { ascending: false, nullsFirst: false });
-        break;
-      case "newest":
-        query = query.order('created_at', { ascending: false });
-        break;
-      case "possession":
-        query = query.order('possession_date', { ascending: true, nullsFirst: false });
-        break;
-      case "recommended":
-      default:
-        query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
-        break;
-    }
-  } else {
-    query = query.order('is_featured', { ascending: false }).order('created_at', { ascending: false });
-  }
-
-  if (searchParams.limit) {
-    query = query.limit(Number(searchParams.limit));
+  if (filters.limit) {
+    query = query.limit(Number(filters.limit));
   } else {
     query = query.range(offset, offset + ITEMS_PER_PAGE - 1);
   }
@@ -221,19 +197,8 @@ export async function getPublicProperties(searchParams: PropertySearchParams): P
   const { data, count, error } = await query;
   if (error) throw new Error(`Database Error: ${error.message}`);
 
-  let filteredData = data || [];
-
-  // Manual fallback filter for Builder since doing it over the join is tricky in standard Supabase JS
-  if (searchParams.builder && searchParams.builder !== 'all') {
-    const builderSlug = searchParams.builder.replace(/-/g, ' ').toLowerCase();
-    filteredData = filteredData.filter((row: any) => 
-      row.builders?.name?.toLowerCase().includes(builderSlug)
-    );
-  }
-
-  const properties = filteredData.map(mapToPublicProperty);
+  const properties = (data || []).map(mapToPublicProperty);
   
-  // If we manually filtered, count will be wrong, but for MVP it's acceptable.
   const actualCount = count || 0; 
   const totalPages = Math.ceil(actualCount / ITEMS_PER_PAGE);
 
@@ -241,7 +206,7 @@ export async function getPublicProperties(searchParams: PropertySearchParams): P
 }
 
 export async function getPublicPropertyBySlug(slug: string): Promise<PublicProperty | null> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data, error } = await supabase
     .from('properties')
     .select(`
@@ -252,7 +217,9 @@ export async function getPublicPropertyBySlug(slug: string): Promise<PublicPrope
       property_documents (*),
       property_amenities (
         amenities (name, category, icon)
-      )
+      ),
+      cities (id, name, slug, state),
+      locations (id, name, slug, type)
     `)
     .eq('slug', slug)
     .eq('status', 'ACTIVE')
@@ -266,44 +233,127 @@ export async function getPublicPropertyBySlug(slug: string): Promise<PublicPrope
   return mapToPublicProperty(data);
 }
 
-export async function getRelatedProperties(propertyId: string, builderId: string, limit: number = 4): Promise<PublicProperty[]> {
-  const supabase = await createClient();
-  
-  // To keep it simple but effective: We fetch properties from the same builder, excluding the current one.
-  const { data, error } = await supabase
-    .from('properties')
-    .select(`
-      *,
-      builders (name, logo_url),
-      property_media (url, is_featured, display_order)
-    `)
-    .eq('status', 'ACTIVE')
-    .eq('builder_id', builderId)
-    .neq('id', propertyId)
-    .order('is_featured', { ascending: false })
-    .order('created_at', { ascending: false })
-    .limit(limit);
+export async function getRelatedProperties(baseProperty: PublicProperty, limit: number = 4): Promise<PublicProperty[]> {
+  const supabase = createPublicClient();
+  const results: any[] = [];
+  const fetchedIds = new Set<string>([baseProperty.id]);
 
-  if (error) {
-    console.error('Failed to fetch related properties:', error);
-    return [];
+  const fetchProperties = async (queryBuilder: any, limitNeeded: number) => {
+    const { data, error } = await queryBuilder
+      .eq('status', 'ACTIVE')
+      .order('is_featured', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(limitNeeded);
+
+    if (error) {
+      console.error('Failed to fetch related properties:', error);
+      return [];
+    }
+    
+    // Filter out already fetched IDs just in case
+    const newItems = (data || []).filter((item: any) => !fetchedIds.has(item.id));
+    newItems.forEach((item: any) => fetchedIds.add(item.id));
+    return newItems;
+  };
+
+  // 1. Same Location
+  if (baseProperty.locationId && results.length < limit) {
+    let q = supabase.from('properties').select('*', { count: 'exact', head: true })
+      .eq('location_id', baseProperty.locationId);
+    
+    // Convert to full query but exclude fetched
+    let query = supabase.from('properties').select(`
+        *,
+        builders (name, logo_url),
+        property_media (url, is_featured, display_order),
+        cities (id, name, slug, state),
+        locations (id, name, slug, type)
+      `)
+      .eq('location_id', baseProperty.locationId)
+      .neq('id', baseProperty.id);
+      
+    const items = await fetchProperties(query, limit - results.length);
+    results.push(...items);
   }
 
-  return (data || []).map(mapToPublicProperty);
+  // 2. Same City
+  if (baseProperty.cityId && results.length < limit) {
+    let query = supabase.from('properties').select(`
+        *,
+        builders (name, logo_url),
+        property_media (url, is_featured, display_order),
+        cities (id, name, slug, state),
+        locations (id, name, slug, type)
+      `)
+      .eq('city_id', baseProperty.cityId)
+      .neq('id', baseProperty.id);
+    
+    if (baseProperty.locationId) {
+       query = query.neq('location_id', baseProperty.locationId);
+    }
+    
+    const items = await fetchProperties(query, limit - results.length);
+    results.push(...items);
+  }
+
+  // 3. Same Builder
+  if (baseProperty.builderId && results.length < limit) {
+    let query = supabase.from('properties').select(`
+        *,
+        builders (name, logo_url),
+        property_media (url, is_featured, display_order),
+        cities (id, name, slug, state),
+        locations (id, name, slug, type)
+      `)
+      .eq('builder_id', baseProperty.builderId)
+      .neq('id', baseProperty.id);
+      
+    if (baseProperty.cityId) {
+      query = query.neq('city_id', baseProperty.cityId);
+    }
+    
+    const items = await fetchProperties(query, limit - results.length);
+    results.push(...items);
+  }
+
+  // 4. Same Property Type
+  if (baseProperty.propertyType && results.length < limit) {
+    let query = supabase.from('properties').select(`
+        *,
+        builders (name, logo_url),
+        property_media (url, is_featured, display_order),
+        cities (id, name, slug, state),
+        locations (id, name, slug, type)
+      `)
+      .eq('property_type', baseProperty.propertyType)
+      .neq('id', baseProperty.id);
+      
+    if (baseProperty.cityId) {
+       query = query.neq('city_id', baseProperty.cityId);
+    }
+    if (baseProperty.builderId) {
+       query = query.neq('builder_id', baseProperty.builderId);
+    }
+    
+    const items = await fetchProperties(query, limit - results.length);
+    results.push(...items);
+  }
+
+  return results.map(mapToPublicProperty);
 }
 
 export async function getPublicFilterOptions(): Promise<{
-  locations: string[];
+  cities: { id: string; name: string; slug: string }[];
   builders: string[];
   types: string[];
   configs: string[];
   statuses: string[];
 }> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: properties, error: propertiesError } = await supabase
     .from('properties')
-    .select('locality, city, property_type, bedrooms, construction_status')
+    .select('property_type, bedrooms, construction_status')
     .eq('status', 'ACTIVE');
     
   const { data: builders, error: buildersError } = await supabase
@@ -311,19 +361,22 @@ export async function getPublicFilterOptions(): Promise<{
     .select('name')
     .eq('is_active', true);
 
-  if (propertiesError || buildersError) {
-    console.error('Failed to fetch filter options', { propertiesError, buildersError });
-    return { locations: [], builders: [], types: [], configs: [], statuses: [] };
+  const { data: cities, error: citiesError } = await supabase
+    .from('cities')
+    .select('id, name, slug')
+    .eq('is_active', true)
+    .order('name');
+
+  if (propertiesError || buildersError || citiesError) {
+    console.error('Failed to fetch filter options', { propertiesError, buildersError, citiesError });
+    return { cities: [], builders: [], types: [], configs: [], statuses: [] };
   }
 
-  const locationsSet = new Set<string>();
   const typesSet = new Set<string>();
   const configsSet = new Set<string>();
   const statusesSet = new Set<string>();
 
   (properties || []).forEach(p => {
-    if (p.locality) locationsSet.add(p.locality);
-    if (p.city) locationsSet.add(p.city);
     if (p.property_type) typesSet.add(p.property_type);
     if (p.bedrooms) configsSet.add(`${p.bedrooms} BHK`);
     if (p.construction_status) {
@@ -335,7 +388,7 @@ export async function getPublicFilterOptions(): Promise<{
   });
 
   return {
-    locations: Array.from(locationsSet).sort(),
+    cities: (cities || []).map(c => ({ id: c.id, name: c.name, slug: c.slug })),
     builders: (builders || []).map(b => b.name).sort(),
     types: Array.from(typesSet).sort(),
     configs: Array.from(configsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
@@ -344,7 +397,7 @@ export async function getPublicFilterOptions(): Promise<{
 }
 
 export async function getTopLocations(): Promise<{ name: string; slug: string; image: string; propertyCount: number }[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   
   const { data, error } = await supabase
     .from('properties')
@@ -380,7 +433,7 @@ export async function getTopLocations(): Promise<{ name: string; slug: string; i
 }
 
 export async function getSiteStats(): Promise<{ propertyCount: number; developerCount: number }> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   
   const [propertiesResult, buildersResult] = await Promise.all([
     supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
@@ -394,7 +447,7 @@ export async function getSiteStats(): Promise<{ propertyCount: number; developer
 }
 
 export async function getFeaturedBuilders(): Promise<PublicFeaturedBuilder[]> {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   
   const { data, error } = await supabase
     .from('builders')

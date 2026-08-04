@@ -16,19 +16,23 @@ import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 
 interface PropertyFiltersProps {
-  locations?: string[];
+  cities?: { id: string; name: string; slug: string }[];
   builders?: string[];
   types?: string[];
   configs?: string[];
   statuses?: string[];
+  possessionStatuses?: string[];
+  amenitiesList?: { id: string, name: string }[];
 }
 
 export function PropertyFilters({
-  locations = [],
+  cities = [],
   builders = [],
   types = [],
   configs = [],
-  statuses = []
+  statuses = [],
+  possessionStatuses = ['READY_TO_MOVE', 'UNDER_CONSTRUCTION', 'NEW_LAUNCH'],
+  amenitiesList = []
 }: PropertyFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -38,6 +42,22 @@ export function PropertyFilters({
   const initialQuery = searchParams.get("q") || "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const debouncedSearch = useDebounce(searchQuery, 500);
+  
+  const currentCitySlug = searchParams.get("city") || "";
+  const [locations, setLocations] = useState<{ id: string; name: string; type: string; slug: string }[]>([]);
+
+  // Resolve currentCitySlug to its ID for fetching locations
+  const currentCityId = cities.find(c => c.slug === currentCitySlug)?.id || "";
+
+  useEffect(() => {
+    import("@/modules/locations/locations.actions").then(({ getLocationsByCityAction }) => {
+      if (currentCityId && currentCityId !== "all") {
+        getLocationsByCityAction(currentCityId).then(data => setLocations(data));
+      } else {
+        setLocations([]);
+      }
+    });
+  }, [currentCityId]);
 
   const updateFilter = useCallback(
     (name: string, value: string) => {
@@ -100,22 +120,40 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Location</Label>
-        <Select value={getParam("location")} onValueChange={(val) => updateFilter("location", val)}>
+        <Label className="text-sm font-medium text-foreground">City</Label>
+        <Select value={getParam("city")} onValueChange={(val) => {
+          updateFilter("city", val);
+          updateFilter("location", "all");
+        }}>
           <SelectTrigger className="h-11 bg-background">
-            <SelectValue placeholder="All Locations" />
+            <SelectValue placeholder="All Cities" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Locations</SelectItem>
-            {locations.map(loc => (
-              <SelectItem key={loc} value={formatSlug(loc)}>{loc}</SelectItem>
+            <SelectItem value="all">All Cities</SelectItem>
+            {cities.map(c => (
+              <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Budget</Label>
+        <Label className="text-sm font-medium text-foreground">Location</Label>
+        <Select value={getParam("location")} onValueChange={(val) => updateFilter("location", val)} disabled={!currentCityId || currentCityId === "all"}>
+          <SelectTrigger className="h-11 bg-background">
+            <SelectValue placeholder="All Locations" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Locations</SelectItem>
+            {locations.map(loc => (
+              <SelectItem key={loc.id} value={loc.slug}>{loc.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-foreground">Budget / Price</Label>
         <Select value={getParam("budget")} onValueChange={(val) => updateFilter("budget", val)}>
           <SelectTrigger className="h-11 bg-background">
             <SelectValue placeholder="Any Budget" />
@@ -126,6 +164,21 @@ export function PropertyFilters({
             <SelectItem value="3-5">₹3 Cr - ₹5 Cr</SelectItem>
             <SelectItem value="5-10">₹5 Cr - ₹10 Cr</SelectItem>
             <SelectItem value="above-10">Above ₹10 Cr</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-foreground">Possession Status</Label>
+        <Select value={getParam("possession")} onValueChange={(val) => updateFilter("possession", val)}>
+          <SelectTrigger className="h-11 bg-background">
+            <SelectValue placeholder="All Statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            {possessionStatuses.map(s => (
+              <SelectItem key={s} value={s}>{s.replace(/_/g, ' ')}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

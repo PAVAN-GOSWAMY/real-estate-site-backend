@@ -11,6 +11,7 @@ import { PropertyLocation } from "@/components/property/PropertyLocation";
 import { StickyCTA } from "@/components/contact/StickyCTA";
 import { PropertyDeveloper } from "@/components/property/PropertyDeveloper";
 import { PropertyCard } from "@/components/properties/PropertyCard";
+import { ScheduleVisitModalContainer } from "@/components/forms/ScheduleVisitModalContainer";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -46,7 +47,7 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
   const images = property.images && property.images.length > 0 ? property.images : (property.thumbnail ? [property.thumbnail] : []);
   const priceDisplay = property.priceDisplay || "Price on Request";
 
-  const relatedProperties = await getRelatedProperties(property.id, property.builderId, 4);
+  const relatedProperties = await getRelatedProperties(property, 4);
 
   return (
     <main className="min-h-screen bg-surface pb-24">
@@ -57,6 +58,8 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
           city={property.city} 
           locality={property.locality} 
           title={property.title} 
+          citySlug={property.citySlug}
+          locationSlug={property.locationSlug}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -140,6 +143,12 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
           </section>
         )}
       </div>
+
+      <ScheduleVisitModalContainer 
+        propertyId={property.id} 
+        builderId={property.builderId || undefined}
+        propertyTitle={property.title}
+      />
     </main>
   );
 }

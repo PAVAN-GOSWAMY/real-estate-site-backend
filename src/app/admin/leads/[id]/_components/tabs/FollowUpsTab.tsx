@@ -27,7 +27,8 @@ interface FollowUpsTabProps {
 export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [type, setType] = useState("Call");
+  const [type, setType] = useState("Phone Call");
+  const [priority, setPriority] = useState("Medium");
   const [comment, setComment] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -45,6 +46,7 @@ export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
       formData.append("leadId", leadId);
       formData.append("followUpDate", dateTime);
       formData.append("reminderType", type);
+      formData.append("priority", priority);
       formData.append("comment", comment);
 
       const result = await createLeadFollowUpAction(formData);
@@ -53,7 +55,8 @@ export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
         setDate("");
         setTime("");
         setComment("");
-        setType("Call");
+        setType("Phone Call");
+        setPriority("Medium");
       } else {
         toast.error(result.error || "Failed to schedule follow-up");
       }
@@ -71,15 +74,15 @@ export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
     });
   };
 
-  const pendingFollowUps = followUps.filter(f => f.status === 'Pending');
-  const pastFollowUps = followUps.filter(f => f.status !== 'Pending');
+  const pendingFollowUps = followUps.filter(f => f.status === 'Scheduled');
+  const pastFollowUps = followUps.filter(f => f.status !== 'Scheduled');
 
   return (
     <div className="space-y-8">
       {/* Schedule Follow-up */}
       <div className="bg-card border border-border/50 rounded-xl p-6 space-y-4">
         <h3 className="font-semibold text-lg text-foreground">Schedule Follow-up</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
             <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} disabled={isPending} />
@@ -90,19 +93,37 @@ export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
-            <Select value={type} onValueChange={setType} disabled={isPending}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Call">Call</SelectItem>
-                <SelectItem value="Email">Email</SelectItem>
-                <SelectItem value="Meeting">Meeting</SelectItem>
-                <SelectItem value="Site Visit">Site Visit</SelectItem>
-              </SelectContent>
-            </Select>
+              <select
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                disabled={isPending}
+              >
+                <option value="Phone Call">Phone Call</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Email">Email</option>
+                <option value="Site Visit">Site Visit</option>
+                <option value="Office Meeting">Office Meeting</option>
+                <option value="Document Collection">Document Collection</option>
+                <option value="Loan Discussion">Loan Discussion</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority</Label>
+              <select
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                disabled={isPending}
+              >
+                <option value="Urgent">Urgent</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
           </div>
-        </div>
         <div className="space-y-2">
           <Label htmlFor="comment">Comment (Optional)</Label>
           <Textarea id="comment" value={comment} onChange={(e) => setComment(e.target.value)} disabled={isPending} />
@@ -132,7 +153,9 @@ export function FollowUpsTab({ leadId, followUps }: FollowUpsTabProps) {
                   <div>
                     <h4 className="font-semibold text-foreground flex items-center gap-2">
                       {f.reminderType}
-                      <Badge variant="outline" className="text-xs font-normal">Pending</Badge>
+                      <Badge variant="outline" className="text-xs font-normal">Scheduled</Badge>
+                      {f.priority === "Urgent" && <Badge variant="destructive" className="bg-rose-500 hover:bg-rose-600 text-xs px-1.5 py-0">Urgent</Badge>}
+                      {f.priority === "High" && <Badge variant="outline" className="text-orange-500 border-orange-200 bg-orange-50 text-xs px-1.5 py-0">High</Badge>}
                     </h4>
                     <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
                       <Calendar className="h-3.5 w-3.5" />

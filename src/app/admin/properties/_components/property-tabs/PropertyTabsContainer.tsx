@@ -77,7 +77,7 @@ export function PropertyTabsContainer({
           <TabsTrigger value="amenities">Amenities</TabsTrigger>
           <TabsTrigger value="floorplans">Floor Plans</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="activity">Activity</TabsTrigger>
+          {/* <TabsTrigger value="activity">Activity</TabsTrigger> */}
         </TabsList>
       </div>
 
@@ -106,7 +106,6 @@ export function PropertyTabsContainer({
           <MediaTab property={property} />
         </TabsContent>
         
-        {/* Coming Soon Tabs */}
         <TabsContent value="amenities" className="m-0 focus-visible:outline-none">
           <AmenitiesTab 
             property={property} 
@@ -123,9 +122,9 @@ export function PropertyTabsContainer({
           <DocumentsTab propertyId={property.id} />
         </TabsContent>
         
-        <TabsContent value="activity" className="m-0 focus-visible:outline-none">
+        {/* <TabsContent value="activity" className="m-0 focus-visible:outline-none">
           <ComingSoonTab title="Activity Timeline" description="View property history and audit logs." />
-        </TabsContent>
+        </TabsContent> */}
       </div>
     </Tabs>
     </div>

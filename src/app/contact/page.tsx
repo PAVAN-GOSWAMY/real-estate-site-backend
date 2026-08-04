@@ -90,27 +90,31 @@ export default function ContactPage() {
         <div className="container px-4 md:px-6 mx-auto">
           <div className="max-w-3xl mx-auto text-center mb-12">
             <h2 className="text-3xl font-heading font-bold text-foreground mb-4">Visit Our Office</h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg whitespace-pre-line">
               {contactInfo.address}
             </p>
-            <Button asChild variant="outline" className="mt-6 rounded-full border-primary text-primary hover:bg-primary/5">
-              <a href={contactInfo.googleMapsUrl} target="_blank" rel="noopener noreferrer">
-                Get Directions <ArrowRight className="w-4 h-4 ml-2" />
-              </a>
-            </Button>
+            {contactInfo.googleMapsUrl && (
+              <Button asChild variant="outline" className="mt-6 rounded-full border-primary text-primary hover:bg-primary/5">
+                <a href={contactInfo.googleMapsUrl} target="_blank" rel="noopener noreferrer">
+                  Get Directions <ArrowRight className="w-4 h-4 ml-2" />
+                </a>
+              </Button>
+            )}
           </div>
-          <div className="rounded-3xl overflow-hidden border border-border/50 aspect-video md:aspect-[21/9] w-full relative bg-muted shadow-lg max-w-5xl mx-auto">
-            <iframe 
-              src={contactInfo.googleMapsUrl}
-              width="100%" 
-              height="100%" 
-              style={{ border: 0, position: 'absolute', top: 0, left: 0 }} 
-              allowFullScreen 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-              className="grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
-            />
-          </div>
+          {contactInfo.googleMapsUrl && (
+            <div className="rounded-3xl overflow-hidden border border-border/50 aspect-video md:aspect-[21/9] w-full relative bg-muted shadow-lg max-w-5xl mx-auto">
+              <iframe 
+                src={contactInfo.googleMapsUrl}
+                width="100%" 
+                height="100%" 
+                style={{ border: 0, position: 'absolute', top: 0, left: 0 }} 
+                allowFullScreen 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+                className="grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+              />
+            </div>
+          )}
         </div>
       </section>
 

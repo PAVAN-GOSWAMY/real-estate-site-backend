@@ -17,6 +17,8 @@ function mapToProperty(row: any): Property {
     availability: row.availability,
     address: row.address,
     landmark: row.landmark,
+    city_id: row.city_id,
+    location_id: row.location_id,
     locality: row.locality,
     sector: row.sector,
     city: row.city,
@@ -47,6 +49,7 @@ function mapToProperty(row: any): Property {
     isPremium: row.is_premium,
     metaTitle: row.meta_title,
     metaDescription: row.meta_description,
+    reraNumber: row.rera_number,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     createdBy: row.created_by,
@@ -70,6 +73,8 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
     availability: data.availability,
     address: data.address,
     landmark: data.landmark,
+    city_id: data.city_id,
+    location_id: data.location_id,
     locality: data.locality,
     sector: data.sector,
     city: data.city,
@@ -100,6 +105,7 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
     is_premium: data.isPremium,
     meta_title: data.metaTitle,
     meta_description: data.metaDescription,
+    rera_number: data.reraNumber,
   };
 
   const { data: row, error } = await supabase
@@ -240,6 +246,8 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
   if (data.availability !== undefined) payload.availability = data.availability;
   if (data.address !== undefined) payload.address = data.address;
   if (data.landmark !== undefined) payload.landmark = data.landmark;
+  if (data.city_id !== undefined) payload.city_id = data.city_id;
+  if (data.location_id !== undefined) payload.location_id = data.location_id;
   if (data.locality !== undefined) payload.locality = data.locality;
   if (data.sector !== undefined) payload.sector = data.sector;
   if (data.city !== undefined) payload.city = data.city;
@@ -270,6 +278,7 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
   if (data.isPremium !== undefined) payload.is_premium = data.isPremium;
   if (data.metaTitle !== undefined) payload.meta_title = data.metaTitle;
   if (data.metaDescription !== undefined) payload.meta_description = data.metaDescription;
+  if (data.reraNumber !== undefined) payload.rera_number = data.reraNumber;
 
   if (Object.keys(payload).length === 0) {
     const existing = await getPropertyById(id);

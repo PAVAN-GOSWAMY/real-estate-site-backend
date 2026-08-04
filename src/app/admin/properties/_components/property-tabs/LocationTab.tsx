@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { Property, UpdatePropertyInput } from "@/modules/properties/types/property";
 import { updatePropertyAction } from "@/modules/properties/actions";
 import { Input } from "@/components/ui/input";
@@ -8,15 +8,21 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
+import { getActiveCitiesAction, getLocationsByCityAction } from "@/modules/locations/locations.actions";
+import { City, Location } from "@/modules/locations/types";
+import { LocationCombobox } from "../LocationCombobox";
 
 const LocationSchema = z.object({
   landmark: z.string().optional().or(z.literal("")),
   sector: z.string().optional().or(z.literal("")),
   address: z.string().optional().or(z.literal("")),
-  locality: z.string().min(1, "Locality is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
+  city_id: z.string().uuid("Please select a city"),
+  location_id: z.string().uuid("Please select a location"),
+  locality: z.string().optional().or(z.literal("")),
+  city: z.string().optional().or(z.literal("")),
+  state: z.string().optional().or(z.literal("")),
   country: z.string().optional().or(z.literal("")),
   pincode: z.string().optional().or(z.literal("")),
   googleMapsUrl: z.string().url("Must be a valid URL").optional().or(z.literal("")),
@@ -33,6 +39,23 @@ export function LocationTab({ property }: LocationTabProps) {
   const [serverError, setServerError] = useState<string>();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const [cities, setCities] = useState<City[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [selectedCityId, setSelectedCityId] = useState<string>(property.city_id || "");
+  const [selectedLocationId, setSelectedLocationId] = useState<string>(property.location_id || "");
+
+  useEffect(() => {
+    getActiveCitiesAction().then(setCities);
+  }, []);
+
+  useEffect(() => {
+    if (selectedCityId) {
+      getLocationsByCityAction(selectedCityId).then(setLocations);
+    } else {
+      setLocations([]);
+    }
+  }, [selectedCityId]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -48,6 +71,29 @@ export function LocationTab({ property }: LocationTabProps) {
     const data = Object.fromEntries(formData.entries());
     
     const payload: Record<string, any> = { ...data };
+
+    // Set relational IDs
+    payload.city_id = selectedCityId || undefined;
+    payload.location_id = selectedLocationId || undefined;
+
+    // Dual-write legacy text fields based on selection
+    if (selectedCityId) {
+      const cityData = cities.find(c => c.id === selectedCityId);
+      if (cityData) {
+        payload.city = cityData.name;
+        payload.state = cityData.state;
+      }
+    }
+    if (selectedLocationId) {
+      const locData = locations.find(l => l.id === selectedLocationId);
+      if (locData) {
+        if (locData.type === 'SECTOR') {
+          payload.sector = locData.name;
+        } else {
+          payload.locality = locData.name;
+        }
+      }
+    }
 
     // Numeric conversion
     ["latitude", "longitude"].forEach(field => {
@@ -114,24 +160,45 @@ export function LocationTab({ property }: LocationTabProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="locality">Locality <span className="text-destructive">*</span></Label>
-                <Input id="locality" name="locality" defaultValue={property.locality || ""} disabled={isPending} aria-invalid={!!errors.locality} />
-                {errors.locality && <p className="text-sm text-destructive">{errors.locality}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="sector">Sector</Label>
-                <Input id="sector" name="sector" placeholder="e.g. Sector 150" defaultValue={property.sector || ""} disabled={isPending} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City <span className="text-destructive">*</span></Label>
-                <Input id="city" name="city" defaultValue={property.city || ""} disabled={isPending} aria-invalid={!!errors.city} />
-                {errors.city && <p className="text-sm text-destructive">{errors.city}</p>}
+                <Label htmlFor="city_id">City <span className="text-destructive">*</span></Label>
+                <Select value={selectedCityId} onValueChange={(val) => {
+                  setSelectedCityId(val);
+                  setSelectedLocationId(""); // reset location when city changes
+                }} disabled={isPending}>
+                  <SelectTrigger className="h-11 bg-background" aria-invalid={!!errors.city_id}>
+                    <SelectValue placeholder="Select City" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map((city) => (
+                      <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.city_id && <p className="text-sm text-destructive">{errors.city_id}</p>}
               </div>
 
+                <div className="space-y-2 relative z-10">
+                  <Label>Location (Locality/Sector) <span className="text-destructive">*</span></Label>
+                  <LocationCombobox
+                    locations={locations}
+                    cityId={selectedCityId}
+                    value={selectedLocationId}
+                    onChange={setSelectedLocationId}
+                    disabled={isPending || !selectedCityId}
+                    onLocationCreated={(newLoc) => setLocations(prev => [...prev, newLoc].sort((a, b) => a.name.localeCompare(b.name)))}
+                  />
+                  <input type="hidden" name="location_id" value={selectedLocationId} />
+                  {errors.location_id && <p className="text-sm text-destructive">{errors.location_id}</p>}
+                </div>
+
+              {/* Legacy fallback / override fields (hidden for clean UX, we overwrite them on submit) */}
+              <input type="hidden" name="locality" value={property.locality || ""} />
+              <input type="hidden" name="city" value={property.city || ""} />
+              <input type="hidden" name="state" value={property.state || ""} />
+              
               <div className="space-y-2">
-                <Label htmlFor="state">State <span className="text-destructive">*</span></Label>
-                <Input id="state" name="state" defaultValue={property.state || ""} disabled={isPending} aria-invalid={!!errors.state} />
-                {errors.state && <p className="text-sm text-destructive">{errors.state}</p>}
+                <Label htmlFor="sector">Sector (Legacy Override)</Label>
+                <Input id="sector" name="sector" placeholder="e.g. Sector 150" defaultValue={property.sector || ""} disabled={isPending} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>

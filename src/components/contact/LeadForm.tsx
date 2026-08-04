@@ -4,6 +4,9 @@ import * as React from "react";
 import { LeadEnquiry } from "@/types/contact";
 import { SuccessModal } from "./SuccessModal";
 
+import { toast } from "sonner";
+import { createPublicLeadAction } from "@/modules/leads/actions/leads.actions";
+
 interface LeadFormProps {
   type: LeadEnquiry["type"];
   children: (props: {
@@ -28,7 +31,7 @@ export function LeadForm({ type, children, onSuccess }: LeadFormProps) {
     const data = Object.fromEntries(formData.entries());
 
     // Basic Validation
-    if (!data.name || !data.phone || (!data.email && type !== "Callback")) {
+    if (!data.name && !data.fullName || !data.phone || (!data.email && type !== "Callback")) {
       setError("Please fill out all required fields.");
       setIsLoading(false);
       return;
@@ -50,14 +53,56 @@ export function LeadForm({ type, children, onSuccess }: LeadFormProps) {
       return;
     }
 
-    // Mock API Call
+    // Normalize for CRM
+    if (formData.has("name") && !formData.has("fullName")) {
+      formData.set("fullName", formData.get("name") as string);
+    }
+
+    if (formData.has("preferredDate") && formData.get("preferredDate")) {
+      let visitDate = formData.get("preferredDate") as string;
+      let timeStr = formData.get("preferredTime") as string;
+      if (timeStr) {
+        if (timeStr.includes(" PM") || timeStr.includes(" AM")) {
+          const isPM = timeStr.includes(" PM");
+          const parts = timeStr.split(" ")[0].split(":");
+          let hours = parseInt(parts[0], 10);
+          if (isPM && hours < 12) hours += 12;
+          if (!isPM && hours === 12) hours = 0;
+          timeStr = `${hours.toString().padStart(2, "0")}:${parts[1]}`;
+        }
+        visitDate += `T${timeStr}:00Z`;
+      } else {
+        visitDate += `T00:00:00Z`; // Default if no time provided
+      }
+      formData.set("preferredVisitDate", visitDate);
+    }
+    
+    if (formData.has("configuration") && formData.get("configuration")) {
+      const config = formData.get("configuration") as string;
+      const existingMessage = formData.get("message") as string || "";
+      formData.set("message", existingMessage ? `Preferred Configuration: ${config}\n\n${existingMessage}` : `Preferred Configuration: ${config}`);
+    }
+
+    // Set CRM Source
+    const sourceMap: Record<string, string> = {
+      "Property": "Property Inquiry",
+      "General": "General Contact",
+      "Callback": "Phone Call",
+      "SiteVisit": "Site Visit Request",
+    };
+    formData.set("source", sourceMap[type] || "General Contact");
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate network request
+      const result = await createPublicLeadAction(formData);
       
-      // Success
-      setShowSuccess(true);
-      if (onSuccess) onSuccess();
-      e.currentTarget.reset();
+      if (result.success) {
+        toast.success("Enquiry submitted successfully! We will get back to you soon.");
+        setShowSuccess(true);
+        if (onSuccess) onSuccess();
+        e.currentTarget.reset();
+      } else {
+        setError(result.error || "Failed to submit enquiry. Please try again.");
+      }
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {

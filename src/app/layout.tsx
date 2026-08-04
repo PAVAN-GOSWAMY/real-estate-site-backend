@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { FloatingContactWidget } from "@/components/contact/FloatingContactWidget";
 import { EnquiryModalProvider } from "@/contexts/EnquiryModalContext";
 import { EnquiryModal } from "@/components/common/EnquiryModal";
+import { Toaster } from "sonner";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -57,12 +58,13 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background">
         <EnquiryModalProvider>
           <Navbar />
-          <main className="flex-1 pt-16 md:pt-[72px]">
+          <main className="flex-1 pt-[114px]">
             {children}
             <FloatingContactWidget />
           </main>
           <Footer />
           <EnquiryModal />
+          <Toaster position="bottom-right" richColors />
         </EnquiryModalProvider>
       </body>
     </html>

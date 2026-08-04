@@ -9,6 +9,9 @@ import { CallToAction } from "@/components/home/CallToAction";
 import { getTopLocations, getSiteStats, getPublicFilterOptions } from "@/modules/public/services/public-property.service";
 import { getFilteredProperties } from "@/core/queries/properties";
 
+// Revalidate the page every 90 seconds (ISR)
+export const revalidate = 90;
+
 export default async function Home() {
   const [locations, stats, filterOptions, featuredData, premiumData] = await Promise.all([
     getTopLocations(),

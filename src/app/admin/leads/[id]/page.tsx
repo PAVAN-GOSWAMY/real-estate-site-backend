@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { LeadsService } from "@/modules/leads/services/leads.service";
+import { LeadNotesService } from "@/modules/leads/services/lead-notes.service";
 import { LeadWorkspace } from "./_components/LeadWorkspace";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ export default async function LeadDetailPage({
   // Fetch all related entities for the workspace
   const [activities, notes, followUps, attachments] = await Promise.all([
     LeadsService.getLeadActivities(lead.id),
-    LeadsService.getLeadNotes(lead.id),
+    LeadNotesService.getLeadNotes(lead.id),
     LeadsService.getLeadFollowUps(lead.id),
     LeadsService.getLeadAttachments(lead.id)
   ]);

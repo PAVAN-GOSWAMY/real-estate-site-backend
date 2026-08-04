@@ -4,10 +4,11 @@ export const siteConfig = {
   description: "Find your dream luxury home or investment property with Square AR Spaces.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "https://squarearspaces.com",
   contact: {
-    email: "pavangoswamy017@gmail.com",
-    phone: "+91 93470 00368",
-    whatsapp: "+91 93470 00368",
-    address: "Noida, UP, India", // [Placeholder awaiting official client data]
+    email: "squarearspace@gmail.com",
+    phone: "+91 99119 15885",
+    whatsapp: "+91 99119 15885",
+    officeAddress: "SF-22A, Second Floor,\nSUNTWILIGHT COMMERCIAL COMPLEX,\nSector-27,\nOpposite Delta-01 Metro Station,\nNear Jaypee Greens,\nGreater Noida,\nDistt. G. B. Nagar,\nUttar Pradesh – 201315",
+    officeMapsUrl: null, // Set to a valid Google Maps URL when available
   },
   socials: {
     instagram: "https://instagram.com/squarearspaces", // [Placeholder awaiting official client data]

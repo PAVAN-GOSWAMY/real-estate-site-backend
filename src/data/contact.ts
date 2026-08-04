@@ -2,11 +2,11 @@ import { siteConfig } from "@/config/site";
 import { ContactInfo, BusinessHours, FAQItem } from "@/types/contact";
 
 export const contactInfo: ContactInfo = {
-  address: siteConfig.contact.address,
+  address: siteConfig.contact.officeAddress,
   phone: siteConfig.contact.phone,
   email: siteConfig.contact.email,
   whatsapp: siteConfig.contact.whatsapp,
-  googleMapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3505.419409051052!2d77.40026211508006!3d28.527123982459955!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce7b1b36b5c77%3A0x6b8bc215038f99!2sAdvant%20Navis%20Business%20Park!5e0!3m2!1sen!2sin!4v1689000000000!5m2!1sen!2sin" // [Placeholder awaiting official client data]
+  googleMapsUrl: siteConfig.contact.officeMapsUrl
 };
 
 export const getWhatsAppLink = (propertyName?: string) => {

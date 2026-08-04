@@ -8,6 +8,7 @@ import { PhoneCall, Calendar } from "lucide-react";
 import { createPublicLeadAction } from "@/modules/leads/actions/leads.actions";
 import { toast } from "sonner";
 import { siteConfig } from "@/config/site";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface PropertyInquiryCardProps {
   title: string;
@@ -17,6 +18,9 @@ interface PropertyInquiryCardProps {
 }
 
 export function PropertyInquiryCard({ title, price, propertyId, builderId }: PropertyInquiryCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -111,7 +115,16 @@ export function PropertyInquiryCard({ title, price, propertyId, builderId }: Pro
           <span className="h-[1px] w-full bg-border"></span>
         </div>
         
-        <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground h-9 text-xs">
+        <Button 
+          type="button"
+          onClick={() => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("modal", "schedule-visit");
+            router.push(`${pathname}?${params.toString()}`, { scroll: false });
+          }} 
+          variant="outline" 
+          className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground h-9 text-xs"
+        >
           <Calendar className="mr-2 h-3.5 w-3.5" /> Schedule Site Visit
         </Button>
         

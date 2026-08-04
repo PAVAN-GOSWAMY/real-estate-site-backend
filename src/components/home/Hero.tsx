@@ -6,13 +6,16 @@ import { ArrowRight, PhoneCall } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/layout/wrappers";
 import { HeroSearchPanel } from "./HeroSearchPanel";
+import { useEnquiryModal } from "@/contexts/EnquiryModalContext";
 
 interface HeroProps {
   stats: { propertyCount: number; developerCount: number };
-  filterOptions: { locations: string[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
+  filterOptions: { cities: { id: string; name: string; slug: string }[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
 }
 
 export function Hero({ stats, filterOptions }: HeroProps) {
+  const { openModal } = useEnquiryModal();
+  
   // Stagger variants for smooth sequence animations
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -91,7 +94,12 @@ export function Hero({ stats, filterOptions }: HeroProps) {
               Explore Properties
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button size="lg" variant="outline" className="h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-primary text-base font-semibold transition-colors">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-primary text-base font-semibold transition-colors"
+              onClick={() => openModal("Hero Section: Book Free Consultation")}
+            >
               <PhoneCall className="mr-2 w-4 h-4" />
               Book Free Consultation
             </Button>

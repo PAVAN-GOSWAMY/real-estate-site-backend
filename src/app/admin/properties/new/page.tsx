@@ -2,15 +2,17 @@ import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { CreatePropertyForm } from "../_components/create-property-form";
 import { listBuildersAction } from "@/modules/builders/actions";
 import { getNextPropertyCodeAction } from "@/modules/properties/actions";
+import { getActiveCitiesAction } from "@/modules/locations/locations.actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = 'force-dynamic';
 
 export default async function NewPropertyPage() {
-  const [buildersResult, codeResult] = await Promise.all([
+  const [buildersResult, codeResult, cities] = await Promise.all([
     listBuildersAction({ active: true, limit: 100 }),
-    getNextPropertyCodeAction()
+    getNextPropertyCodeAction(),
+    getActiveCitiesAction()
   ]);
 
   const builders = buildersResult.success ? buildersResult.data.items : [];
@@ -29,7 +31,7 @@ export default async function NewPropertyPage() {
       />
       
       <div className="mx-auto max-w-5xl">
-        <CreatePropertyForm initialCode={initialCode} builders={builders} />
+        <CreatePropertyForm initialCode={initialCode} builders={builders} cities={cities} />
       </div>
     </div>
   );

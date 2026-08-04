@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { LeadsService } from "@/modules/leads/services/leads.service";
 import { LeadsClient } from "./_components/LeadsClient";
-import { Plus } from "lucide-react";
+import { Plus, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -30,12 +30,20 @@ export default async function LeadsPage({
         title="Leads Management" 
         description="Track and manage all customer inquiries and interactions."
         action={
-          <Button asChild>
-            <Link href="/admin/leads/new">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Lead
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" asChild>
+              <Link href="/admin/leads/dashboard">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics Dashboard
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/admin/leads/new">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Lead
+              </Link>
+            </Button>
+          </div>
         }
       />
 

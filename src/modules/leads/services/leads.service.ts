@@ -1,5 +1,5 @@
 import { LeadsRepository } from "../repository/leads.repository";
-import { CreateLeadInput, UpdateLeadInput, CreateLeadNoteInput, CreateLeadFollowUpInput } from "../types";
+import { CreateLeadInput, UpdateLeadInput, CreateLeadFollowUpInput } from "../types";
 
 export class LeadsService {
   static async getLeads(filters: any = {}, page = 1, pageSize = 20) {
@@ -56,19 +56,6 @@ export class LeadsService {
     return await LeadsRepository.getLeadActivities(leadId);
   }
 
-  static async getLeadNotes(leadId: string) {
-    return await LeadsRepository.getLeadNotes(leadId);
-  }
-
-  static async createNote(input: CreateLeadNoteInput, currentUserEmail: string) {
-    await LeadsRepository.createNote(input, currentUserEmail);
-    await LeadsRepository.createActivity(
-      input.leadId,
-      "Note Added",
-      "Added a new note to the lead",
-      currentUserEmail
-    );
-  }
 
   static async getLeadFollowUps(leadId: string) {
     return await LeadsRepository.getLeadFollowUps(leadId);
@@ -110,5 +97,14 @@ export class LeadsService {
 
   static async getDashboardMetrics() {
     return await LeadsRepository.getDashboardMetrics();
+  }
+
+  static async logCommunication(leadId: string, type: string, description: string, currentUserEmail: string) {
+    await LeadsRepository.createActivity(
+      leadId,
+      type,
+      description,
+      currentUserEmail
+    );
   }
 }
