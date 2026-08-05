@@ -46,8 +46,8 @@ export function BuilderForm({
     // Construct payload safely
     const payload: Record<string, any> = {
       ...data,
-      isFeatured: formData.get("isFeatured") === "on",
-      isActive: formData.get("isActive") === "on",
+      isFeatured: formData.has("isFeatured"),
+      isActive: formData.has("isActive"),
     };
 
     if (payload.establishedYear) {

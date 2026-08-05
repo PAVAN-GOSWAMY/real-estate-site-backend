@@ -19,10 +19,10 @@ function mapToProperty(row: any): Property {
     landmark: row.landmark,
     city_id: row.city_id,
     location_id: row.location_id,
-    locality: row.locality,
-    sector: row.sector,
-    city: row.city,
-    state: row.state,
+
+
+
+
     country: row.country,
     pincode: row.pincode,
     googleMapsUrl: row.google_maps_url,
@@ -75,10 +75,10 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
     landmark: data.landmark,
     city_id: data.city_id,
     location_id: data.location_id,
-    locality: data.locality,
-    sector: data.sector,
-    city: data.city,
-    state: data.state,
+
+
+
+
     country: data.country,
     pincode: data.pincode,
     google_maps_url: data.googleMapsUrl,
@@ -201,7 +201,11 @@ export async function listProperties(
     query = query.eq('is_premium', filters.premium);
   }
   if (filters.city) {
-    query = query.ilike('city', `%${filters.city}%`);
+    // Legacy support: mapping city to city_id is needed if filters.city is passed
+    // For now, we skip or filter by city_id if it's a UUID
+    if (filters.city.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
+      query = query.eq('city_id', filters.city);
+    }
   }
   if (filters.minPrice !== undefined) {
     query = query.gte('price', filters.minPrice);
@@ -246,12 +250,12 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
   if (data.availability !== undefined) payload.availability = data.availability;
   if (data.address !== undefined) payload.address = data.address;
   if (data.landmark !== undefined) payload.landmark = data.landmark;
-  if (data.city_id !== undefined) payload.city_id = data.city_id;
+
   if (data.location_id !== undefined) payload.location_id = data.location_id;
-  if (data.locality !== undefined) payload.locality = data.locality;
-  if (data.sector !== undefined) payload.sector = data.sector;
-  if (data.city !== undefined) payload.city = data.city;
-  if (data.state !== undefined) payload.state = data.state;
+
+
+
+
   if (data.country !== undefined) payload.country = data.country;
   if (data.pincode !== undefined) payload.pincode = data.pincode;
   if (data.googleMapsUrl !== undefined) payload.google_maps_url = data.googleMapsUrl;

@@ -35,6 +35,7 @@ const MinimalCreateSchema = z.object({
 import { getLocationsByCityAction } from "@/modules/locations/locations.actions";
 import { useEffect } from "react";
 import { LocationCombobox } from "./LocationCombobox";
+import { CityCombobox } from "./CityCombobox";
 
 export function CreatePropertyForm({ initialCode, builders, cities }: CreatePropertyFormProps) {
   const router = useRouter();
@@ -78,9 +79,9 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
       status,
       price: data.price ? Number(data.price) : undefined,
       propertyCode: initialCode, // Force the initial code
-      isFeatured: formData.get("isFeatured") === "on",
-      isVerified: formData.get("isVerified") === "on",
-      isPremium: formData.get("isPremium") === "on",
+      isFeatured: formData.has("isFeatured"),
+      isVerified: formData.has("isVerified"),
+      isPremium: formData.has("isPremium"),
       city_id: cityId,
       location_id: locationId,
       reraNumber: data.reraNumber === "" ? undefined : data.reraNumber,
@@ -128,10 +129,6 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
           isFeatured: payload.isFeatured,
           isVerified: payload.isVerified,
           isPremium: payload.isPremium,
-          city: payload.city,
-          state: payload.state,
-          locality: payload.locality,
-          sector: payload.sector,
         } as CreatePropertyInput;
         
         const actionResult = await createPropertyAction(fullPayload);
@@ -250,19 +247,19 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
 
               <div className="space-y-2">
                 <Label>City <span className="text-destructive">*</span></Label>
-                <Select value={cityId} onValueChange={(val) => {
-                  setCityId(val);
-                  setLocationId(""); // reset location when city changes
-                }} disabled={isPending}>
-                  <SelectTrigger aria-invalid={!!errors.city_id}>
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CityCombobox
+                  cities={cities}
+                  value={cityId}
+                  onChange={(val) => {
+                    setCityId(val);
+                    setLocationId("");
+                  }}
+                  disabled={isPending}
+                  onCityCreated={(newCity) => {
+                    // Directly push to the array (or we could use a state variable for cities if preferred)
+                    cities.push(newCity);
+                  }}
+                />
                 {errors.city_id && <p className="text-sm text-destructive">{errors.city_id}</p>}
               </div>
 

@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Geist } from "next/font/google";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { FloatingContactWidget } from "@/components/contact/FloatingContactWidget";
-import { EnquiryModalProvider } from "@/contexts/EnquiryModalContext";
-import { EnquiryModal } from "@/components/common/EnquiryModal";
 import { Toaster } from "sonner";
+import { RootLayoutWrapper } from "@/components/layout/RootLayoutWrapper";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -45,27 +41,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+import { SettingsService } from "@/modules/settings/services/settings.service";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await SettingsService.getSiteStatsSettings();
+  
   return (
     <html
       lang="en"
       className={cn("h-full", "antialiased", inter.variable, playfair.variable, "font-sans", geist.variable, "scroll-pt-16 md:scroll-pt-[72px]")}
     >
       <body className="min-h-full flex flex-col bg-background">
-        <EnquiryModalProvider>
-          <Navbar />
-          <main className="flex-1 pt-[114px]">
-            {children}
-            <FloatingContactWidget />
-          </main>
-          <Footer />
-          <EnquiryModal />
-          <Toaster position="bottom-right" richColors />
-        </EnquiryModalProvider>
+        <RootLayoutWrapper settings={settings}>
+          {children}
+        </RootLayoutWrapper>
+        <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );

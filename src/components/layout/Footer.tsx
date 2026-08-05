@@ -2,12 +2,25 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Container } from "./wrappers";
-import { footerQuickLinks, footerLocations, socialLinks } from "@/data/navigation";
+import { footerQuickLinks, socialLinks } from "@/data/navigation";
 import { siteConfig } from "@/config/site";
 import { getMailtoLink } from "@/data/contact";
 import { Mail, Phone } from "lucide-react";
+import { SiteStatsSettings } from "@/modules/settings/services/settings.service";
 
-export function Footer() {
+export function Footer({ settings }: { settings?: SiteStatsSettings }) {
+  // Parse popular locations string into an array of lines
+  const rawLocations = settings?.popularLocations 
+    ? settings.popularLocations.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+    : ["Sector 150, Noida", "Sector 128, Noida", "Greater Noida West", "Yamuna Expressway"];
+
+  const footerLocations = rawLocations.map((loc, index) => ({
+    id: `fl-${index}`,
+    label: loc,
+    // Generate a simple slug for the href (e.g., "Sector 150, Noida" -> "sector-150-noida")
+    href: `/properties?location=${loc.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+  }));
+
   return (
     <footer className="bg-primary text-primary-foreground border-t border-border/10">
       <Container className="py-16 md:py-20">

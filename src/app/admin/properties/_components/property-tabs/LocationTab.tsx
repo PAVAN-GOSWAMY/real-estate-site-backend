@@ -8,11 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import { getActiveCitiesAction, getLocationsByCityAction } from "@/modules/locations/locations.actions";
 import { City, Location } from "@/modules/locations/types";
 import { LocationCombobox } from "../LocationCombobox";
+import { CityCombobox } from "../CityCombobox";
 
 const LocationSchema = z.object({
   landmark: z.string().optional().or(z.literal("")),
@@ -161,19 +161,16 @@ export function LocationTab({ property }: LocationTabProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="city_id">City <span className="text-destructive">*</span></Label>
-                <Select value={selectedCityId} onValueChange={(val) => {
-                  setSelectedCityId(val);
-                  setSelectedLocationId(""); // reset location when city changes
-                }} disabled={isPending}>
-                  <SelectTrigger className="h-11 bg-background" aria-invalid={!!errors.city_id}>
-                    <SelectValue placeholder="Select City" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem key={city.id} value={city.id}>{city.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <CityCombobox
+                  cities={cities}
+                  value={selectedCityId}
+                  onChange={(val) => {
+                    setSelectedCityId(val);
+                    setSelectedLocationId("");
+                  }}
+                  disabled={isPending}
+                  onCityCreated={(newCity) => setCities(prev => [...prev, newCity].sort((a, b) => a.name.localeCompare(b.name)))}
+                />
                 {errors.city_id && <p className="text-sm text-destructive">{errors.city_id}</p>}
               </div>
 
@@ -191,15 +188,7 @@ export function LocationTab({ property }: LocationTabProps) {
                   {errors.location_id && <p className="text-sm text-destructive">{errors.location_id}</p>}
                 </div>
 
-              {/* Legacy fallback / override fields (hidden for clean UX, we overwrite them on submit) */}
-              <input type="hidden" name="locality" value={property.locality || ""} />
-              <input type="hidden" name="city" value={property.city || ""} />
-              <input type="hidden" name="state" value={property.state || ""} />
-              
-              <div className="space-y-2">
-                <Label htmlFor="sector">Sector (Legacy Override)</Label>
-                <Input id="sector" name="sector" placeholder="e.g. Sector 150" defaultValue={property.sector || ""} disabled={isPending} />
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
                 <Input id="country" name="country" defaultValue={property.country || "India"} disabled={isPending} />

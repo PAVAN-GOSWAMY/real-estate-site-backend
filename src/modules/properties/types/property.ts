@@ -24,10 +24,10 @@ export interface Property {
   landmark: string | null;
   city_id: string | null;
   location_id: string | null;
-  locality: string | null;
-  sector: string | null;
-  city: string | null;
-  state: string | null;
+
+
+
+
   country: string | null;
   pincode: string | null;
   googleMapsUrl: string | null;
@@ -140,8 +140,8 @@ export interface PropertyListItem {
   status: PropertyStatus;
   availability: PropertyAvailability;
   price: number | null;
-  locality: string | null;
-  city: string | null;
+
+
   isFeatured: boolean;
   isVerified: boolean;
 }

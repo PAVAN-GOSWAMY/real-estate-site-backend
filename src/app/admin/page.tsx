@@ -25,6 +25,18 @@ export default async function AdminDashboardPage() {
   const recentLeadsRes = await LeadsService.getLeads({}, 1, 5);
   const recentLeads = recentLeadsRes.leads;
 
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const { count: totalPropertiesCount } = await supabase
+    .from('properties')
+    .select('*', { count: 'exact', head: true });
+
+  const { count: newPropertiesCount } = await supabase
+    .from('properties')
+    .select('*', { count: 'exact', head: true })
+    .gte('created_at', thirtyDaysAgo.toISOString());
+
   return (
     <div className="space-y-6">
       <PageHeader 
@@ -36,9 +48,9 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Properties"
-          value="124"
+          value={(totalPropertiesCount || 0).toString()}
           icon={Home}
-          trend={{ value: 12, label: "from last month", isPositive: true }}
+          trend={{ value: newPropertiesCount || 0, label: "new this month", isPositive: true }}
         />
         <StatsCard
           title="Total Leads"

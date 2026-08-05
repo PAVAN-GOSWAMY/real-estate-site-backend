@@ -9,7 +9,7 @@ import { HeroSearchPanel } from "./HeroSearchPanel";
 import { useEnquiryModal } from "@/contexts/EnquiryModalContext";
 
 interface HeroProps {
-  stats: { propertyCount: number; developerCount: number };
+  stats: { propertyCount: number; developerCount: number; happyClients: string; yearsExperience: string };
   filterOptions: { cities: { id: string; name: string; slug: string }[]; types: string[]; configs: string[]; builders: string[]; statuses: string[] };
 }
 
@@ -50,8 +50,8 @@ export function Hero({ stats, filterOptions }: HeroProps) {
   const dynamicTrustMetrics = [
     { id: "tm-projects", value: `${stats.propertyCount}+`, label: "Verified Projects" },
     { id: "tm-developers", value: `${stats.developerCount}+`, label: "Trusted Developers" },
-    { id: "tm-clients", value: "2,000+", label: "Happy Clients" }, // Static fallback
-    { id: "tm-experience", value: "10+", label: "Years of Experience" }, // Static fallback
+    { id: "tm-clients", value: stats.happyClients, label: "Happy Clients" },
+    { id: "tm-experience", value: stats.yearsExperience, label: "Years of Experience" },
   ];
 
   return (

@@ -105,7 +105,7 @@ export function PropertiesList({ properties, buildersMap }: PropertiesListProps)
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="font-semibold truncate max-w-[280px]">{property.title}</span>
-                    <span className="text-xs text-muted-foreground">{property.city || property.locality || "No location specified"}</span>
+                    <span className="text-xs text-muted-foreground">{property.address || "Location specified"}</span>
                   </div>
                 </TableCell>
                 <TableCell className="max-w-[150px] truncate" title={buildersMap[property.builderId]?.name}>

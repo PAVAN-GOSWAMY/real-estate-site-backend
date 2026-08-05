@@ -1,3 +1,4 @@
+CREATE TABLE IF NOT EXISTS public.profiles (id uuid primary key, role text, is_active boolean);
 -- ============================================================================
 -- Create Builders Table
 -- Sprint 2 - Phase A

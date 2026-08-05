@@ -38,7 +38,7 @@ export function PropertyTabsContainer({
 }: PropertyTabsContainerProps) {
   // Calculate completion
   const isBasicInfoComplete = !!(property.title && property.slug && property.propertyType);
-  const isLocationComplete = !!(property.city && property.state);
+  const isLocationComplete = !!(property.city_id && property.location_id);
   const isPricingComplete = property.price !== null && property.price !== undefined;
   const isDetailsComplete = property.bedrooms !== null || property.carpetArea !== null;
   const isSeoComplete = !!(property.metaTitle || property.metaDescription);

@@ -59,9 +59,9 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
       propertyType,
       status,
       availability,
-      isFeatured: formData.get("isFeatured") === "on",
-      isVerified: formData.get("isVerified") === "on",
-      isPremium: formData.get("isPremium") === "on",
+      isFeatured: formData.has("isFeatured"),
+      isVerified: formData.has("isVerified"),
+      isPremium: formData.has("isPremium"),
     };
 
     const textFields = ["slug", "shortDescription", "description", "reraNumber"];

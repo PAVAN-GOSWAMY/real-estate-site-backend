@@ -432,17 +432,22 @@ export async function getTopLocations(): Promise<{ name: string; slug: string; i
     .slice(0, 4);
 }
 
-export async function getSiteStats(): Promise<{ propertyCount: number; developerCount: number }> {
+export async function getSiteStats(): Promise<{ propertyCount: number; developerCount: number; happyClients: string; yearsExperience: string }> {
   const supabase = createPublicClient();
   
-  const [propertiesResult, buildersResult] = await Promise.all([
+  const [propertiesResult, buildersResult, settingsResult] = await Promise.all([
     supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
-    supabase.from('builders').select('*', { count: 'exact', head: true }).eq('is_active', true)
+    supabase.from('builders').select('*', { count: 'exact', head: true }).eq('is_active', true),
+    supabase.from('site_settings').select('value').eq('key', 'stats').single()
   ]);
+
+  const statsSetting = settingsResult.data?.value as { happyClients?: string, yearsExperience?: string } | undefined;
 
   return {
     propertyCount: propertiesResult.count || 0,
-    developerCount: buildersResult.count || 0
+    developerCount: buildersResult.count || 0,
+    happyClients: statsSetting?.happyClients || "2,000+",
+    yearsExperience: statsSetting?.yearsExperience || "10+"
   };
 }
 

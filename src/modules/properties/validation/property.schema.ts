@@ -32,10 +32,8 @@ export const CreatePropertySchema = z.object({
   
   address: z.string().max(255).optional().or(z.literal('')),
   landmark: z.string().max(100).optional().or(z.literal('')),
-  locality: z.string().min(1, "Locality is required").max(100),
-  sector: z.string().max(100).optional().or(z.literal('')),
-  city: z.string().min(1, "City is required").max(100),
-  state: z.string().min(1, "State is required").max(100),
+  city_id: z.string().uuid("Invalid city ID"),
+  location_id: z.string().uuid("Invalid location ID"),
   country: z.string().max(100).default('India'),
   pincode: z.string().max(20).optional().or(z.literal('')),
   googleMapsUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),

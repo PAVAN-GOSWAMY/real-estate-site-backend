@@ -5,6 +5,10 @@ import { useEnquiryModal } from "@/contexts/EnquiryModalContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PropertyType } from "@/modules/properties/types/enums";
+import { createPublicLeadAction } from "@/modules/leads/actions/leads.actions";
+import { toast } from "sonner";
 
 export function EnquiryModal() {
   const { isOpen, closeModal, modalData } = useEnquiryModal();
@@ -41,19 +45,44 @@ export function EnquiryModal() {
     }
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock API Call
-    setTimeout(() => {
+    const formData = new FormData(e.currentTarget);
+    const location = formData.get("location") as string;
+    const propertyType = formData.get("propertyType") as string;
+    let message = formData.get("message") as string;
+    
+    // Append location and property type to message if they exist
+    if (location || propertyType) {
+      message = (message ? message + "\n\n" : "") + 
+                (location ? `Preferred Location: ${location}\n` : "") + 
+                (propertyType ? `Property Type: ${propertyType}` : "");
+    }
+    
+    formData.set("message", message.trim());
+    formData.set("source", modalData.propertyName ? "Property Inquiry" : "General Contact");
+    if (modalData.propertyName) {
+      message = `Interested in: ${modalData.propertyName}\n` + message;
+    }
+    formData.set("message", message.trim());
+
+    try {
+      const res = await createPublicLeadAction(formData);
+      if (res.success) {
+        setIsSuccess(true);
+        setTimeout(() => {
+          closeModal();
+        }, 2500);
+      } else {
+        toast.error(res.error || "Failed to submit enquiry. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.");
+    } finally {
       setIsLoading(false);
-      setIsSuccess(true);
-      // Mock close after success
-      setTimeout(() => {
-        closeModal();
-      }, 2500);
-    }, 1000);
+    }
   };
 
   return (
@@ -118,57 +147,71 @@ export function EnquiryModal() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label htmlFor="modal-name" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Full Name *</label>
-                      <input id="modal-name" required type="text" autoFocus className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="John Doe" />
+                      <input id="modal-name" name="fullName" required type="text" autoFocus className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="John Doe" />
                     </div>
                     <div className="space-y-1">
                       <label htmlFor="modal-phone" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Phone Number *</label>
-                      <input id="modal-phone" required type="tel" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="+91 98765 43210" />
+                      <input id="modal-phone" name="phone" required type="tel" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="+91 98765 43210" />
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <label htmlFor="modal-email" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Email Address *</label>
-                    <input id="modal-email" required type="email" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="john@example.com" />
+                    <input id="modal-email" name="email" required type="email" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm" placeholder="john@example.com" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label htmlFor="modal-location" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Preferred Location</label>
-                      <select id="modal-location" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm appearance-none text-sm">
-                        <option value="">Select Location</option>
-                        <option value="Sector 150, Noida">Sector 150, Noida</option>
-                        <option value="Yamuna Expressway">Yamuna Expressway</option>
-                        <option value="Greater Noida West">Greater Noida West</option>
-                        <option value="Central Noida">Central Noida</option>
-                        <option value="Other">Other</option>
-                      </select>
+                      <Select name="location">
+                        <SelectTrigger id="modal-location" className="w-full h-11 rounded-xl border-border/50 bg-background shadow-sm text-sm">
+                          <SelectValue placeholder="Select Location" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          <SelectItem value="Noida">Noida</SelectItem>
+                          <SelectItem value="Greater Noida">Greater Noida</SelectItem>
+                          <SelectItem value="Ghaziabad">Ghaziabad</SelectItem>
+                          <SelectItem value="Delhi">Delhi</SelectItem>
+                          <SelectItem value="Gurugram">Gurugram</SelectItem>
+                          <SelectItem value="Faridabad">Faridabad</SelectItem>
+                          <SelectItem value="Jewar">Jewar</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-1">
                       <label htmlFor="modal-type" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Property Type</label>
-                      <select id="modal-type" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm appearance-none text-sm">
-                        <option value="">Select Type</option>
-                        <option value="Luxury Apartment">Luxury Apartment</option>
-                        <option value="Penthouse">Penthouse</option>
-                        <option value="Villa">Villa</option>
-                        <option value="Commercial">Commercial</option>
-                      </select>
+                      <Select name="propertyType">
+                        <SelectTrigger id="modal-type" className="w-full h-11 rounded-xl border-border/50 bg-background shadow-sm text-sm">
+                          <SelectValue placeholder="Select Type" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          {Object.values(PropertyType).map(t => (
+                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
 
                   <div className="space-y-1">
                     <label htmlFor="modal-budget" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Budget</label>
-                    <select id="modal-budget" className="w-full px-4 h-11 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm appearance-none text-sm">
-                      <option value="">Select Budget Range</option>
-                      <option value="₹1.5 Cr - ₹3 Cr">₹1.5 Cr - ₹3 Cr</option>
-                      <option value="₹3 Cr - ₹5 Cr">₹3 Cr - ₹5 Cr</option>
-                      <option value="₹5 Cr - ₹10 Cr">₹5 Cr - ₹10 Cr</option>
-                      <option value="₹10 Cr+">₹10 Cr+</option>
-                    </select>
+                    <Select name="budget">
+                      <SelectTrigger id="modal-budget" className="w-full h-11 rounded-xl border-border/50 bg-background shadow-sm text-sm">
+                        <SelectValue placeholder="Select Budget Range" />
+                      </SelectTrigger>
+                        <SelectContent className="z-[200]">
+                          <SelectItem value="under-50l">Below 50L</SelectItem>
+                          <SelectItem value="50l-1cr">50L - 1 Cr</SelectItem>
+                          <SelectItem value="1cr-2cr">1 Cr - 2 Cr</SelectItem>
+                          <SelectItem value="2cr-5cr">2 Cr - 5 Cr</SelectItem>
+                          <SelectItem value="above-5cr">Above 5 Cr</SelectItem>
+                        </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-1">
                     <label htmlFor="modal-message" className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Message</label>
-                    <textarea id="modal-message" rows={3} className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm resize-none" placeholder={modalData.propertyName ? `I am interested in ${modalData.propertyName}...` : "How can we assist with your property search?"} />
+                    <textarea id="modal-message" name="message" rows={3} className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background outline-none focus:border-primary transition-colors text-foreground shadow-sm text-sm resize-none" placeholder={modalData.propertyName ? `I am interested in ${modalData.propertyName}...` : "How can we assist with your property search?"} />
                   </div>
 
                   <div className="pt-4 flex gap-3">

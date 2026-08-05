@@ -69,19 +69,19 @@ export default async function AboutPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.propertyCount}+</p>
-              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Exclusive Listings</p>
-            </div>
-            <div>
-              <p className="text-5xl font-heading font-bold text-accent mb-2">15+</p>
-              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Years Experience</p>
-            </div>
-            <div>
-              <p className="text-5xl font-heading font-bold text-accent mb-2">₹500Cr+</p>
-              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Sales Volume</p>
+              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Verified Projects</p>
             </div>
             <div>
               <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.developerCount}+</p>
-              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Developer Partners</p>
+              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Trusted Developers</p>
+            </div>
+            <div>
+              <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.happyClients}</p>
+              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Happy Clients</p>
+            </div>
+            <div>
+              <p className="text-5xl font-heading font-bold text-accent mb-2">{stats.yearsExperience}</p>
+              <p className="text-primary-foreground/70 uppercase tracking-widest text-sm">Years of Experience</p>
             </div>
           </div>
         </div>
