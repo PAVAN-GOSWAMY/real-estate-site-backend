@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { Property, UpdatePropertyInput } from "@/modules/properties/types/property";
 import { Builder } from "@/modules/builders/types/builder";
-import { PropertyStatus, PropertyType, PropertyAvailability } from "@/modules/properties/types/enums";
+import { PropertyStatus, PropertyType, PropertyAvailability, PropertyCategory } from "@/modules/properties/types/enums";
 import { updatePropertyAction } from "@/modules/properties/actions";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ const BasicInfoSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   slug: z.string().optional().or(z.literal("")),
   builderId: z.string().uuid("Please select a builder"),
+  propertyCategory: z.nativeEnum(PropertyCategory),
   propertyType: z.nativeEnum(PropertyType),
   status: z.nativeEnum(PropertyStatus),
   availability: z.nativeEnum(PropertyAvailability),
@@ -36,6 +37,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [builderId, setBuilderId] = useState(property.builderId);
+  const [propertyCategory, setPropertyCategory] = useState<PropertyCategory>(property.propertyCategory);
   const [propertyType, setPropertyType] = useState<PropertyType>(property.propertyType);
   const [status, setStatus] = useState<PropertyStatus>(property.status);
   const [availability, setAvailability] = useState<PropertyAvailability>(property.availability);
@@ -56,6 +58,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
     const payload: Record<string, any> = {
       ...data,
       builderId,
+      propertyCategory,
       propertyType,
       status,
       availability,
@@ -172,6 +175,21 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
                   </SelectContent>
                 </Select>
                 {errors.builderId && <p className="text-sm text-destructive">{errors.builderId}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Property Category <span className="text-destructive">*</span></Label>
+                <Select value={propertyCategory} onValueChange={(val: PropertyCategory) => setPropertyCategory(val)} disabled={isPending}>
+                  <SelectTrigger aria-invalid={!!errors.propertyCategory}>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(PropertyCategory).map(c => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.propertyCategory && <p className="text-sm text-destructive">{errors.propertyCategory}</p>}
               </div>
 
               <div className="space-y-2">

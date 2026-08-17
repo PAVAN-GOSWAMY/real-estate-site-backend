@@ -31,19 +31,24 @@ export default async function PropertiesPage({
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* Hero Header */}
-      <div className="bg-primary py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl">
-            <h1 className="font-heading text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
-              Exclusive <span className="opacity-70 italic">Properties</span>
-            </h1>
-            <p className="text-lg text-primary-foreground/90 leading-relaxed">
-              Find your perfect sanctuary from our curated selection of Noida and Greater Noida&apos;s finest real estate.
+      {params.q && (
+        <div className="container mx-auto px-4 md:px-8 pt-10 pb-2">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border/60 pb-6">
+            <div>
+              <p className="text-sm font-bold text-accent uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-accent rounded-full"></span> Search Results
+              </p>
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
+                Matches for <span className="text-muted-foreground">&quot;{params.q}&quot;</span>
+              </h1>
+            </div>
+            <p className="text-sm text-muted-foreground md:max-w-xs md:text-right">
+              Can&apos;t find what you&apos;re looking for? <br className="hidden md:block" />
+              <a href="/contact" className="text-foreground font-semibold hover:text-accent transition-colors underline underline-offset-4">Contact our experts</a> for help.
             </p>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="container mx-auto px-4 md:px-8 py-12">
         <div className="flex flex-col lg:flex-row gap-8">

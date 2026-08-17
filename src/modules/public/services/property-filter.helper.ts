@@ -2,7 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { PropertyFilterOptions } from '../types/search';
 
 // Reusable select fragments
-export const BASE_PROPERTY_SELECT = `id, title, slug, price, locality, city, sector, city_id, location_id, property_type, status, bedrooms, bathrooms, carpet_area, possession_date, rera_number, is_featured, is_verified, is_premium, short_description, created_at, updated_at, cities (id, name, slug), locations (id, name, slug, type)`;
+export const BASE_PROPERTY_SELECT = `id, title, slug, price, locality, city, sector, city_id, location_id, property_category, property_type, status, bedrooms, bathrooms, carpet_area, possession_date, rera_number, is_featured, is_verified, is_premium, short_description, created_at, updated_at, cities (id, name, slug), locations (id, name, slug, type)`;
 export const BUILDER_SELECT = `builders!inner (name, logo_url)`;
 export const MEDIA_SELECT = `property_media (url, is_featured, display_order)`;
 export const FLOOR_PLAN_SELECT = `property_floor_plans!inner (bedrooms, bathrooms, area, price)`;
@@ -36,7 +36,32 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
   // 1. Search Query
   if (filters.q) {
     const sq = filters.q.replace(/-/g, ' ');
-    query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%`);
+    const lowerSq = sq.toLowerCase();
+
+    // Map keywords to specific property categories
+    let mappedCategory = '';
+    if (lowerSq.includes('residential')) mappedCategory = 'Residential';
+    else if (lowerSq.includes('commercial')) mappedCategory = 'Commercial';
+    else if (lowerSq.includes('studio')) mappedCategory = 'Studio Apartment';
+
+    if (mappedCategory) {
+      query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%,property_category.eq.${mappedCategory}`);
+    } else {
+      let mappedType = '';
+      if (lowerSq.includes('apartment')) mappedType = 'Apartment';
+      else if (lowerSq.includes('villa')) mappedType = 'Villa';
+      else if (lowerSq.includes('plot')) mappedType = 'Plot';
+      else if (lowerSq.includes('penthouse')) mappedType = 'Penthouse';
+      else if (lowerSq.includes('independent')) mappedType = 'Independent House';
+      else if (lowerSq.includes('retail')) mappedType = 'Retail Shop';
+      else if (lowerSq.includes('office')) mappedType = 'Office Space';
+
+      if (mappedType) {
+        query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%,property_type.eq.${mappedType}`);
+      } else {
+        query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%`);
+      }
+    }
   }
 
   // 2. Location (City, Sector, or legacy location string)
@@ -63,10 +88,16 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
     query = query.ilike('builders.name', `%${builderSlug}%`);
   }
 
-  // 4. Property Type
+  // 4. Property Type and Category
+  if (filters.propertyCategory && filters.propertyCategory !== 'all') {
+    const pc = filters.propertyCategory.replace(/-/g, ' ');
+    query = query.eq('property_category', pc);
+  }
+
   if (filters.propertyType && filters.propertyType !== 'all') {
     const pt = filters.propertyType.replace(/-/g, ' ');
-    query = query.ilike('property_type', `%${pt}%`);
+    // Use .eq instead of .ilike since property_type is an Enum
+    query = query.eq('property_type', pt);
   }
 
   // 5. Status & Possession
@@ -116,6 +147,9 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
   }
   if (filters.isPremium) {
     query = query.eq('is_premium', true);
+  }
+  if (filters.isVerified) {
+    query = query.eq('is_verified', true);
   }
 
   return query;

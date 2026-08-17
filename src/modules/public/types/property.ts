@@ -37,6 +37,7 @@ export interface PublicProperty {
   longitude: number | null;
   price: number | null;
   priceDisplay: string | null;
+  propertyCategory: string;
   propertyType: string;
   status: string;
   bedrooms: number | null;

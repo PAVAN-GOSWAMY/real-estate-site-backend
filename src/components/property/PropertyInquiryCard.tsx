@@ -99,35 +99,30 @@ export function PropertyInquiryCard({ title, price, propertyId, builderId }: Pro
           />
         </div>
         
-        <Button 
-          type="submit" 
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-10 text-sm font-semibold mt-1"
-          disabled={isPending}
-        >
-          {isPending ? "Submitting..." : "Enquire Now"}
-        </Button>
+        <div className="flex gap-2 mt-1">
+          <Button 
+            type="submit" 
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-10 text-sm font-semibold"
+            disabled={isPending}
+          >
+            {isPending ? "Submitting..." : "Enquire Now"}
+          </Button>
+          
+          <Button 
+            type="button"
+            onClick={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.set("modal", "schedule-visit");
+              router.push(`${pathname}?${params.toString()}`, { scroll: false });
+            }} 
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground h-10 text-sm font-semibold"
+          >
+            <Calendar className="mr-2 h-4 w-4" /> Schedule Visit
+          </Button>
+        </div>
       </form>
 
-      <div className="mt-3 flex flex-col gap-2">
-        <div className="flex items-center justify-center gap-2 text-[9px] text-muted-foreground">
-          <span className="h-[1px] w-full bg-border"></span>
-          <span className="shrink-0 uppercase tracking-widest">Or</span>
-          <span className="h-[1px] w-full bg-border"></span>
-        </div>
-        
-        <Button 
-          type="button"
-          onClick={() => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set("modal", "schedule-visit");
-            router.push(`${pathname}?${params.toString()}`, { scroll: false });
-          }} 
-          variant="outline" 
-          className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground h-9 text-xs"
-        >
-          <Calendar className="mr-2 h-3.5 w-3.5" /> Schedule Site Visit
-        </Button>
-        
+      <div className="mt-4 flex flex-col gap-2">
         <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="flex items-center justify-center gap-1.5 text-primary text-xs font-medium hover:text-accent transition-colors pt-0.5">
           <PhoneCall className="h-3 w-3" /> {siteConfig.contact.phone}
         </a>

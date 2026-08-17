@@ -18,6 +18,15 @@ export enum PropertyAvailability {
 }
 
 /**
+ * Property Category Enum
+ */
+export enum PropertyCategory {
+  RESIDENTIAL = 'Residential',
+  COMMERCIAL = 'Commercial',
+  STUDIO_APARTMENT = 'Studio Apartment',
+}
+
+/**
  * Property Type Enum
  */
 export enum PropertyType {
@@ -29,6 +38,7 @@ export enum PropertyType {
   RETAIL = 'Retail',
   WAREHOUSE = 'Warehouse',
   PENTHOUSE = 'Penthouse',
+  STUDIO_APARTMENT = 'Studio Apartment',
 }
 
 /**

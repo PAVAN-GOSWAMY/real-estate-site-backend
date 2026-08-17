@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PropertyStatus, PropertyAvailability, PropertyType, ConstructionStatus } from "../types/enums";
+import { PropertyStatus, PropertyAvailability, PropertyType, ConstructionStatus, PropertyCategory } from "../types/enums";
 
 /**
  * Schema for creating a new Property.
@@ -25,6 +25,7 @@ export const CreatePropertySchema = z.object({
   
   builderId: z.string().uuid("Invalid builder ID"),
   
+  propertyCategory: z.nativeEnum(PropertyCategory),
   propertyType: z.nativeEnum(PropertyType),
   
   status: z.nativeEnum(PropertyStatus).default(PropertyStatus.ACTIVE),
@@ -92,6 +93,7 @@ export const UpdatePropertySchema = CreatePropertySchema.partial();
 export const PropertyFilterSchema = z.object({
   search: z.string().optional(),
   builderId: z.string().uuid().optional(),
+  propertyCategory: z.nativeEnum(PropertyCategory).optional(),
   propertyType: z.nativeEnum(PropertyType).optional(),
   status: z.nativeEnum(PropertyStatus).optional(),
   availability: z.nativeEnum(PropertyAvailability).optional(),

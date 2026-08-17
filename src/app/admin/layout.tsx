@@ -11,7 +11,7 @@ export default async function AdminLayout({
   const user = await ensureAdminAuth();
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 admin-dashboard selection:bg-primary/20 selection:text-primary">
       <div className="flex min-h-screen">
         {/* Desktop Sidebar */}
         <div className="hidden md:block w-64 shrink-0">

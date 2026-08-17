@@ -1,17 +1,11 @@
-import * as LucideIcons from "lucide-react";
 import { LucideProps } from "lucide-react";
+import { getAmenityIcon } from "@/lib/icons/amenity-icons";
 
 interface DynamicIconProps extends LucideProps {
   name: string;
 }
 
 export function DynamicIcon({ name, ...props }: DynamicIconProps) {
-  const IconComponent = (LucideIcons as any)[name];
-
-  if (!IconComponent) {
-    const FallbackIcon = LucideIcons.Check;
-    return <FallbackIcon {...props} />;
-  }
-
+  const IconComponent = getAmenityIcon(name);
   return <IconComponent {...props} />;
 }

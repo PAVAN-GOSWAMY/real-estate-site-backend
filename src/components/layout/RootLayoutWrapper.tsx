@@ -27,7 +27,7 @@ export function RootLayoutWrapper({
     return (
       <EnquiryModalProvider>
         <Navbar />
-        <main className="flex-1 pt-[114px]">{children}</main>
+        <main className="flex-1 pt-[86px]">{children}</main>
         <EnquiryModal />
       </EnquiryModalProvider>
     );
@@ -36,7 +36,7 @@ export function RootLayoutWrapper({
   return (
     <EnquiryModalProvider>
       <Navbar />
-      <main className="flex-1 pt-[114px]">
+      <main className="flex-1 pt-[86px]">
         {children}
         <FloatingContactWidget />
       </main>

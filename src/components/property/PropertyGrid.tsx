@@ -1,5 +1,6 @@
 import { Property } from "@/types/property";
 import { PropertyCard } from "@/components/properties/PropertyCard";
+import { SimplePropertyCard } from "@/components/properties/SimplePropertyCard";
 import { PropertySort } from "./PropertySort";
 import { PropertyPagination } from "./PropertyPagination";
 import { PropertyEmptyState } from "./PropertyEmptyState";
@@ -12,9 +13,10 @@ interface PropertyGridProps {
 export async function PropertyGrid({ searchParams }: PropertyGridProps) {
   const { properties, totalCount, totalPages } = await getFilteredProperties(searchParams);
   const currentPage = parseInt(searchParams.page || "1");
+  const isSearchActive = !!searchParams.q;
 
   if (properties.length === 0) {
-    return <PropertyEmptyState />;
+    return <PropertyEmptyState searchQuery={searchParams.q} />;
   }
 
   return (
@@ -28,9 +30,17 @@ export async function PropertyGrid({ searchParams }: PropertyGridProps) {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      <div className={
+        isSearchActive 
+          ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6" 
+          : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6"
+      }>
         {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
+          isSearchActive ? (
+            <SimplePropertyCard key={property.id} property={property} />
+          ) : (
+            <PropertyCard key={property.id} property={property} />
+          )
         ))}
       </div>
 

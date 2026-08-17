@@ -2,7 +2,8 @@ import {
   PropertyStatus, 
   PropertyAvailability, 
   PropertyType, 
-  ConstructionStatus 
+  ConstructionStatus,
+  PropertyCategory 
 } from './enums';
 
 /**
@@ -16,6 +17,7 @@ export interface Property {
   
   builderId: string;
   
+  propertyCategory: PropertyCategory;
   propertyType: PropertyType;
   status: PropertyStatus;
   availability: PropertyAvailability;
@@ -77,6 +79,7 @@ export interface CreatePropertyInput {
   
   builderId: string;
   
+  propertyCategory: PropertyCategory;
   propertyType: PropertyType;
   status?: PropertyStatus;
   availability?: PropertyAvailability;
@@ -136,6 +139,7 @@ export interface PropertyListItem {
   title: string;
   slug: string;
   propertyCode: string;
+  propertyCategory: PropertyCategory;
   propertyType: PropertyType;
   status: PropertyStatus;
   availability: PropertyAvailability;
@@ -152,6 +156,7 @@ export interface PropertyListItem {
 export interface PropertyFilters {
   search?: string;
   builderId?: string;
+  propertyCategory?: PropertyCategory;
   propertyType?: PropertyType;
   status?: PropertyStatus;
   availability?: PropertyAvailability;

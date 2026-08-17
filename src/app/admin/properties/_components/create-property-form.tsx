@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createPropertyAction } from "@/modules/properties/actions";
 import { CreatePropertyInput } from "@/modules/properties/types/property";
 import { Builder } from "@/modules/builders/types/builder";
-import { PropertyStatus, PropertyType, PropertyAvailability } from "@/modules/properties/types/enums";
+import { PropertyStatus, PropertyType, PropertyAvailability, PropertyCategory } from "@/modules/properties/types/enums";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ interface CreatePropertyFormProps {
 const MinimalCreateSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   builderId: z.string().uuid("Please select a builder"),
+  propertyCategory: z.nativeEnum(PropertyCategory),
   propertyType: z.nativeEnum(PropertyType),
   status: z.nativeEnum(PropertyStatus),
   price: z.number().min(0, "Price must be positive").optional(),
@@ -45,6 +46,7 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [builderId, setBuilderId] = useState("");
+  const [propertyCategory, setPropertyCategory] = useState<PropertyCategory | "">("");
   const [propertyType, setPropertyType] = useState<PropertyType | "">("");
   const [status, setStatus] = useState<PropertyStatus>(PropertyStatus.ACTIVE);
   const [cityId, setCityId] = useState("");
@@ -75,6 +77,7 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
     const payload: any = {
       ...data,
       builderId,
+      propertyCategory: propertyCategory === "" ? undefined : propertyCategory,
       propertyType: propertyType === "" ? undefined : propertyType,
       status,
       price: data.price ? Number(data.price) : undefined,
@@ -189,6 +192,21 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
                   </SelectContent>
                 </Select>
                 {errors.builderId && <p className="text-sm text-destructive">{errors.builderId}</p>}
+              </div>
+
+              <div className="space-y-2">
+                <Label>Property Category <span className="text-destructive">*</span></Label>
+                <Select value={propertyCategory} onValueChange={(val: PropertyCategory) => setPropertyCategory(val)} disabled={isPending}>
+                  <SelectTrigger aria-invalid={!!errors.propertyCategory}>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(PropertyCategory).map(c => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.propertyCategory && <p className="text-sm text-destructive">{errors.propertyCategory}</p>}
               </div>
 
               <div className="space-y-2">

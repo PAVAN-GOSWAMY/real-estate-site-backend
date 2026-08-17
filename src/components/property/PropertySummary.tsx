@@ -1,5 +1,6 @@
-import { MapPin, Building, Key } from "lucide-react";
+import { MapPin, Building, Key, IndianRupee, Ruler, Calendar, LayoutTemplate } from "lucide-react";
 import { PublicProperty } from "@/modules/public/types/property";
+import { Badge } from "@/components/ui/badge";
 
 interface PropertySummaryProps {
   property: PublicProperty;
@@ -7,69 +8,96 @@ interface PropertySummaryProps {
 
 export function PropertySummary({ property }: PropertySummaryProps) {
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="flex flex-wrap items-center gap-3 mb-4">
-          <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent">
+    <div className="space-y-8 bg-card p-6 md:p-8 rounded-2xl border border-border/50 shadow-sm">
+      {/* Header Section */}
+      <div className="border-b border-border/50 pb-6">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200/50">
             {property.status}
-          </span>
+          </Badge>
           {property.isFeatured && (
-            <span className="inline-flex items-center rounded-full bg-yellow-100 text-yellow-800 px-3 py-1 text-sm font-medium">
+            <Badge variant="secondary" className="bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200/50">
               Featured
-            </span>
+            </Badge>
           )}
           {property.isVerified && (
-            <span className="inline-flex items-center rounded-full bg-green-100 text-green-800 px-3 py-1 text-sm font-medium">
+            <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200/50">
               Verified
-            </span>
+            </Badge>
           )}
           {property.reraNumber && (
-            <span className="inline-flex items-center rounded-full bg-border/50 px-3 py-1 text-sm font-medium text-muted-foreground">
+            <Badge variant="outline" className="text-muted-foreground border-border">
               RERA: {property.reraNumber}
-            </span>
+            </Badge>
           )}
         </div>
         
-        <h1 className="font-heading text-3xl md:text-5xl font-bold text-primary tracking-tight mb-2">
-          {property.title}
-        </h1>
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="h-5 w-5 mr-2 shrink-0 text-accent" />
-            <span className="text-lg">{[property.sector, property.locality, property.city].filter(Boolean).join(', ') || "Location on Request"}</span>
+        <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-3">
+              {property.title}
+            </h1>
+            <div className="flex items-center text-muted-foreground">
+              <MapPin className="h-5 w-5 mr-2 shrink-0 text-accent" />
+              <span className="text-base md:text-lg">{[property.sector, property.locality, property.city].filter(Boolean).join(', ') || "Location on Request"}</span>
+            </div>
           </div>
+          
           {property.priceDisplay && (
-            <div className="text-2xl font-bold text-primary">
-              {property.priceDisplay}
+            <div className="xl:text-right shrink-0">
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Starting Price</p>
+              <div className="text-2xl md:text-4xl font-bold text-accent">
+                {property.priceDisplay}
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="prose prose-lg prose-p:text-muted-foreground max-w-none">
+      {/* Description Section */}
+      <div className="prose prose-lg max-w-none">
         {property.shortDescription && (
-          <p className="text-xl text-foreground font-medium mb-4">{property.shortDescription}</p>
+          <p className="text-lg md:text-xl text-foreground font-medium leading-relaxed mb-6">
+            {property.shortDescription}
+          </p>
         )}
-        <p>{property.description}</p>
+        <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+          {property.description}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-border/50">
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Developer</p>
-          <p className="font-medium text-foreground">{property.builderName}</p>
+      {/* Key Metrics Section */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
+        <div className="bg-muted/30 p-4 rounded-xl flex flex-col gap-2">
+          <Building className="w-5 h-5 text-foreground" />
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Developer</p>
+            <p className="font-semibold text-foreground line-clamp-1" title={property.builderName}>{property.builderName}</p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Configurations</p>
-          <p className="font-medium text-foreground">{property.bedrooms ? `${property.bedrooms} BHK ${property.propertyType}` : property.propertyType}</p>
+        
+        <div className="bg-muted/30 p-4 rounded-xl flex flex-col gap-2">
+          <LayoutTemplate className="w-5 h-5 text-foreground" />
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Configuration</p>
+            <p className="font-semibold text-foreground">{property.bedrooms ? `${property.bedrooms} BHK` : property.propertyType}</p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Carpet Area</p>
-          <p className="font-medium text-foreground">{property.carpetArea ? `${property.carpetArea} Sq.Ft.` : "On Request"}</p>
+
+        <div className="bg-muted/30 p-4 rounded-xl flex flex-col gap-2">
+          <Ruler className="w-5 h-5 text-foreground" />
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Carpet Area</p>
+            <p className="font-semibold text-foreground">{property.carpetArea ? `${property.carpetArea} Sq.Ft.` : "On Request"}</p>
+          </div>
         </div>
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Possession</p>
-          <p className="font-medium text-foreground">{property.possessionDate || "Ready"}</p>
+
+        <div className="bg-muted/30 p-4 rounded-xl flex flex-col gap-2">
+          <Calendar className="w-5 h-5 text-foreground" />
+          <div>
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Possession</p>
+            <p className="font-semibold text-foreground">{property.possessionDate || "Ready to Move"}</p>
+          </div>
         </div>
       </div>
     </div>

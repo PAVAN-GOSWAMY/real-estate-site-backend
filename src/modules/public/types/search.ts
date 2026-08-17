@@ -16,6 +16,7 @@ export interface PropertyFilterOptions {
   
   // Configuration
   bedrooms?: number | string;
+  propertyCategory?: string;
   propertyType?: string;
   
   // Amenities
@@ -34,6 +35,7 @@ export interface PropertyFilterOptions {
   // Flags
   isFeatured?: boolean;
   isPremium?: boolean;
+  isVerified?: boolean;
   
   // Sorting & Pagination
   sort?: string;

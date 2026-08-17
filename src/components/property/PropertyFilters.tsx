@@ -84,8 +84,13 @@ export function PropertyFilters({
     }
   }, [debouncedSearch, searchParams, updateFilter]);
 
-  // Removed conflicting useEffect that was syncing searchParams to searchQuery
-  // to prevent infinite render loops during navigation.
+  // Sync URL changes back to local state (e.g. when navbar search is used)
+  useEffect(() => {
+    const currentQ = searchParams.get("q") || "";
+    if (currentQ !== debouncedSearch) {
+      setSearchQuery(currentQ);
+    }
+  }, [searchParams, debouncedSearch]);
 
   const clearFilters = () => {
     setSearchQuery("");

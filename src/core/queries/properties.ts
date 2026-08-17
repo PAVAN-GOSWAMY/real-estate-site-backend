@@ -7,6 +7,7 @@ export interface PropertySearchParams {
   city?: string;
   sector?: string;
   builder?: string;
+  category?: string;
   type?: string;
   budget?: string;
   minPrice?: string;
@@ -21,6 +22,7 @@ export interface PropertySearchParams {
   page?: string;
   isFeatured?: boolean | string;
   isPremium?: boolean | string;
+  isVerified?: boolean | string;
   limit?: number;
 }
 
@@ -32,6 +34,7 @@ function transformParams(params: PropertySearchParams): PropertyFilterOptions {
     city: params.city,
     sector: params.sector,
     builder: params.builder,
+    propertyCategory: params.category,
     propertyType: params.type,
     budget: params.budget,
     minPrice: params.minPrice ? Number(params.minPrice) : undefined,
@@ -43,6 +46,7 @@ function transformParams(params: PropertySearchParams): PropertyFilterOptions {
     amenityMatchMode: params.matchMode,
     isFeatured: params.isFeatured === 'true' || params.isFeatured === true,
     isPremium: params.isPremium === 'true' || params.isPremium === true,
+    isVerified: params.isVerified === 'true' || params.isVerified === true,
     sort: params.sort,
     page: params.page ? parseInt(params.page, 10) : 1,
     limit: params.limit,

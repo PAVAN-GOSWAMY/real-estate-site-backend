@@ -36,7 +36,7 @@ const sidebarNav = [
     items: [
       { title: "Properties", href: "/admin/properties", icon: Home },
       // { title: "Property Types", href: "/admin/property-types", icon: Building2 }, // Coming Soon
-      // { title: "Amenities", href: "/admin/amenities", icon: HeartHandshake }, // Coming Soon
+      { title: "Amenities", href: "/admin/amenities", icon: HeartHandshake },
       { title: "Locations", href: "/admin/locations", icon: MapPin },
       // { title: "Media Library", href: "/admin/media", icon: ImageIcon }, // Coming Soon
     ],

@@ -4,7 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Home, XCircle } from "lucide-react";
 
-export function PropertyEmptyState() {
+export function PropertyEmptyState({ searchQuery }: { searchQuery?: string }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -13,9 +13,17 @@ export function PropertyEmptyState() {
       <div className="bg-muted p-6 rounded-full mb-6">
         <Home className="h-12 w-12 text-muted-foreground" />
       </div>
-      <h3 className="font-heading text-2xl font-bold text-primary mb-3">No Properties Found</h3>
+      {searchQuery ? (
+        <h3 className="font-heading text-2xl font-bold text-primary mb-3">No result found for {searchQuery}</h3>
+      ) : (
+        <h3 className="font-heading text-2xl font-bold text-primary mb-3">No Properties Found</h3>
+      )}
+      
       <p className="text-muted-foreground max-w-md mx-auto mb-8 text-lg">
-        We couldn&apos;t find any properties matching your exact criteria. Try adjusting your filters or explore our complete collection.
+        {searchQuery 
+          ? `We couldn't find any properties matching "${searchQuery}". Try adjusting your filters or search for something else.`
+          : "We couldn't find any properties matching your exact criteria. Try adjusting your filters or explore our complete collection."
+        }
       </p>
       
       <div className="flex flex-col sm:flex-row gap-4">

@@ -12,6 +12,7 @@ function mapToProperty(row: any): Property {
     slug: row.slug,
     propertyCode: row.property_code,
     builderId: row.builder_id,
+    propertyCategory: row.property_category,
     propertyType: row.property_type,
     status: row.status,
     availability: row.availability,
@@ -68,6 +69,7 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
     slug: data.slug,
     property_code: data.propertyCode,
     builder_id: data.builderId,
+    property_category: data.propertyCategory,
     property_type: data.propertyType,
     status: data.status,
     availability: data.availability,
@@ -182,6 +184,9 @@ export async function listProperties(
   if (filters.builderId) {
     query = query.eq('builder_id', filters.builderId);
   }
+  if (filters.propertyCategory) {
+    query = query.eq('property_category', filters.propertyCategory);
+  }
   if (filters.propertyType) {
     query = query.eq('property_type', filters.propertyType);
   }
@@ -245,6 +250,7 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
   if (data.slug !== undefined) payload.slug = data.slug;
   if (data.propertyCode !== undefined) payload.property_code = data.propertyCode;
   if (data.builderId !== undefined) payload.builder_id = data.builderId;
+  if (data.propertyCategory !== undefined) payload.property_category = data.propertyCategory;
   if (data.propertyType !== undefined) payload.property_type = data.propertyType;
   if (data.status !== undefined) payload.status = data.status;
   if (data.availability !== undefined) payload.availability = data.availability;

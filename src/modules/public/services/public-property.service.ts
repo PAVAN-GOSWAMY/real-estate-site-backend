@@ -116,6 +116,7 @@ function mapToPublicProperty(row: any): PublicProperty {
     longitude: row.longitude ? Number(row.longitude) : null,
     price: row.price ? Number(row.price) : null,
     priceDisplay,
+    propertyCategory: row.property_category,
     propertyType: row.property_type,
     status: row.status,
     bedrooms: row.bedrooms,
@@ -345,6 +346,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
 export async function getPublicFilterOptions(): Promise<{
   cities: { id: string; name: string; slug: string }[];
   builders: string[];
+  categories: string[];
   types: string[];
   configs: string[];
   statuses: string[];
@@ -353,7 +355,7 @@ export async function getPublicFilterOptions(): Promise<{
 
   const { data: properties, error: propertiesError } = await supabase
     .from('properties')
-    .select('property_type, bedrooms, construction_status')
+    .select('property_category, property_type, bedrooms, construction_status')
     .eq('status', 'ACTIVE');
     
   const { data: builders, error: buildersError } = await supabase
@@ -369,14 +371,16 @@ export async function getPublicFilterOptions(): Promise<{
 
   if (propertiesError || buildersError || citiesError) {
     console.error('Failed to fetch filter options', { propertiesError, buildersError, citiesError });
-    return { cities: [], builders: [], types: [], configs: [], statuses: [] };
+    return { cities: [], builders: [], categories: [], types: [], configs: [], statuses: [] };
   }
 
+  const categoriesSet = new Set<string>();
   const typesSet = new Set<string>();
   const configsSet = new Set<string>();
   const statusesSet = new Set<string>();
 
   (properties || []).forEach(p => {
+    if (p.property_category) categoriesSet.add(p.property_category);
     if (p.property_type) typesSet.add(p.property_type);
     if (p.bedrooms) configsSet.add(`${p.bedrooms} BHK`);
     if (p.construction_status) {
@@ -390,6 +394,7 @@ export async function getPublicFilterOptions(): Promise<{
   return {
     cities: (cities || []).map(c => ({ id: c.id, name: c.name, slug: c.slug })),
     builders: (builders || []).map(b => b.name).sort(),
+    categories: Array.from(categoriesSet).sort(),
     types: Array.from(typesSet).sort(),
     configs: Array.from(configsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
     statuses: Array.from(statusesSet).sort(),
