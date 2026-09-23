@@ -6,19 +6,30 @@ import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteBlogAction, publishBlogAction, unpublishBlogAction } from "@/modules/blogs/actions/blogs.actions";
 import { Blog } from "@/modules/blogs/types";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function BlogsList({ blogs }: { blogs: Blog[] }) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
     setIsDeleting(id);
     const result = await deleteBlogAction(id);
     setIsDeleting(null);
     if (result.success) {
-      alert("Blog deleted successfully.");
+      toast.success("Blog deleted successfully.");
     } else {
-      alert("Error: " + result.error);
+      toast.error("Error: " + result.error);
     }
   };
 
@@ -32,9 +43,9 @@ export function BlogsList({ blogs }: { blogs: Blog[] }) {
     }
     
     if (result.success) {
-      alert(`Blog ${blog.status === 'published' ? 'unpublished' : 'published'} successfully.`);
+      toast.success(`Blog ${blog.status === 'published' ? 'unpublished' : 'published'} successfully.`);
     } else {
-      alert("Error: " + result.error);
+      toast.error("Error: " + result.error);
     }
   };
 
@@ -74,9 +85,27 @@ export function BlogsList({ blogs }: { blogs: Blog[] }) {
                     <Edit className="h-4 w-4" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" onClick={() => handleDelete(blog.id)} disabled={isDeleting === blog.id}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" disabled={isDeleting === blog.id}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure you want to delete this blog?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the blog post.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(blog.id)}>
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </td>
             </tr>
           ))}
