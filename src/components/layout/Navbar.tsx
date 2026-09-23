@@ -35,7 +35,7 @@ export function Navbar() {
     const formData = new FormData(e.currentTarget);
     const query = formData.get("search")?.toString().trim();
     if (query) {
-      router.push(`/properties?q=${encodeURIComponent(query)}`);
+      router.push(`/?q=${encodeURIComponent(query)}`);
     }
   };
 

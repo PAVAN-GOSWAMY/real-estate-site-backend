@@ -1,48 +1,38 @@
-import * as React from "react";
+import { Section, Container, SectionHeader, SectionTitle } from "@/components/layout/wrappers";
+import { BlogsService } from "@/modules/blogs/services/blogs.service";
 import { Metadata } from "next";
-import { blogs } from "@/data/blogs";
-import { BlogHero } from "@/components/blog/BlogHero";
-import { FeaturedArticle } from "@/components/blog/FeaturedArticle";
-import { BlogCategories } from "@/components/blog/BlogCategories";
-import { BlogCard } from "@/components/blog/BlogCard";
-import { NewsletterCTA } from "@/components/blog/NewsletterCTA";
-
-import { siteConfig } from "@/config/site";
+import { BlogListingClient } from "./BlogListingClient";
 
 export const metadata: Metadata = {
-  title: `Real Estate Blog & Insights | ${siteConfig.name}`,
-  description: "Read expert articles, investment guides, and real estate market news focused on Noida, Greater Noida, and Yamuna Expressway.",
-  openGraph: {
-    title: `Real Estate Blog & Insights | ${siteConfig.name}`,
-    description: "Read expert articles, investment guides, and real estate market news focused on Noida, Greater Noida, and Yamuna Expressway.",
-  },
+  title: "Blog | Square AR Spaces",
+  description: "Read the latest news, updates, and insights from Square AR Spaces.",
 };
 
-export default function BlogListingPage() {
-  const featuredPost = blogs.find(post => post.featured) || blogs[0];
-  const regularPosts = blogs.filter(post => post.id !== featuredPost.id);
+export const revalidate = 60; // Revalidate every 60 seconds
+
+export default async function BlogListingPage() {
+  // Fetch published blogs and categories concurrently
+  const [blogs, categories] = await Promise.all([
+    BlogsService.getPublishedBlogs(),
+    BlogsService.getCategories(),
+  ]);
 
   return (
-    <main className="min-h-screen bg-surface pb-20">
-      <BlogHero />
-      
-      <div className="container px-4 md:px-6 mx-auto">
-        <BlogCategories />
-        
-        <FeaturedArticle post={featuredPost} />
-        
-        <div className="mb-8">
-          <h2 className="text-3xl font-heading font-bold text-foreground">Latest Articles</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {regularPosts.map((post) => (
-            <BlogCard key={post.id} post={post} />
-          ))}
-        </div>
+    <Section className="bg-[#faf9f6] min-h-screen pt-32 pb-24 overflow-hidden relative">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-20 -left-64 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50"></div>
+        <div className="absolute bottom-20 -right-64 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50"></div>
       </div>
-      
-      <NewsletterCTA />
-    </main>
+
+      <Container className="relative z-10">
+        <SectionHeader className="mb-16 text-center max-w-3xl mx-auto">
+          <SectionTitle>Our Blog</SectionTitle>
+          <p className="text-slate-500 mt-4 text-xl">Insights, updates, and real estate market trends.</p>
+        </SectionHeader>
+        
+        <BlogListingClient initialBlogs={blogs} categories={categories} />
+      </Container>
+    </Section>
   );
 }

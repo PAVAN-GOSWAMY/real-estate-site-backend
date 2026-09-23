@@ -58,7 +58,7 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
     if (budget && budget !== "all") params.set('budget', budget);
     if (builder && builder !== "all") params.set('builder', builder);
 
-    router.push(`/properties?${params.toString()}`);
+    router.push(`/?${params.toString()}`);
   };
 
   return (

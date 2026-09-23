@@ -66,6 +66,20 @@ const sidebarNav = [
       { title: "Applications", href: "/admin/applications", icon: FileText },
     ],
   },
+  {
+    title: "Content",
+    roles: ["Super Admin", "Admin"],
+    items: [
+      { title: "Blogs", href: "/admin/blogs", icon: FileText },
+    ],
+  },
+  {
+    title: "Content",
+    roles: ["Super Admin", "Admin"],
+    items: [
+      { title: "Blogs", href: "/admin/blogs", icon: FileText },
+    ],
+  },
   /* 
   {
     title: "Content", // Entire module Coming Soon

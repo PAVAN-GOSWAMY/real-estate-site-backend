@@ -10,12 +10,13 @@ interface ImageUploadProps {
   defaultValue?: string | null;
   onRemove?: () => void;
   disabled?: boolean;
+  onFileSelect?: (file: File | null) => void;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
-export function ImageUpload({ name, defaultValue, onRemove, disabled }: ImageUploadProps) {
+export function ImageUpload({ name, defaultValue, onRemove, disabled, onFileSelect }: ImageUploadProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(defaultValue || null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +61,7 @@ export function ImageUpload({ name, defaultValue, onRemove, disabled }: ImageUpl
     const objectUrl = URL.createObjectURL(file);
     img.src = objectUrl;
     setPreviewUrl(objectUrl);
+    if (onFileSelect) onFileSelect(file);
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,6 +98,8 @@ export function ImageUpload({ name, defaultValue, onRemove, disabled }: ImageUpl
     setPreviewUrl(null);
     setError(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (onFileSelect) onFileSelect(null);
+    if (onFileSelect) onFileSelect(null);
     if (onRemove) onRemove();
   };
 
