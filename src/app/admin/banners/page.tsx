@@ -1,12 +1,20 @@
 import { PageHeader } from "@/components/admin/ui/PageHeader";
-import { EmptyState } from "@/components/admin/ui/EmptyState";
-import { Settings } from "lucide-react";
+import { getAllBannersAction } from "@/modules/banners/actions/banners.actions";
+import { BannersList } from "./_components/BannersList";
+import { BannerFormDialog } from "./_components/BannerFormDialog";
 
-export default function Page() {
+export default async function BannersPage() {
+  const result = await getAllBannersAction();
+  const banners = result.success && result.data ? result.data : [];
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Banners" description="Manage Banners." />
-      <EmptyState title="Coming Soon" description="The Banners module is currently under development." icon={Settings} className="bg-card shadow-sm" />
+      <div className="flex items-center justify-between">
+        <PageHeader title="Deals & Offers" description="Manage promotional banners displayed on the website." />
+        <BannerFormDialog />
+      </div>
+      
+      <BannersList banners={banners} />
     </div>
   );
 }

@@ -74,10 +74,10 @@ const sidebarNav = [
     ],
   },
   {
-    title: "Content",
+    title: "Offers",
     roles: ["Super Admin", "Admin"],
     items: [
-      { title: "Blogs", href: "/admin/blogs", icon: FileText },
+      { title: "Deals & Offers", href: "/admin/banners", icon: ImageIcon },
     ],
   },
   /* 
@@ -164,3 +164,4 @@ export function AdminSidebar({ className, onNavigate, role }: AdminSidebarProps)
     </div>
   );
 }
+

@@ -196,7 +196,13 @@ export async function getPublicProperties(filters: PropertyFilterOptions): Promi
   }
 
   const { data, count, error } = await query;
-  if (error) throw new Error(`Database Error: ${error.message}`);
+  if (error) {
+    // Handle invalid enum silently by returning 0 results
+    if (error.message.includes('invalid input value for enum')) {
+      return { properties: [], totalCount: 0, totalPages: 0 };
+    }
+    throw new Error(`Database Error: ${error.message}`);
+  }
 
   const properties = (data || []).map(mapToPublicProperty);
   

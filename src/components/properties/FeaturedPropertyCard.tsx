@@ -52,7 +52,14 @@ export function FeaturedPropertyCard({ property, className, ...props }: Featured
 
         {/* Bottom Image Info (Price) */}
         <div className="absolute bottom-3 left-3">
-          <p className="text-white font-bold text-[17px] tracking-tight">{property.priceDisplay || "Price on Request"}</p>
+          {property.priceDisplay ? (
+            <p className="text-white font-bold text-[17px] tracking-tight flex items-baseline gap-1">
+              <span className="text-primary">{property.priceDisplay.replace(/\s*onwards\s*\**\s*/i, '')}</span>
+              <span className="text-[11px] font-normal text-white/90 lowercase">onwards*</span>
+            </p>
+          ) : (
+            <p className="text-white font-bold text-[17px] tracking-tight">Price on Request</p>
+          )}
         </div>
       </div>
 

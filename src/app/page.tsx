@@ -1,5 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { FeaturedProperties } from "@/components/home/FeaturedProperties";
+import { DealsAndOffers } from "@/components/home/DealsAndOffers";
+import { BannersService } from "@/modules/banners/services/banners.service";
 import { PremiumProjects } from "@/components/home/PremiumProjects";
 import { TopLocations } from "@/components/home/TopLocations";
 import { FeaturedBuilders } from "@/components/home/FeaturedBuilders";
@@ -25,13 +27,14 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
     ['q', 'city', 'location', 'type', 'config', 'budget', 'builder'].includes(key)
   );
 
-  const [locations, stats, filterOptions, featuredData, premiumData, latestBlogs] = await Promise.all([
+  const [locations, stats, filterOptions, featuredData, premiumData, latestBlogs, banners] = await Promise.all([
     getTopLocations(),
     getSiteStats(),
     getPublicFilterOptions(),
     getFilteredProperties({ isFeatured: true, limit: 12, sort: "recommended" }),
     getFilteredProperties({ isPremium: true, limit: 12, sort: "price-desc" }),
-    BlogsService.getLatestBlogs(4)
+    BlogsService.getLatestBlogs(4),
+    BannersService.getPublicBanners()
   ]);
 
   return (
@@ -48,8 +51,7 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
           </Container>
         </Section>
       ) : (
-        <>
-          <FeaturedProperties properties={featuredData.properties} />
+        <>          <FeaturedProperties properties={featuredData.properties} />
           <PremiumProjects properties={premiumData.properties} />
           <TopLocations locations={locations} />
           <Testimonials />
@@ -58,7 +60,10 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
       )}
       
       <WhyChooseUs />
+      {!isSearchActive && <DealsAndOffers banners={banners} />}
       <CallToAction />
     </>
   );
 }
+
+

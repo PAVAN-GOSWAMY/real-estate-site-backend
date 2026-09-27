@@ -46,8 +46,9 @@ export function PropertySummary({ property }: PropertySummaryProps) {
           {property.priceDisplay && (
             <div className="xl:text-right shrink-0">
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Starting Price</p>
-              <div className="text-2xl md:text-4xl font-bold text-accent">
-                {property.priceDisplay}
+              <div className="text-2xl md:text-4xl font-bold text-primary flex flex-wrap items-baseline gap-1.5 xl:justify-end">
+                {property.priceDisplay.replace(/\s*onwards\s*\**\s*/i, '')}
+                <span className="text-sm md:text-base font-normal text-muted-foreground lowercase">onwards*</span>
               </div>
             </div>
           )}

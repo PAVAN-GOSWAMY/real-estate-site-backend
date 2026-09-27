@@ -73,7 +73,14 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
 
         {/* Bottom Image Info */}
         <div className="absolute bottom-4 left-4 right-4">
-          <p className="text-white font-bold text-xl drop-shadow-sm font-heading">{property.priceDisplay || "Price on Request"}</p>
+          {property.priceDisplay ? (
+            <p className="text-white font-bold text-xl drop-shadow-sm font-heading flex flex-wrap items-baseline gap-1">
+              <span className="text-primary">{property.priceDisplay.replace(/\s*onwards\s*\**\s*/i, '')}</span>
+              <span className="text-sm font-normal text-white/90 lowercase">onwards*</span>
+            </p>
+          ) : (
+            <p className="text-white font-bold text-xl drop-shadow-sm font-heading">Price on Request</p>
+          )}
         </div>
       </div>
 

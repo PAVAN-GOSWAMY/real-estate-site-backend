@@ -91,13 +91,15 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
   // 4. Property Type and Category
   if (filters.propertyCategory && filters.propertyCategory !== 'all') {
     const pc = filters.propertyCategory.replace(/-/g, ' ');
-    query = query.eq('property_category', pc);
+    const formattedPc = pc.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    query = query.eq('property_category', formattedPc);
   }
 
   if (filters.propertyType && filters.propertyType !== 'all') {
     const pt = filters.propertyType.replace(/-/g, ' ');
+    const formattedPt = pt.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
     // Use .eq instead of .ilike since property_type is an Enum
-    query = query.eq('property_type', pt);
+    query = query.eq('property_type', formattedPt);
   }
 
   // 5. Status & Possession
