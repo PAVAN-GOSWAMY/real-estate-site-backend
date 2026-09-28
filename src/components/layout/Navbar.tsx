@@ -116,8 +116,8 @@ export function Navbar() {
                   className={cn(
                     "relative text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full px-3 xl:px-4 py-2 flex items-center whitespace-nowrap",
                     isActive 
-                      ? "text-slate-900 font-semibold bg-slate-100" 
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+                      ? "text-brand-red font-semibold bg-brand-surface" 
+                      : "text-brand-navy hover:text-brand-red hover:bg-brand-surface"
                   )}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -129,7 +129,7 @@ export function Navbar() {
             {isAdminAuth && (
               <Link
                 href="/admin"
-                className="relative text-sm font-medium transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full px-3 xl:px-4 py-2 flex items-center whitespace-nowrap"
+                className="relative text-sm font-medium transition-all text-brand-navy hover:text-brand-red hover:bg-brand-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full px-3 xl:px-4 py-2 flex items-center whitespace-nowrap"
               >
                 Dashboard
               </Link>
@@ -137,17 +137,17 @@ export function Navbar() {
           </nav>
           <form onSubmit={handleProjectSearch} className="flex items-center gap-2 w-full max-w-[350px] xl:max-w-[420px]">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground stroke-[2.5]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-navy/70 stroke-[2.5]" />
               <input
                 type="text"
                 name="search"
                 placeholder="Search by Project Name..."
-                className="w-full pl-9 pr-3 py-[7px] text-[13px] border border-border/60 rounded-md outline-none bg-background text-foreground placeholder:text-muted-foreground focus:border-foreground transition-colors shadow-sm"
+                className="w-full pl-9 pr-3 py-[7px] text-[13px] border border-brand-slate/60 rounded-md outline-none bg-background text-brand-navy placeholder:text-brand-slate focus:border-brand-blue transition-colors shadow-sm"
               />
             </div>
             <button
               type="submit"
-              className="bg-foreground text-background p-2 rounded-md hover:bg-foreground/90 transition-colors shadow-sm flex-shrink-0"
+              className="bg-brand-navy text-white p-2 rounded-md hover:bg-brand-navy-hover transition-colors shadow-sm flex-shrink-0"
               aria-label="Search"
             >
               <Search className="w-4 h-4 stroke-[2.5]" />
@@ -170,7 +170,7 @@ export function Navbar() {
             <Button
               variant="outline"
               size="icon"
-              className="h-10 w-10 transition-all duration-300 border-slate-200 bg-transparent text-slate-900 hover:bg-slate-100 hover:border-slate-300 rounded-full shrink-0"
+              className="h-10 w-10 transition-all duration-300 border-brand-slate/50 bg-transparent text-brand-navy hover:bg-brand-red hover:text-white hover:border-brand-red rounded-full shrink-0"
             >
               <Phone className="w-4 h-4" />
             </Button>
@@ -184,7 +184,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-slate-900 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-ring"
+                className="text-brand-navy hover:text-brand-red hover:bg-brand-surface focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Open menu"
               >
                 <Menu className="h-6 w-6" />
@@ -214,8 +214,8 @@ export function Navbar() {
                       prefetch={false}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        "text-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm w-fit",
-                        isActive ? "text-accent" : "text-foreground hover:text-accent"
+                        "text-xl font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm w-fit",
+                        isActive ? "text-brand-red" : "text-brand-navy hover:text-brand-red"
                       )}
                       aria-current={isActive ? "page" : undefined}
                     >
@@ -228,7 +228,7 @@ export function Navbar() {
                   <Link
                     href="/admin"
                     onClick={() => setIsOpen(false)}
-                    className="text-xl font-medium transition-colors text-foreground hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm w-fit"
+                    className="text-xl font-medium transition-colors text-brand-navy hover:text-brand-red focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm w-fit"
                   >
                     Dashboard
                   </Link>
@@ -241,7 +241,7 @@ export function Navbar() {
                     setIsOpen(false);
                     openModal("Navbar Mobile");
                   }}
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="w-full bg-brand-red text-white hover:bg-brand-red-hover"
                   size="lg"
                 >
                   Enquire Now
