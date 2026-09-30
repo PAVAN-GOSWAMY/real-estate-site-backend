@@ -22,7 +22,7 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
   }));
 
   return (
-    <footer className="bg-primary text-primary-foreground border-t border-border/10">
+    <footer className="bg-[linear-gradient(135deg,#870404_0%,#042C74_100%)] text-white border-t border-brand-slate/20">
       <Container className="py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           
@@ -38,21 +38,21 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                 className="object-contain" 
               />
             </Link>
-            <p className="text-sm text-primary-foreground/70 max-w-xs leading-relaxed">
+            <p className="text-sm text-white/70 max-w-xs leading-relaxed">
               {siteConfig.description}
             </p>
           </div>
           
           {/* 2. Quick Links */}
           <div className="space-y-6">
-            <h4 className="font-semibold text-accent text-lg">Quick Links</h4>
+            <h4 className="font-semibold text-white text-lg">Quick Links</h4>
             <nav aria-label="Footer Quick Links">
-              <ul className="space-y-3 text-sm text-primary-foreground/80">
+              <ul className="space-y-3 text-sm text-white/80">
                 {footerQuickLinks.map((link) => (
                   <li key={link.id}>
                     <Link 
                       href={link.href} 
-                      className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm inline-block"
+                      className="hover:text-brand-red transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm inline-block"
                     >
                       {link.label}
                     </Link>
@@ -64,14 +64,14 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
           
           {/* 3. Popular Locations */}
           <div className="space-y-6">
-            <h4 className="font-semibold text-accent text-lg">Popular Locations</h4>
+            <h4 className="font-semibold text-white text-lg">Popular Locations</h4>
             <nav aria-label="Footer Locations">
-              <ul className="space-y-3 text-sm text-primary-foreground/80">
+              <ul className="space-y-3 text-sm text-white/80">
                 {footerLocations.map((link) => (
                   <li key={link.id}>
                     <Link 
                       href={link.href} 
-                      className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm inline-block"
+                      className="hover:text-brand-red transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm inline-block"
                     >
                       {link.label}
                     </Link>
@@ -83,22 +83,22 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
           
           {/* 4. Contact & Socials */}
           <div className="space-y-6">
-            <h4 className="font-semibold text-accent text-lg">Connect With Us</h4>
+            <h4 className="font-semibold text-white text-lg">Connect With Us</h4>
             
             <div className="space-y-4">
-              <address className="not-italic text-sm text-primary-foreground/70 space-y-4">
+              <address className="not-italic text-sm text-white/80 space-y-4">
                 <li className="flex items-start gap-3 list-none">
-                  <Mail className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                  <Mail className="w-5 h-5 text-brand-red shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-white font-bold text-sm mb-1">Email</h4>
-                    <a href={getMailtoLink()} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.email}</a>
+                    <a href={getMailtoLink()} className="hover:text-brand-red transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.email}</a>
                   </div>
                 </li>
                 <li className="flex items-start gap-3 list-none">
-                  <Phone className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                  <Phone className="w-5 h-5 text-brand-red shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-white font-bold text-sm mb-1">Phone</h4>
-                    <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.phone}</a>
+                    <a href={`tel:${siteConfig.contact.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-brand-red transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm">{siteConfig.contact.phone}</a>
                   </div>
                 </li>
               </address>
@@ -109,7 +109,7 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                     <li key={link.id}>
                       <Link 
                         href={link.href} 
-                        className="text-primary-foreground/80 hover:text-white transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
+                        className="text-white/80 hover:text-brand-red transition-colors font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring rounded-sm"
                       >
                         {link.label}
                       </Link>
@@ -123,10 +123,10 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
         </div>
         
         {/* Copyright */}
-        <div className="mt-16 pt-8 border-t border-primary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-primary-foreground/50">
+        <div className="mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/50">
           <p>&copy; {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
           <p>
-            Designed for <span className="text-primary-foreground/70">Noida & Greater Noida</span>
+            Designed for <span className="text-white/70">Noida & Greater Noida</span>
           </p>
         </div>
       </Container>

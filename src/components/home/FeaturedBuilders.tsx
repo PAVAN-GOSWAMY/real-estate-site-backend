@@ -19,14 +19,14 @@ export async function FeaturedBuilders() {
       <Container>
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <SectionHeader className="mb-0">
-            <SectionTitle>Featured Developers</SectionTitle>
+            <SectionTitle className="text-brand-navy">Featured Developers</SectionTitle>
             <SectionDescription>
               Discover India&apos;s most trusted and reputed real estate developers shaping the future of urban living.
             </SectionDescription>
           </SectionHeader>
           <Link
             href="/properties"
-            className="inline-flex items-center text-sm font-bold text-accent hover:text-primary transition-colors group whitespace-nowrap mb-1"
+            className="inline-flex items-center text-sm font-bold text-brand-navy hover:text-brand-red transition-colors group whitespace-nowrap mb-1"
           >
             Explore All Projects
             <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -37,7 +37,7 @@ export async function FeaturedBuilders() {
           {builders.map((builder) => (
             <div 
               key={builder.id} 
-              className="group bg-card border border-border/40 rounded-2xl overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col"
+              className="group bg-card border border-brand-slate/40 rounded-2xl overflow-hidden hover:border-brand-red/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col"
             >
               <div className="p-6 flex-1 flex flex-col">
                 <div className="flex items-center gap-4 mb-4">
@@ -55,10 +55,10 @@ export async function FeaturedBuilders() {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-heading text-xl font-bold text-primary group-hover:text-accent transition-colors">
+                    <h3 className="font-heading text-xl font-bold text-brand-navy group-hover:text-brand-red transition-colors">
                       {builder.name}
                     </h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3 mt-1 text-sm text-brand-blue">
                       <span className="flex items-center gap-1">
                         <Building2 className="w-3.5 h-3.5" />
                         {builder.activePropertyCount} Projects
@@ -82,10 +82,10 @@ export async function FeaturedBuilders() {
                   </p>
                 )}
 
-                <div className="mt-auto pt-4 border-t border-border/40">
+                <div className="mt-auto pt-4 border-t border-brand-slate/40">
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-between hover:bg-accent hover:text-accent-foreground group/btn"
+                    className="w-full justify-between hover:bg-brand-red hover:text-white group/btn"
                     asChild
                   >
                     <Link href={`/properties?builder=${builder.slug}`}>

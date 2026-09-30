@@ -14,7 +14,7 @@ export function SimplePropertyCard({ property, className, ...props }: SimpleProp
       href={`/properties/${property.slug}`} 
       prefetch={false}
       className={cn(
-        "group flex flex-col bg-card rounded-xl overflow-hidden hover:shadow-[0_15px_30px_rgb(0,0,0,0.12)] transition-all duration-300 border border-border/50",
+        "group flex flex-col bg-white rounded-xl overflow-hidden hover:shadow-[0_15px_30px_rgb(0,0,0,0.12)] transition-all duration-300 border border-brand-slate/50",
         className
       )}
       {...props}
@@ -37,8 +37,8 @@ export function SimplePropertyCard({ property, className, ...props }: SimpleProp
       </div>
 
       {/* 2. Title Area (Bottom - Accent Background) */}
-      <div className="bg-accent p-4 flex items-center justify-center text-center h-[60px]">
-        <h3 className="font-heading text-sm font-bold text-accent-foreground line-clamp-1 group-hover:opacity-90 transition-opacity">
+      <div className="bg-brand-navy p-4 flex items-center justify-center text-center h-[60px]">
+        <h3 className="font-heading text-sm font-bold text-white line-clamp-1 group-hover:opacity-90 transition-opacity">
           {property.title}
         </h3>
       </div>

@@ -49,43 +49,43 @@ export function BannersList({ banners }: { banners: Banner[] }) {
   }
 
   return (
-    <div className="rounded-md border bg-white overflow-hidden">
+    <div className="rounded-md border border-brand-slate/50 bg-white overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 text-sm">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-brand-slate/50 text-sm">
+          <thead className="bg-brand-surface">
             <tr>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Preview</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Title</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Order</th>
-              <th className="px-4 py-3 text-left font-medium text-gray-500">Link</th>
-              <th className="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
+              <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Preview</th>
+              <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Title</th>
+              <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Status</th>
+              <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Order</th>
+              <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Link</th>
+              <th className="px-4 py-3 text-right font-medium text-brand-navy/70">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-brand-slate/50">
             {banners.map((banner) => (
-              <tr key={banner.id}>
+              <tr key={banner.id} className="hover:bg-brand-surface/50 transition-colors">
                 <td className="px-4 py-3">
-                  <div className="relative w-24 h-12 bg-gray-100 rounded overflow-hidden">
+                  <div className="relative w-24 h-12 bg-brand-surface rounded overflow-hidden border border-brand-slate/20">
                     {banner.imageUrl ? (
                       <Image src={banner.imageUrl} alt={banner.title} fill className="object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <div className="w-full h-full flex items-center justify-center text-brand-blue/50">
                         <ImageIcon className="w-4 h-4" />
                       </div>
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 font-medium text-gray-900">{banner.title}</td>
+                <td className="px-4 py-3 font-medium text-brand-navy">{banner.title}</td>
                 <td className="px-4 py-3">
                   <Badge variant={banner.isActive ? "default" : "secondary"} className={banner.isActive ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200" : ""}>
                     {banner.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-gray-500">{banner.displayOrder}</td>
-                <td className="px-4 py-3 text-gray-500 max-w-[150px] truncate">
+                <td className="px-4 py-3 text-brand-navy/70">{banner.displayOrder}</td>
+                <td className="px-4 py-3 text-brand-navy/70 max-w-[150px] truncate">
                   {banner.linkUrl ? (
-                    <a href={banner.linkUrl} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">{banner.linkUrl}</a>
+                    <a href={banner.linkUrl} target="_blank" rel="noreferrer" className="text-brand-red hover:text-brand-red-hover hover:underline">{banner.linkUrl}</a>
                   ) : (
                     "-"
                   )}

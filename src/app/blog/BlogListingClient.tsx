@@ -39,15 +39,15 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
         
         {/* LEFT SIDEBAR: Categories */}
         <div className="lg:col-span-1 order-2 lg:order-1">
-          <div className="sticky top-28 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800 mb-6">Categories</h3>
+          <div className="sticky top-28 bg-white p-6 rounded-2xl border border-brand-slate/50 shadow-sm">
+            <h3 className="text-lg font-bold text-brand-navy mb-6">Categories</h3>
             <div className="flex flex-row lg:flex-col flex-wrap gap-2 lg:gap-3">
               <button
                 onClick={() => setActiveCategory("all")}
                 className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 text-left ${
                   activeCategory === "all"
-                    ? "bg-primary text-white shadow-md shadow-primary/20"
-                    : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-primary"
+                    ? "bg-brand-red text-white shadow-md shadow-brand-red/20"
+                    : "bg-brand-surface text-brand-navy/70 hover:bg-brand-slate/20 hover:text-brand-red"
                 }`}
               >
                 All Articles
@@ -58,8 +58,8 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
                   onClick={() => setActiveCategory(cat.id)}
                   className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 text-left ${
                     activeCategory === cat.id
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-primary"
+                      ? "bg-brand-red text-white shadow-md shadow-brand-red/20"
+                      : "bg-brand-surface text-brand-navy/70 hover:bg-brand-slate/20 hover:text-brand-red"
                   }`}
                 >
                   {cat.name}
@@ -75,13 +75,13 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm"
+              className="text-center py-16 bg-white rounded-3xl border border-brand-slate/50 shadow-sm"
             >
-              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search className="w-8 h-8 text-slate-300" />
+              <div className="w-20 h-20 bg-brand-surface rounded-full flex items-center justify-center mx-auto mb-6">
+                <Search className="w-8 h-8 text-brand-blue/50" />
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">No blogs found</h3>
-              <p className="text-slate-500 max-w-md mx-auto">
+              <h3 className="text-xl font-bold text-brand-navy mb-2">No blogs found</h3>
+              <p className="text-brand-navy/70 max-w-md mx-auto">
                 We couldn&apos;t find any articles matching your search or category filter. Try adjusting your criteria.
               </p>
               <button
@@ -89,7 +89,7 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
                   setSearchQuery("");
                   setActiveCategory("all");
                 }}
-                className="mt-6 px-6 py-2 bg-primary/10 text-primary font-semibold rounded-full hover:bg-primary hover:text-white transition-colors"
+                className="mt-6 px-6 py-2 bg-brand-red/10 text-brand-red font-semibold rounded-full hover:bg-brand-red hover:text-white transition-colors"
               >
                 Clear Filters
               </button>
@@ -121,15 +121,15 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
         <div className="lg:col-span-1 order-1 lg:order-3 space-y-8">
           
           {/* Search Box */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800 mb-4">Search</h3>
+          <div className="bg-white p-6 rounded-2xl border border-brand-slate/50 shadow-sm">
+            <h3 className="text-lg font-bold text-brand-navy mb-4">Search</h3>
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-400" />
+                <Search className="h-5 w-5 text-brand-blue" />
               </div>
               <input
                 type="text"
-                className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors sm:text-sm shadow-sm"
+                className="block w-full pl-10 pr-3 py-3 border border-brand-slate/50 rounded-xl leading-5 bg-brand-surface placeholder-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-colors sm:text-sm shadow-sm text-brand-navy"
                 placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -138,15 +138,15 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
           </div>
 
           {/* Recent Blogs */}
-          <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-800 mb-6">Recent Blogs</h3>
+          <div className="bg-white p-6 rounded-2xl border border-brand-slate/50 shadow-sm">
+            <h3 className="text-lg font-bold text-brand-navy mb-6">Recent Blogs</h3>
             <div className="space-y-5">
               {recentBlogs.length === 0 ? (
-                <p className="text-sm text-slate-500">No recent blogs.</p>
+                <p className="text-sm text-brand-navy/70">No recent blogs.</p>
               ) : (
                 recentBlogs.map((blog) => (
                   <Link href={`/blog/${blog.slug}`} key={blog.id} className="flex gap-4 group">
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-brand-slate/20">
                       <Image
                         src={blog.coverImage || '/placeholder.jpg'}
                         alt={blog.title}
@@ -155,10 +155,10 @@ export function BlogListingClient({ initialBlogs, categories }: BlogListingClien
                       />
                     </div>
                     <div className="flex flex-col justify-center flex-1">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                      <p className="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
                         {blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : 'Draft'}
                       </p>
-                      <h4 className="text-sm font-bold text-slate-800 line-clamp-2 group-hover:text-primary transition-colors leading-tight">
+                      <h4 className="text-sm font-bold text-brand-navy line-clamp-2 group-hover:text-brand-red transition-colors leading-tight">
                         {blog.title}
                       </h4>
                     </div>

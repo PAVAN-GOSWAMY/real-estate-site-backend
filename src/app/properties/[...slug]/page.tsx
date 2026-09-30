@@ -50,7 +50,7 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
   const relatedProperties = await getRelatedProperties(property, 4);
 
   return (
-    <main className="min-h-screen bg-surface pb-24">
+    <main className="min-h-screen bg-brand-surface pb-24">
       <div className="container mx-auto px-4 md:px-8 py-8 md:py-12">
         
         <PropertyBreadcrumb 
@@ -132,8 +132,8 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
         </div>
 
         {relatedProperties.length > 0 && (
-          <section id="related-properties" className="mt-24 border-t border-border/50 pt-16">
-            <h2 className="font-heading text-3xl font-bold text-primary mb-8">Related Properties</h2>
+          <section id="related-properties" className="mt-24 border-t border-brand-slate/50 pt-16">
+            <h2 className="font-heading text-3xl font-bold text-brand-navy mb-8">Related Properties</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProperties.map(prop => (
                 <PropertyCard key={prop.id} property={prop} />

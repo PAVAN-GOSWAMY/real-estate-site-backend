@@ -243,7 +243,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
                     name="isFeatured"
                     defaultChecked={property.isFeatured}
                     disabled={isPending}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                   />
                   <Label htmlFor="isFeatured" className="cursor-pointer">Featured Property</Label>
                 </div>
@@ -254,7 +254,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
                     name="isVerified"
                     defaultChecked={property.isVerified}
                     disabled={isPending}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                   />
                   <Label htmlFor="isVerified" className="cursor-pointer">Verified Property</Label>
                 </div>
@@ -265,7 +265,7 @@ export function BasicInfoTab({ property, builders }: BasicInfoTabProps) {
                     name="isPremium"
                     defaultChecked={property.isPremium}
                     disabled={isPending}
-                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                   />
                   <Label htmlFor="isPremium" className="cursor-pointer">Premium Project</Label>
                 </div>

@@ -33,7 +33,7 @@ export function PropertyPagination({ totalPages, currentPage }: PropertyPaginati
         size="icon"
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="h-10 w-10"
+        className="h-10 w-10 border-brand-slate text-brand-navy hover:bg-brand-surface hover:text-brand-navy-hover"
       >
         <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">Previous Page</span>
@@ -48,7 +48,7 @@ export function PropertyPagination({ totalPages, currentPage }: PropertyPaginati
             key={page}
             variant={isActive ? "default" : "outline"}
             onClick={() => handlePageChange(page)}
-            className={`h-10 w-10 ${isActive ? 'bg-primary text-primary-foreground pointer-events-none' : ''}`}
+            className={`h-10 w-10 ${isActive ? 'bg-brand-red text-white pointer-events-none border-brand-red' : 'hover:bg-brand-surface border-brand-slate text-brand-navy hover:text-brand-navy-hover'}`}
           >
             {page}
           </Button>
@@ -60,7 +60,7 @@ export function PropertyPagination({ totalPages, currentPage }: PropertyPaginati
         size="icon"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage >= totalPages}
-        className="h-10 w-10"
+        className="h-10 w-10 border-brand-slate text-brand-navy hover:bg-brand-surface hover:text-brand-navy-hover"
       >
         <ChevronRight className="h-4 w-4" />
         <span className="sr-only">Next Page</span>

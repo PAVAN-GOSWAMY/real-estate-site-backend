@@ -29,16 +29,16 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-muted/40 p-4">
-      <div className="w-full max-w-md rounded-2xl border bg-card text-card-foreground shadow-lg overflow-hidden">
+    <div className="flex h-screen w-full items-center justify-center bg-brand-surface p-4">
+      <div className="w-full max-w-md rounded-2xl border border-brand-slate/50 bg-white shadow-xl overflow-hidden">
         <div className="p-8">
           <div className="mb-6">
-            <Link href="/login" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground mb-4 transition-colors">
+            <Link href="/login" className="inline-flex items-center text-sm font-medium text-brand-navy/70 hover:text-brand-navy mb-4 transition-colors">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to login
             </Link>
-            <h2 className="text-2xl font-bold tracking-tight">Forgot Password?</h2>
-            <p className="text-muted-foreground text-sm mt-1">
+            <h2 className="text-2xl font-bold tracking-tight text-brand-navy">Forgot Password?</h2>
+            <p className="text-brand-navy/70 text-sm mt-1">
               {success 
                 ? "Check your email for a reset link." 
                 : "Enter your email address and we'll send you a link to reset your password."}
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email" className="text-brand-navy">Email address</Label>
                 <Input 
                   id="email" 
                   name="email" 
@@ -69,11 +69,11 @@ export default function ForgotPasswordPage() {
                   required 
                   placeholder="admin@example.com" 
                   disabled={isPending}
-                  className="h-11"
+                  className="h-11 border-brand-slate/50 focus-visible:ring-brand-red"
                 />
               </div>
 
-              <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isPending}>
+              <Button type="submit" className="w-full h-11 text-base font-medium bg-brand-red hover:bg-brand-red-hover text-white transition-colors" disabled={isPending}>
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />

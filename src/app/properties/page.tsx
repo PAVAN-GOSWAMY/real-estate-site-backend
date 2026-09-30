@@ -30,21 +30,21 @@ export default async function PropertiesPage({
   const filterOptions = await getPublicFilterOptions();
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-brand-surface">
       {params.q && (
         <div className="container mx-auto px-4 md:px-8 pt-10 pb-2">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border/60 pb-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-slate/60 pb-6">
             <div>
-              <p className="text-sm font-bold text-accent uppercase tracking-wider mb-2 flex items-center gap-2">
-                <span className="w-8 h-[2px] bg-accent rounded-full"></span> Search Results
+              <p className="text-sm font-bold text-brand-red uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span className="w-8 h-[2px] bg-brand-red rounded-full"></span> Search Results
               </p>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground">
-                Matches for <span className="text-muted-foreground">&quot;{params.q}&quot;</span>
+              <h1 className="text-3xl md:text-4xl font-heading font-bold text-brand-navy">
+                Matches for <span className="text-brand-navy/60">&quot;{params.q}&quot;</span>
               </h1>
             </div>
-            <p className="text-sm text-muted-foreground md:max-w-xs md:text-right">
+            <p className="text-sm text-brand-blue md:max-w-xs md:text-right">
               Can&apos;t find what you&apos;re looking for? <br className="hidden md:block" />
-              <a href="/contact" className="text-foreground font-semibold hover:text-accent transition-colors underline underline-offset-4">Contact our experts</a> for help.
+              <a href="/contact" className="text-brand-navy font-semibold hover:text-brand-red transition-colors underline underline-offset-4">Contact our experts</a> for help.
             </p>
           </div>
         </div>
@@ -55,8 +55,8 @@ export default async function PropertiesPage({
           
           {/* Desktop Sidebar (Sticky) */}
           <div className="hidden lg:block w-72 shrink-0">
-            <div className="sticky top-28 bg-background p-6 rounded-2xl border border-border/50 shadow-sm flex flex-col max-h-[calc(100vh-8rem)]">
-              <h3 className="shrink-0 font-heading text-xl font-bold mb-6 text-primary border-b border-border/50 pb-4">
+            <div className="sticky top-28 bg-white p-6 rounded-2xl border border-brand-slate/50 shadow-sm flex flex-col max-h-[calc(100vh-8rem)]">
+              <h3 className="shrink-0 font-heading text-xl font-bold mb-6 text-brand-navy border-b border-brand-slate/50 pb-4">
                 Filters
               </h3>
               <div className="flex-1 overflow-y-auto pr-3 -mr-3 custom-scrollbar">
@@ -71,13 +71,13 @@ export default async function PropertiesPage({
             <div className="lg:hidden mb-6 flex justify-end">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto bg-background h-12">
+                  <Button variant="outline" className="w-full sm:w-auto bg-white border-brand-slate h-12">
                     <SlidersHorizontal className="h-4 w-4 mr-2" /> Filters
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-full sm:w-[400px] overflow-y-auto custom-scrollbar">
                   <SheetHeader className="mb-6">
-                    <SheetTitle className="font-heading text-xl text-left">Filters</SheetTitle>
+                    <SheetTitle className="font-heading text-xl text-left text-brand-navy">Filters</SheetTitle>
                   </SheetHeader>
                   <PropertyFilters {...filterOptions} />
                 </SheetContent>

@@ -112,12 +112,12 @@ export function PropertyFilters({
     <div className="space-y-6">
       {/* Search Input */}
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Search</Label>
+        <Label className="text-sm font-medium text-brand-navy">Search</Label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-blue h-4 w-4" />
           <Input 
             placeholder="Project, location, or builder..." 
-            className="pl-9 bg-background h-11"
+            className="pl-9 bg-white border-brand-slate h-11 focus-visible:ring-brand-red"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -125,12 +125,12 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">City</Label>
+        <Label className="text-sm font-medium text-brand-navy">City</Label>
         <Select value={getParam("city")} onValueChange={(val) => {
           updateFilter("city", val);
           updateFilter("location", "all");
         }}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Cities" />
           </SelectTrigger>
           <SelectContent>
@@ -143,9 +143,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Location</Label>
+        <Label className="text-sm font-medium text-brand-navy">Location</Label>
         <Select value={getParam("location")} onValueChange={(val) => updateFilter("location", val)} disabled={!currentCityId || currentCityId === "all"}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Locations" />
           </SelectTrigger>
           <SelectContent>
@@ -158,9 +158,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Budget / Price</Label>
+        <Label className="text-sm font-medium text-brand-navy">Budget / Price</Label>
         <Select value={getParam("budget")} onValueChange={(val) => updateFilter("budget", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="Any Budget" />
           </SelectTrigger>
           <SelectContent>
@@ -174,9 +174,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Possession Status</Label>
+        <Label className="text-sm font-medium text-brand-navy">Possession Status</Label>
         <Select value={getParam("possession")} onValueChange={(val) => updateFilter("possession", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -189,9 +189,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Property Type</Label>
+        <Label className="text-sm font-medium text-brand-navy">Property Type</Label>
         <Select value={getParam("type")} onValueChange={(val) => updateFilter("type", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -204,9 +204,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Configuration</Label>
+        <Label className="text-sm font-medium text-brand-navy">Configuration</Label>
         <Select value={getParam("config")} onValueChange={(val) => updateFilter("config", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Configurations" />
           </SelectTrigger>
           <SelectContent>
@@ -219,9 +219,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Builder</Label>
+        <Label className="text-sm font-medium text-brand-navy">Builder</Label>
         <Select value={getParam("builder")} onValueChange={(val) => updateFilter("builder", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Builders" />
           </SelectTrigger>
           <SelectContent>
@@ -234,9 +234,9 @@ export function PropertyFilters({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-sm font-medium text-foreground">Status</Label>
+        <Label className="text-sm font-medium text-brand-navy">Status</Label>
         <Select value={getParam("status")} onValueChange={(val) => updateFilter("status", val)}>
-          <SelectTrigger className="h-11 bg-background">
+          <SelectTrigger className="h-11 bg-white border-brand-slate focus:ring-brand-red">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -249,7 +249,7 @@ export function PropertyFilters({
       </div>
 
       {Array.from(searchParams.keys()).filter(k => k !== 'sort' && k !== 'page').length > 0 && (
-        <Button variant="outline" className="w-full mt-4 h-11 border-accent text-accent hover:bg-accent hover:text-accent-foreground" onClick={clearFilters}>
+        <Button variant="outline" className="w-full mt-4 h-11 border-brand-red text-brand-red hover:bg-brand-red hover:text-white" onClick={clearFilters}>
           <X className="mr-2 h-4 w-4" /> Clear All Filters
         </Button>
       )}

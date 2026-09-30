@@ -107,11 +107,11 @@ export function BannerFormDialog({ bannerToEdit }: { bannerToEdit?: Banner }) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isEditing ? (
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-navy hover:text-brand-navy-hover hover:bg-brand-surface">
             <Edit className="h-4 w-4" />
           </Button>
         ) : (
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2 bg-brand-red hover:bg-brand-red-hover text-white">
             <Plus className="w-4 h-4" />
             Add Banner
           </Button>
@@ -124,18 +124,19 @@ export function BannerFormDialog({ bannerToEdit }: { bannerToEdit?: Banner }) {
         
         <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Title <span className="text-red-500">*</span></Label>
+            <Label htmlFor="title" className="text-brand-navy">Title <span className="text-brand-red">*</span></Label>
             <Input 
               id="title" 
               placeholder="e.g. Festive Season Offer" 
               value={title} 
               onChange={(e) => setTitle(e.target.value)} 
               disabled={isSubmitting}
+              className="focus-visible:ring-brand-red border-brand-slate/50"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Banner Image <span className="text-red-500">*</span></Label>
+            <Label className="text-brand-navy">Banner Image <span className="text-brand-red">*</span></Label>
             <ImageUpload 
               name="coverImage" 
               defaultValue={imageUrl} 
@@ -150,25 +151,27 @@ export function BannerFormDialog({ bannerToEdit }: { bannerToEdit?: Banner }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="linkUrl">Link URL</Label>
+            <Label htmlFor="linkUrl" className="text-brand-navy">Link URL</Label>
             <Input 
               id="linkUrl" 
               placeholder="https://example.com/property-offer" 
               value={linkUrl} 
               onChange={(e) => setLinkUrl(e.target.value)} 
               disabled={isSubmitting}
+              className="focus-visible:ring-brand-red border-brand-slate/50"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="displayOrder">Display Order</Label>
+              <Label htmlFor="displayOrder" className="text-brand-navy">Display Order</Label>
               <Input 
                 id="displayOrder" 
                 type="number" 
                 value={displayOrder} 
                 onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)} 
                 disabled={isSubmitting}
+                className="focus-visible:ring-brand-red border-brand-slate/50"
               />
             </div>
             
@@ -179,20 +182,21 @@ export function BannerFormDialog({ bannerToEdit }: { bannerToEdit?: Banner }) {
                   checked={isActive} 
                   onCheckedChange={setIsActive} 
                   disabled={isSubmitting}
+                  className="data-[state=checked]:bg-brand-red"
                 />
-                <Label htmlFor="isActive" className="cursor-pointer">Active</Label>
+                <Label htmlFor="isActive" className="cursor-pointer text-brand-navy">Active</Label>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="text-[10px] text-brand-blue mt-1">
                 Active banners can appear on the public website.
               </p>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting}>
+          <div className="flex justify-end gap-3 pt-4 border-t border-brand-slate/40">
+            <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={isSubmitting} className="border-brand-slate/50 text-brand-navy hover:bg-brand-surface hover:text-brand-navy-hover">
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSubmitting} className="bg-brand-red hover:bg-brand-red-hover text-white">
               {isSubmitting ? (isEditing ? 'Updating...' : 'Saving...') : (isEditing ? 'Save Banner' : 'Create Banner')}
             </Button>
           </div>

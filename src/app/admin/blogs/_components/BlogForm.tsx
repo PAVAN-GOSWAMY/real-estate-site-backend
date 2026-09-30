@@ -119,7 +119,7 @@ export function BlogForm({ initialData, isEditing }: BlogFormProps) {
         <div className="space-y-4">
           <label className="block text-sm font-medium mb-1">Blog Content (Sections)</label>
           {fields.map((field, index) => (
-            <div key={field.id} className="p-4 border rounded-md relative bg-slate-50 space-y-3">
+            <div key={field.id} className="p-4 border rounded-md relative bg-brand-surface space-y-3">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-sm font-medium">Section {index + 1}</h4>
                 <Button type="button" variant="ghost" size="sm" onClick={() => remove(index)} className="text-red-500 h-8">

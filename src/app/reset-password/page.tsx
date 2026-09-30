@@ -51,12 +51,12 @@ export default function ResetPasswordPage() {
   );
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-muted/40 p-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border bg-card text-card-foreground shadow-lg overflow-hidden">
+    <div className="flex min-h-screen w-full items-center justify-center bg-brand-surface p-4 py-12">
+      <div className="w-full max-w-md rounded-2xl border border-brand-slate/50 bg-white shadow-xl overflow-hidden">
         <div className="p-8">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold tracking-tight">Reset Password</h2>
-            <p className="text-muted-foreground text-sm mt-1">
+            <h2 className="text-2xl font-bold tracking-tight text-brand-navy">Reset Password</h2>
+            <p className="text-brand-navy/70 text-sm mt-1">
               Please enter your new password below.
             </p>
           </div>
@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
             
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password">New Password</Label>
+                <Label htmlFor="password" className="text-brand-navy">New Password</Label>
                 <div className="relative">
                   <Input 
                     id="password" 
@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isPending}
-                    className="h-11 pr-10"
+                    className="h-11 pr-10 border-brand-slate/50 focus-visible:ring-brand-red"
                     placeholder="••••••••"
                   />
                   <button 
@@ -94,7 +94,7 @@ export default function ResetPasswordPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword" className="text-brand-navy">Confirm Password</Label>
                 <Input 
                   id="confirmPassword" 
                   type={showPassword ? "text" : "password"} 
@@ -102,14 +102,14 @@ export default function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isPending}
-                  className="h-11"
+                  className="h-11 border-brand-slate/50 focus-visible:ring-brand-red"
                   placeholder="••••••••"
                 />
               </div>
             </div>
 
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2 border">
-              <p className="text-sm font-medium mb-2">Password must contain:</p>
+            <div className="bg-brand-surface rounded-lg p-4 space-y-2 border border-brand-slate/50">
+              <p className="text-sm font-medium mb-2 text-brand-navy">Password must contain:</p>
               <div className="grid grid-cols-2 gap-2">
                 <ValidationItem isValid={hasMinLength} text="At least 8 characters" />
                 <ValidationItem isValid={hasUppercase} text="One uppercase letter" />
@@ -120,7 +120,7 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isPending || !isValid}>
+            <Button type="submit" className="w-full h-11 text-base font-medium bg-brand-red hover:bg-brand-red-hover text-white transition-colors" disabled={isPending || !isValid}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />

@@ -303,7 +303,7 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
                       id="isFeatured"
                       name="isFeatured"
                       disabled={isPending}
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                     />
                     <Label htmlFor="isFeatured" className="cursor-pointer">Featured Project</Label>
                   </div>
@@ -313,7 +313,7 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
                       id="isPremium"
                       name="isPremium"
                       disabled={isPending}
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                     />
                     <Label htmlFor="isPremium" className="cursor-pointer">Premium Project</Label>
                   </div>
@@ -323,7 +323,7 @@ export function CreatePropertyForm({ initialCode, builders, cities }: CreateProp
                       id="isVerified"
                       name="isVerified"
                       disabled={isPending}
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
                     />
                     <Label htmlFor="isVerified" className="cursor-pointer">Verified Project</Label>
                   </div>

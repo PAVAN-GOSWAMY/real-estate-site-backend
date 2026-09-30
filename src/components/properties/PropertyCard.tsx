@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,12 +8,15 @@ import { PublicProperty } from "@/modules/public/types/property";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useEnquiryModal } from "@/contexts/EnquiryModalContext";
 
 interface PropertyCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "property"> {
   property: PublicProperty;
 }
 
 export function PropertyCard({ property, className, ...props }: PropertyCardProps) {
+  const { openModal } = useEnquiryModal();
+
   // Helper to map status to semantic colors
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -22,7 +27,7 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
       case "Under Construction":
         return "bg-amber-500/10 text-amber-600 border-amber-500/20";
       default:
-        return "bg-primary/10 text-primary border-primary/20";
+        return "bg-brand-red/10 text-brand-red border-brand-red/20";
     }
   };
 
@@ -34,7 +39,7 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
   return (
     <div 
       className={cn(
-        "group flex flex-col bg-white rounded-2xl overflow-hidden border border-border/40 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300",
+        "group relative flex flex-col bg-white rounded-2xl overflow-hidden border border-brand-slate/40 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300",
         className
       )}
       {...props}
@@ -59,7 +64,7 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
         
         {/* Top Badges */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
           <Badge variant="outline" className={cn("backdrop-blur-md bg-white/95 font-semibold", getStatusColor(property.status))}>
             {property.status}
           </Badge>
@@ -72,14 +77,14 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
         </div>
 
         {/* Bottom Image Info */}
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="absolute bottom-4 left-4">
           {property.priceDisplay ? (
-            <p className="text-white font-bold text-xl drop-shadow-sm font-heading flex flex-wrap items-baseline gap-1">
-              <span className="text-primary">{property.priceDisplay.replace(/\s*onwards\s*\**\s*/i, '')}</span>
-              <span className="text-sm font-normal text-white/90 lowercase">onwards*</span>
+            <p className="bg-brand-red text-white px-3 py-1 rounded-full w-fit font-bold text-[17px] tracking-tight flex items-baseline gap-1 shadow-sm">
+              <span>{property.priceDisplay.replace(/\s*onwards\s*\**\s*/i, '')}</span>
+              <span className="text-[11px] font-normal text-white/90 lowercase">onwards*</span>
             </p>
           ) : (
-            <p className="text-white font-bold text-xl drop-shadow-sm font-heading">Price on Request</p>
+            <p className="bg-brand-red text-white px-3 py-1 rounded-full w-fit font-bold text-[17px] tracking-tight shadow-sm">Price on Request</p>
           )}
         </div>
       </div>
@@ -87,40 +92,40 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
       {/* 2. Content Area */}
       <div className="p-6 flex-1 flex flex-col">
         <div className="mb-4">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
+          <p className="text-xs font-bold text-brand-navy/60 uppercase tracking-wider mb-1">
             {property.builderName}
           </p>
-          <h3 className="font-heading text-xl font-bold text-foreground line-clamp-1">
-            <Link href={`/properties/${property.slug}`} prefetch={false} className="hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
+          <h3 className="font-heading text-xl font-bold text-brand-navy line-clamp-1 relative z-0">
+            <Link href={`/properties/${property.slug}`} prefetch={false} className="hover:text-brand-red transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm before:absolute before:inset-0 before:z-0">
               {property.title}
             </Link>
           </h3>
-          <p className="text-sm text-muted-foreground flex items-center mt-2">
+          <p className="text-sm text-brand-blue flex items-center mt-2">
             <MapPin className="w-3.5 h-3.5 mr-1.5 shrink-0" />
             <span className="line-clamp-1">{[property.locality, property.city].filter(Boolean).join(', ') || "Location on Request"}</span>
           </p>
         </div>
 
         {/* Key Metrics Grid */}
-        <div className="grid grid-cols-2 gap-y-3 gap-x-4 py-4 border-y border-border/50 mb-4">
+        <div className="grid grid-cols-2 gap-y-3 gap-x-4 py-4 border-y border-brand-slate/50 mb-4">
           <div className="flex items-center text-sm">
-            <LayoutGrid className="w-4 h-4 text-muted-foreground mr-2 shrink-0" />
-            <span className="text-foreground/80 font-medium truncate">{configuration}</span>
+            <LayoutGrid className="w-4 h-4 text-brand-blue mr-2 shrink-0" />
+            <span className="text-brand-navy font-medium truncate">{configuration}</span>
           </div>
           <div className="flex items-center text-sm">
-            <CalendarDays className="w-4 h-4 text-muted-foreground mr-2 shrink-0" />
-            <span className="text-foreground/80 font-medium truncate">{property.possessionDate || "Ready to Move"}</span>
+            <CalendarDays className="w-4 h-4 text-brand-blue mr-2 shrink-0" />
+            <span className="text-brand-navy font-medium truncate">{property.possessionDate || "Ready to Move"}</span>
           </div>
         </div>
 
         {/* Amenities (Max 4) */}
         {allAmenities.length > 0 && (
           <div className="mb-6 flex-1">
-            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-3">Premium Amenities</p>
+            <p className="text-xs text-brand-navy/70 font-semibold uppercase tracking-wider mb-3">Premium Amenities</p>
             <ul className="grid grid-cols-2 gap-2">
               {allAmenities.slice(0, 4).map((amenity, index) => (
-                <li key={index} className="flex items-center text-xs text-foreground/70">
-                  <CheckCircle2 className="w-3 h-3 text-accent mr-1.5 shrink-0" />
+                <li key={index} className="flex items-center text-xs text-brand-navy/80">
+                  <CheckCircle2 className="w-3 h-3 text-brand-red mr-1.5 shrink-0" />
                   <span className="truncate">{amenity.name}</span>
                 </li>
               ))}
@@ -129,13 +134,19 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
         )}
 
         {/* 3. Action Buttons */}
-        <div className="pt-4 mt-auto border-t border-border/50 flex gap-3">
+        <div className="pt-4 mt-auto border-t border-brand-slate/50 flex gap-3 relative z-10 pointer-events-auto">
           <Link href={`/properties/${property.slug}`} prefetch={false} className="flex-1">
-            <Button variant="outline" className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold">
+            <Button variant="outline" className="w-full border-brand-red text-brand-red hover:bg-brand-red hover:text-white font-semibold">
               View Details
             </Button>
           </Link>
-          <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
+          <Button 
+            className="flex-1 bg-brand-red text-white hover:bg-brand-red-hover font-semibold"
+            onClick={(e) => {
+              e.preventDefault();
+              openModal('Property Card', property.title);
+            }}
+          >
             Enquire
           </Button>
         </div>

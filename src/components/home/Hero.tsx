@@ -55,7 +55,7 @@ export function Hero({ stats, filterOptions }: HeroProps) {
   ];
 
   return (
-    <section className="relative min-h-[90vh] flex flex-col justify-center pb-8 overflow-hidden bg-primary">
+    <section className="relative min-h-[90vh] flex flex-col justify-center pb-8 overflow-hidden bg-brand-navy">
       {/* Background Image using Next.js Image for optimization */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -67,7 +67,7 @@ export function Hero({ stats, filterOptions }: HeroProps) {
           sizes="100vw"
         />
         {/* Subtle dark overlay for perfect text readability (no heavy gradients) */}
-        <div className="absolute inset-0 bg-primary/70 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-brand-navy/70 mix-blend-multiply" />
       </div>
 
       <Container className="relative z-10 flex flex-col justify-center h-full pt-12 md:pt-20 gap-12 lg:gap-16">
@@ -90,14 +90,14 @@ export function Hero({ stats, filterOptions }: HeroProps) {
 
           {/* CTA Buttons */}
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 pt-2">
-            <Button size="lg" className="h-14 px-8 bg-accent text-accent-foreground hover:bg-accent/90 text-base font-semibold group">
+            <Button size="lg" className="h-14 px-8 bg-brand-red text-white hover:bg-brand-red-hover text-base font-semibold group">
               Explore Properties
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
-              className="h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-primary text-base font-semibold transition-colors"
+              className="h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-brand-navy text-base font-semibold transition-colors"
               onClick={() => openModal("Hero Section: Book Free Consultation")}
             >
               <PhoneCall className="mr-2 w-4 h-4" />
@@ -108,7 +108,7 @@ export function Hero({ stats, filterOptions }: HeroProps) {
           {/* Trust Indicators */}
           <motion.div variants={itemVariants} className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-6">
             {dynamicTrustMetrics.map((metric) => (
-              <div key={metric.id} className="flex flex-col space-y-1 border-l-2 border-accent/50 pl-4">
+              <div key={metric.id} className="flex flex-col space-y-1 border-l-2 border-brand-red/50 pl-4">
                 <span className="text-2xl md:text-3xl font-bold text-white font-heading tracking-tight">
                   {metric.value}
                 </span>

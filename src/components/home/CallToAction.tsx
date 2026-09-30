@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export function CallToAction() {
   return (
-    <Section className="py-20 bg-primary relative overflow-hidden">
+    <Section className="py-20 relative overflow-hidden" style={{ background: 'var(--brand-gradient)' }}>
       {/* Subtle background decoration */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:24px_24px]" />
       
@@ -21,7 +21,7 @@ export function CallToAction() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button 
             size="lg" 
-            className="w-full sm:w-auto h-14 px-8 bg-accent text-accent-foreground hover:bg-accent/90 text-base font-semibold group"
+            className="w-full sm:w-auto h-14 px-8 bg-white text-brand-navy hover:bg-brand-surface text-base font-semibold group"
             asChild
           >
             <Link href="/properties">
@@ -33,7 +33,7 @@ export function CallToAction() {
           <Button 
             size="lg" 
             variant="outline" 
-            className="w-full sm:w-auto h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-primary text-base font-semibold transition-colors"
+            className="w-full sm:w-auto h-14 px-8 bg-transparent border-white/30 text-white hover:bg-white hover:text-brand-navy text-base font-semibold transition-colors"
             asChild
           >
             <Link href="/contact">

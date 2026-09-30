@@ -69,8 +69,8 @@
 
 :root {
   /* Brand Tokens */
-  --brand-red: #C20404;
-  --brand-red-hover: #A90303;
+  --brand-red: #870404;
+  --brand-red-hover: #6F0303;
   --brand-red-light: #DD7C84;
   --brand-navy: #042C74;
   --brand-navy-hover: #03235D;
@@ -78,7 +78,7 @@
   --brand-soft-red: #DD7C84;
   --brand-slate: #A4B0C5;
   --brand-surface: #F4F6F9;
-  --brand-gradient: linear-gradient(135deg, #C20404 0%, #042C74 100%);
+  --brand-gradient: linear-gradient(135deg, #870404 0%, #042C74 100%);
 
   /* Shadcn Tokens */
   --surface: var(--brand-surface);
@@ -206,4 +206,18 @@
   --sidebar-accent-foreground: #F8FAFC;
   --sidebar-border: #1E293B;
   --sidebar-ring: var(--brand-red);
+}
+
+/* Phase 9: Admin Theme Overrides */
+.admin-dashboard h1, 
+.admin-dashboard h2, 
+.admin-dashboard h3, 
+.admin-dashboard h4, 
+.admin-dashboard h5, 
+.admin-dashboard h6 {
+  @apply text-brand-navy;
+}
+
+.admin-dashboard a:not(.no-brand-link):not([class*="text-"]):not([class*="bg-"]) {
+  @apply text-brand-red hover:text-brand-red-hover transition-colors;
 }

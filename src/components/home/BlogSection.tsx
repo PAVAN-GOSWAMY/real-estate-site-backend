@@ -34,21 +34,21 @@ function CarouselControls({ length }: { length: number }) {
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollPrev}
         disabled={!canScrollPrev}
       >
         <ChevronLeft className="w-5 h-5" />
       </Button>
       <Link href="/blog">
-        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-slate-200 text-primary bg-white hover:bg-slate-50 shadow-sm">
+        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-brand-slate text-brand-red bg-white hover:bg-brand-surface shadow-sm">
           View All Blogs
         </Button>
       </Link>
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollNext}
         disabled={!canScrollNext}
       >
@@ -82,13 +82,13 @@ export function BlogSection({ blogs = [] }: { blogs?: BlogPost[] }) {
   if (!blogs || blogs.length === 0) return null;
 
   return (
-    <Section className="bg-[#F8F5FB] py-16 border-t border-border/50">
+    <Section className="bg-brand-surface py-16 border-t border-brand-slate/50">
       <Container>
-        <div className="mb-10 text-center md:text-left">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold text-brand-navy mb-2">
             From Our Blog
           </h2>
-          <p className="text-[15px] font-medium text-slate-500">
+          <p className="text-[15px] font-medium text-brand-blue">
             Latest real estate insights, tips and market updates
           </p>
         </div>
@@ -100,7 +100,7 @@ export function BlogSection({ blogs = [] }: { blogs?: BlogPost[] }) {
           <CarouselContent className="-ml-4 md:-ml-6 pb-4">
             {blogs.map((post, i) => (
               <CarouselItem key={post.id} className="pl-4 md:pl-6 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                <motion.div custom={i} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={cardVariants} className="bg-white rounded-xl overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full min-h-[350px]">
+                <motion.div custom={i} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={cardVariants} className="bg-white rounded-xl overflow-hidden border border-brand-slate/40 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full min-h-[350px]">
                   <div className="relative h-44 w-full">
                     <Image
                       src={post.image || '/placeholder.jpg'}
@@ -110,17 +110,17 @@ export function BlogSection({ blogs = [] }: { blogs?: BlogPost[] }) {
                     />
                   </div>
                   <div className="p-5 flex flex-col flex-1">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+                    <p className="text-xs font-bold text-brand-slate uppercase tracking-wider mb-2">
                       {post.date}
                     </p>
-                    <h3 className="font-bold text-[17px] text-slate-900 mb-2 line-clamp-2 leading-snug">
-                      <Link href={`/blog/${post.slug}`} className="hover:text-primary transition-colors">
+                    <h3 className="font-bold text-[17px] text-brand-navy mb-2 line-clamp-2 leading-snug">
+                      <Link href={`/blog/${post.slug}`} className="hover:text-brand-red transition-colors">
                         {post.title}
                       </Link>
                     </h3>
                     
-                    <div className="mt-auto pt-3 border-t border-slate-100">
-                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-[13px] font-bold text-slate-900 hover:text-primary transition-colors group">
+                    <div className="mt-auto pt-3 border-t border-brand-slate/50">
+                      <Link href={`/blog/${post.slug}`} className="inline-flex items-center text-[13px] font-bold text-brand-red hover:text-brand-red-hover transition-colors group">
                         Read More
                         <ArrowRightInline className="ml-1.5 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </Link>

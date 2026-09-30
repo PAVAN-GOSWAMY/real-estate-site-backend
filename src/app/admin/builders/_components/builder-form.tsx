@@ -264,7 +264,7 @@ export function BuilderForm({
                 name="isActive"
                 defaultChecked={initialData.isActive ?? true}
                 disabled={isPending}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
               />
               <Label htmlFor="isActive" className="cursor-pointer">Active</Label>
             </div>
@@ -276,7 +276,7 @@ export function BuilderForm({
                 name="isFeatured"
                 defaultChecked={initialData.isFeatured ?? false}
                 disabled={isPending}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                className="h-4 w-4 rounded border-brand-slate/50 text-brand-red focus:ring-brand-red"
               />
               <Label htmlFor="isFeatured" className="cursor-pointer">Featured</Label>
             </div>

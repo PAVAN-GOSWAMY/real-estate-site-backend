@@ -23,11 +23,11 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-muted/40 p-4">
-      <div className="w-full max-w-md rounded-2xl border bg-card text-card-foreground shadow-lg overflow-hidden">
-        <div className="bg-primary p-6 text-primary-foreground text-center">
-          <h2 className="text-2xl font-bold tracking-tight">Admin Portal</h2>
-          <p className="text-primary-foreground/80 text-sm mt-1">
+    <div className="flex h-screen w-full items-center justify-center bg-brand-surface p-4">
+      <div className="w-full max-w-md rounded-2xl border border-brand-slate/50 bg-white shadow-xl overflow-hidden">
+        <div className="bg-[image:var(--brand-gradient)] p-6 text-white text-center">
+          <h2 className="text-2xl font-bold tracking-tight text-white">Admin Portal</h2>
+          <p className="text-white/90 text-sm mt-1">
             Welcome back. Please sign in to your account.
           </p>
         </div>
@@ -41,7 +41,7 @@ function LoginForm() {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email address</Label>
+              <Label htmlFor="email" className="text-brand-navy">Email address</Label>
               <Input 
                 id="email" 
                 name="email" 
@@ -49,14 +49,14 @@ function LoginForm() {
                 required 
                 placeholder="admin@example.com" 
                 disabled={isPending}
-                className="h-11"
+                className="h-11 border-brand-slate/50 focus-visible:ring-brand-red"
               />
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="/forgot-password" className="text-xs text-primary hover:underline font-medium">
+                <Label htmlFor="password" className="text-brand-navy">Password</Label>
+                <Link href="/forgot-password" className="text-xs text-brand-red hover:text-brand-red-hover font-medium transition-colors">
                   Forgot password?
                 </Link>
               </div>
@@ -91,7 +91,7 @@ function LoginForm() {
               </label>
             </div>
 
-            <Button type="submit" className="w-full h-11 text-base font-medium" disabled={isPending}>
+            <Button type="submit" className="w-full h-11 text-base font-medium bg-brand-red hover:bg-brand-red-hover text-white transition-colors" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -110,7 +110,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-muted/40 p-4"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+    <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-brand-surface p-4"><Loader2 className="h-8 w-8 animate-spin text-brand-red" /></div>}>
       <LoginForm />
     </Suspense>
   );

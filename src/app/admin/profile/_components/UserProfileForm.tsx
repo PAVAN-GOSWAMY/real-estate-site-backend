@@ -51,7 +51,7 @@ export function UserProfileForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-3">
         <div className="space-y-2">
-          <Label>New Password</Label>
+          <Label className="text-brand-navy">New Password</Label>
           <div className="relative">
             <Input 
               type={showPassword ? "text" : "password"} 
@@ -59,7 +59,7 @@ export function UserProfileForm() {
               onChange={(e) => setPassword(e.target.value)}
               disabled={isPending}
               placeholder="••••••••"
-              className="pr-10"
+              className="pr-10 border-brand-slate/50 focus-visible:ring-brand-red"
             />
             <button 
               type="button" 
@@ -73,18 +73,19 @@ export function UserProfileForm() {
         </div>
 
         <div className="space-y-2">
-          <Label>Confirm Password</Label>
+          <Label className="text-brand-navy">Confirm Password</Label>
           <Input 
             type={showPassword ? "text" : "password"} 
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isPending}
             placeholder="••••••••"
+            className="border-brand-slate/50 focus-visible:ring-brand-red"
           />
         </div>
       </div>
 
-      <div className="bg-muted/50 rounded-lg p-4 space-y-2 border">
+      <div className="bg-brand-surface rounded-lg p-4 space-y-2 border border-brand-slate/50">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <ValidationItem isValid={hasMinLength} text="At least 8 characters" />
           <ValidationItem isValid={hasUppercase} text="One uppercase letter" />
@@ -95,7 +96,7 @@ export function UserProfileForm() {
         </div>
       </div>
 
-      <Button type="submit" disabled={isPending || !isValid} className="w-full">
+      <Button type="submit" disabled={isPending || !isValid} className="w-full bg-brand-red hover:bg-brand-red-hover text-white transition-colors">
         {isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

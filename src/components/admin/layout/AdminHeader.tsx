@@ -22,7 +22,7 @@ export function AdminHeader({ role }: { role: string }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-brand-slate/50 bg-white px-4 sm:px-6">
       <div className="md:hidden">
         <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
           <SheetTrigger asChild>
@@ -41,16 +41,16 @@ export function AdminHeader({ role }: { role: string }) {
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <form className="ml-auto flex-1 sm:flex-initial">
           <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-brand-navy/60" />
             <Input
               type="search"
               placeholder="Search admin..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] border-brand-slate/50 focus-visible:ring-brand-red bg-brand-surface/30"
             />
           </div>
         </form>
         
-        <Button variant="ghost" size="icon" className="shrink-0 rounded-full text-muted-foreground hover:text-foreground">
+        <Button variant="ghost" size="icon" className="shrink-0 rounded-full text-brand-navy/70 hover:text-brand-navy hover:bg-brand-surface">
           <Bell className="h-5 w-5" />
           <span className="sr-only">Notifications</span>
         </Button>

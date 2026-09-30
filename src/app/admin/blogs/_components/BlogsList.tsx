@@ -55,16 +55,16 @@ export function BlogsList({ blogs }: { blogs: Blog[] }) {
 
   return (
     <div className="rounded-md border">
-      <table className="min-w-full divide-y divide-gray-200 text-sm">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-brand-slate/50 text-sm">
+        <thead className="bg-brand-surface">
           <tr>
-            <th className="px-4 py-3 text-left font-medium text-gray-500">Title</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-            <th className="px-4 py-3 text-left font-medium text-gray-500">Date</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
+            <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Title</th>
+            <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Status</th>
+            <th className="px-4 py-3 text-left font-medium text-brand-navy/70">Date</th>
+            <th className="px-4 py-3 text-right font-medium text-brand-navy/70">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
+        <tbody className="divide-y divide-brand-slate/50 bg-white">
           {blogs.map((blog) => (
             <tr key={blog.id}>
               <td className="px-4 py-3 font-medium">{blog.title}</td>
@@ -73,7 +73,7 @@ export function BlogsList({ blogs }: { blogs: Blog[] }) {
                   {blog.status}
                 </span>
               </td>
-              <td className="px-4 py-3 text-gray-500">
+              <td className="px-4 py-3 text-brand-navy/70">
                 {blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : '—'}
               </td>
               <td className="px-4 py-3 text-right space-x-2">

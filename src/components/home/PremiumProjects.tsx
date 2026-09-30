@@ -26,21 +26,21 @@ function CarouselControls({ propertiesLength }: { propertiesLength: number }) {
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollPrev}
         disabled={!canScrollPrev}
       >
         <ChevronLeft className="w-5 h-5" />
       </Button>
       <Link href="/properties?premium=true">
-        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-slate-200 text-primary bg-white hover:bg-slate-50 shadow-sm">
+        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-brand-slate text-brand-red bg-white hover:bg-brand-surface shadow-sm">
           Explore All Luxury Properties
         </Button>
       </Link>
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollNext}
         disabled={!canScrollNext}
       >
@@ -76,13 +76,13 @@ export function PremiumProjects({ properties }: { properties: PublicProperty[] }
   if (!properties || properties.length === 0) return null;
 
   return (
-    <Section className="bg-[#faf9f6] py-16 border-t border-border/50">
+    <Section className="bg-brand-surface py-16 border-t border-brand-slate/50">
       <Container>
-        <div className="mb-10 text-center md:text-left">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+        <div className="mb-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-navy mb-2">
             Premium Projects
           </h2>
-          <p className="text-[15px] font-medium text-slate-500">
+          <p className="text-[15px] font-medium text-brand-blue">
             Discover ultra-luxury living spaces and elite commercial properties
           </p>
         </div>

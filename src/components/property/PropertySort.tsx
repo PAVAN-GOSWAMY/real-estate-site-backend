@@ -31,9 +31,9 @@ export function PropertySort() {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm text-muted-foreground whitespace-nowrap hidden sm:inline-block">Sort by:</span>
+      <span className="text-sm text-brand-blue whitespace-nowrap hidden sm:inline-block">Sort by:</span>
       <Select value={sort} onValueChange={handleSortChange}>
-        <SelectTrigger className="w-[180px] bg-background h-10">
+        <SelectTrigger className="w-[180px] bg-white border-brand-slate h-10 focus:ring-brand-red">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>

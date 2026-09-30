@@ -32,21 +32,21 @@ function CarouselControls({ length }: { length: number }) {
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollPrev}
         disabled={!canScrollPrev}
       >
         <ChevronLeft className="w-5 h-5" />
       </Button>
       <Link href="/locations">
-        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-slate-200 text-primary bg-white hover:bg-slate-50 shadow-sm">
+        <Button variant="outline" className="h-12 rounded-xl px-8 text-[15px] font-bold border-brand-slate text-brand-red bg-white hover:bg-brand-surface shadow-sm">
           View All Locations
         </Button>
       </Link>
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-12 w-12 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-12 w-12 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-navy-hover shadow-sm disabled:opacity-50"
         onClick={scrollNext}
         disabled={!canScrollNext}
       >
@@ -80,13 +80,13 @@ export function TopLocations({ locations }: { locations: LocationItem[] }) {
   if (!locations || locations.length === 0) return null;
 
   return (
-    <Section className="bg-surface py-16 border-t border-border/50">
+    <Section className="bg-brand-surface py-16 border-t border-brand-slate/50">
       <Container>
-        <div className="mb-10 text-center md:text-left">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold text-brand-navy mb-2">
             Our Footprints
           </h2>
-          <p className="text-[15px] font-medium text-slate-500">
+          <p className="text-[15px] font-medium text-brand-blue">
             Locations where we help you find the perfect property
           </p>
         </div>
@@ -100,7 +100,7 @@ export function TopLocations({ locations }: { locations: LocationItem[] }) {
               <CarouselItem key={location.slug} className="pl-4 md:pl-6 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                 <motion.div custom={i} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={cardVariants} className="h-full">
                   <Link href={`/locations/${location.slug}`} className="group block h-full">
-                  <div className="bg-white rounded-xl overflow-hidden border border-border/40 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full p-2 pb-5">
+                  <div className="bg-white rounded-xl overflow-hidden border border-brand-slate/40 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full p-2 pb-5">
                     <div className="relative h-48 rounded-lg overflow-hidden mb-4">
                       <Image
                         src={location.image || '/placeholder.jpg'}
@@ -110,8 +110,8 @@ export function TopLocations({ locations }: { locations: LocationItem[] }) {
                       />
                     </div>
                     <div className="px-4 flex items-center justify-center gap-2 mt-auto">
-                      <MapPin className="w-4 h-4 text-slate-400" />
-                      <h3 className="font-bold text-primary text-[15px]">{location.name}</h3>
+                      <MapPin className="w-4 h-4 text-brand-blue" />
+                      <h3 className="font-bold text-brand-navy text-[15px]">{location.name}</h3>
                     </div>
                   </div>
                 </Link>

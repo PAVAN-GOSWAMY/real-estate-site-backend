@@ -5,35 +5,35 @@ export function WhyChooseUs() {
   const features = [
     {
       id: "f1",
-      icon: <CheckCircle2 className="w-8 h-8 text-primary" />,
+      icon: <CheckCircle2 className="w-8 h-8 text-brand-red" />,
       title: "Verified Properties",
       description: "Every property goes through a rigorous legal and physical verification process to ensure zero disputes."
     },
     {
       id: "f2",
-      icon: <ShieldCheck className="w-8 h-8 text-primary" />,
+      icon: <ShieldCheck className="w-8 h-8 text-brand-red" />,
       title: "Trusted Developers",
       description: "We partner exclusively with RERA-registered developers who have a proven track record of timely delivery."
     },
     {
       id: "f3",
-      icon: <UserCheck className="w-8 h-8 text-primary" />,
+      icon: <UserCheck className="w-8 h-8 text-brand-red" />,
       title: "Expert Guidance",
       description: "Our dedicated property advisors provide personalized end-to-end support for your real estate journey."
     },
     {
       id: "f4",
-      icon: <IndianRupee className="w-8 h-8 text-primary" />,
+      icon: <IndianRupee className="w-8 h-8 text-brand-red" />,
       title: "Transparent Pricing",
       description: "No hidden charges, no surprises. We believe in complete financial transparency from day one."
     }
   ];
 
   return (
-    <Section className="bg-surface pt-16 pb-16">
+    <Section className="bg-brand-surface pt-16 pb-16">
       <Container>
         <SectionHeader className="text-center md:max-w-3xl mx-auto">
-          <SectionTitle>Why Choose Square AR Spaces</SectionTitle>
+          <SectionTitle className="text-brand-navy">Why Choose Square AR Spaces</SectionTitle>
           <SectionDescription>
             We bring transparency, trust, and expertise to your real estate investments, making the process of buying a property seamless and secure.
           </SectionDescription>
@@ -43,12 +43,12 @@ export function WhyChooseUs() {
           {features.map((feature) => (
             <div 
               key={feature.id}
-              className="bg-card rounded-2xl p-8 border border-border/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group flex flex-col items-start h-full"
+              className="bg-card rounded-2xl p-8 border border-brand-slate/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 group flex flex-col items-start h-full"
             >
-              <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-14 h-14 rounded-xl bg-brand-soft-red flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 {feature.icon}
               </div>
-              <h3 className="font-heading text-xl font-bold text-foreground mb-3">
+              <h3 className="font-heading text-xl font-bold text-brand-navy mb-3">
                 {feature.title}
               </h3>
               <p className="text-muted-foreground leading-relaxed flex-1">

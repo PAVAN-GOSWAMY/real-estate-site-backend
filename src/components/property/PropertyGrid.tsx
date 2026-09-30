@@ -23,8 +23,8 @@ export async function PropertyGrid({ searchParams }: PropertyGridProps) {
     <div className="w-full">
       {/* Header: Results count and Sort */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h2 className="text-lg text-muted-foreground font-medium">
-          Showing <span className="text-foreground font-bold">{totalCount}</span> properties
+        <h2 className="text-lg text-brand-blue font-medium">
+          Showing <span className="text-brand-navy font-bold">{totalCount}</span> properties
         </h2>
         <PropertySort />
       </div>

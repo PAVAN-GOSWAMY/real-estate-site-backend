@@ -71,6 +71,7 @@ const sidebarNav = [
     roles: ["Super Admin", "Admin"],
     items: [
       { title: "Blogs", href: "/admin/blogs", icon: FileText },
+      { title: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
     ],
   },
   {
@@ -119,9 +120,9 @@ export function AdminSidebar({ className, onNavigate, role }: AdminSidebarProps)
   const pathname = usePathname();
 
   return (
-    <div className={cn("flex flex-col h-full bg-background border-r", className)}>
-      <div className="flex h-14 items-center border-b px-6 font-semibold">
-        <Link href="/admin" onClick={onNavigate} className="flex items-center gap-2">
+    <div className={cn("flex flex-col h-full bg-white border-r border-brand-slate/50", className)}>
+      <div className="flex h-14 items-center border-b border-brand-slate/50 px-6 font-semibold">
+        <Link href="/admin" onClick={onNavigate} className="flex items-center gap-2 text-brand-navy">
           <span>{siteConfig.name} Admin</span>
         </Link>
       </div>
@@ -132,7 +133,7 @@ export function AdminSidebar({ className, onNavigate, role }: AdminSidebarProps)
 
             return (
               <div key={index} className="flex flex-col gap-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2">
+                <h4 className="text-xs font-semibold text-brand-navy uppercase tracking-wider px-2">
                   {group.title}
                 </h4>
                 <div className="flex flex-col gap-1">
@@ -146,8 +147,8 @@ export function AdminSidebar({ className, onNavigate, role }: AdminSidebarProps)
                       className={cn(
                         "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                         isActive
-                          ? "bg-primary text-primary-foreground font-medium"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          ? "bg-brand-red text-white font-medium shadow-sm"
+                          : "text-brand-navy hover:bg-brand-surface hover:text-brand-red"
                       )}
                     >
                       <item.icon className="h-4 w-4" />

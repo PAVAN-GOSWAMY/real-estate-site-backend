@@ -14,6 +14,7 @@ import { getFilteredProperties } from "@/core/queries/properties";
 import { BlogsService } from "@/modules/blogs/services/blogs.service";
 import { PropertyGrid } from "@/components/property/PropertyGrid";
 import { Section, Container, SectionHeader, SectionTitle } from "@/components/layout/wrappers";
+import { TestimonialsService } from "@/modules/testimonials/services/testimonials.service";
 
 export const revalidate = 90;
 
@@ -27,14 +28,15 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
     ['q', 'city', 'location', 'type', 'config', 'budget', 'builder'].includes(key)
   );
 
-  const [locations, stats, filterOptions, featuredData, premiumData, latestBlogs, banners] = await Promise.all([
+  const [locations, stats, filterOptions, featuredData, premiumData, latestBlogs, banners, activeTestimonials] = await Promise.all([
     getTopLocations(),
     getSiteStats(),
     getPublicFilterOptions(),
     getFilteredProperties({ isFeatured: true, limit: 12, sort: "recommended" }),
     getFilteredProperties({ isPremium: true, limit: 12, sort: "price-desc" }),
     BlogsService.getLatestBlogs(4),
-    BannersService.getPublicBanners()
+    BannersService.getPublicBanners(),
+    TestimonialsService.getActiveTestimonials()
   ]);
 
   return (
@@ -54,7 +56,7 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
         <>          <FeaturedProperties properties={featuredData.properties} />
           <PremiumProjects properties={premiumData.properties} />
           <TopLocations locations={locations} />
-          <Testimonials />
+          <Testimonials testimonials={activeTestimonials} />
           <BlogSection blogs={latestBlogs.map(b => ({ id: b.id, title: b.title, slug: b.slug, excerpt: b.excerpt || "", date: b.publishedAt ? new Date(b.publishedAt).toLocaleDateString() : "Draft", image: b.coverImage || "/placeholder.jpg" }))} />
         </>
       )}

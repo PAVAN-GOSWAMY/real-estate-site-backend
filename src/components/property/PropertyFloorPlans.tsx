@@ -13,11 +13,11 @@ export function PropertyFloorPlans({ floorPlans }: PropertyFloorPlansProps) {
 
   return (
     <div className="space-y-6">
-      <h3 className="font-heading text-2xl font-bold text-primary">Master & Floor Plans</h3>
+      <h3 className="font-heading text-2xl font-bold text-brand-navy">Master & Floor Plans</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {floorPlans.map((plan) => (
-          <div key={plan.id} className="group relative bg-surface rounded-2xl overflow-hidden border border-border/50">
+          <div key={plan.id} className="group relative bg-white rounded-2xl overflow-hidden border border-brand-slate/50">
             <div className="relative h-64 w-full bg-white p-4">
               <Image 
                 src={plan.imageUrl}
@@ -26,21 +26,21 @@ export function PropertyFloorPlans({ floorPlans }: PropertyFloorPlansProps) {
                 className="object-contain"
               />
               {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                <Button variant="secondary" size="icon" className="rounded-full bg-white text-primary hover:bg-primary hover:text-primary-foreground">
+              <div className="absolute inset-0 bg-brand-navy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                <Button variant="secondary" size="icon" className="rounded-full bg-white text-brand-navy hover:bg-brand-red hover:text-white">
                   <Maximize2 className="h-4 w-4" />
                 </Button>
-                <Button variant="secondary" size="icon" className="rounded-full bg-white text-primary hover:bg-primary hover:text-primary-foreground">
+                <Button variant="secondary" size="icon" className="rounded-full bg-white text-brand-navy hover:bg-brand-red hover:text-white">
                   <Download className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="p-4 border-t border-border/50 bg-background flex justify-between items-center">
+            <div className="p-4 border-t border-brand-slate/50 bg-brand-surface flex justify-between items-center">
               <div>
-                <h4 className="font-semibold text-foreground">{plan.name}</h4>
-                {plan.area && plan.unit && <p className="text-sm text-muted-foreground">{plan.area} {plan.unit}</p>}
+                <h4 className="font-semibold text-brand-navy">{plan.name}</h4>
+                {plan.area && plan.unit && <p className="text-sm text-brand-navy/60">{plan.area} {plan.unit}</p>}
               </div>
-              <Button variant="ghost" size="sm" className="text-accent hover:text-accent-foreground hover:bg-accent/10">
+              <Button variant="ghost" size="sm" className="text-brand-red hover:text-white hover:bg-brand-red-hover">
                 Enquire
               </Button>
             </div>

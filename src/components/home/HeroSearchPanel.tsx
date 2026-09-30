@@ -62,16 +62,16 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
   };
 
   return (
-    <div className="bg-[#f8f9fa]/95 backdrop-blur-md rounded-[32px] shadow-xl p-3 md:p-4 w-full border border-white/20 relative z-20 mx-auto max-w-7xl">
+    <div className="bg-brand-surface/95 backdrop-blur-md rounded-[32px] shadow-xl p-3 md:p-4 w-full border border-white/20 relative z-20 mx-auto max-w-7xl">
       <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
 
         {/* City Select */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <MapPin className="w-3 h-3 text-muted-foreground/40" /> CITY
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <MapPin className="w-3 h-3 text-brand-navy/50" /> CITY
           </label>
           <Select value={cityId} onValueChange={setCityId}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="All Cities" />
             </SelectTrigger>
             <SelectContent>
@@ -87,11 +87,11 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
 
         {/* Location Select */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <MapPin className="w-3 h-3 text-muted-foreground/40" /> LOCATION
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <MapPin className="w-3 h-3 text-brand-navy/50" /> LOCATION
           </label>
           <Select value={locationId} onValueChange={setLocationId} disabled={cityId === "all"}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="All Locations" />
             </SelectTrigger>
             <SelectContent>
@@ -107,11 +107,11 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
 
         {/* Property Type Select */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <Home className="w-3 h-3 text-muted-foreground/40" /> PROPERTY TYPE
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <Home className="w-3 h-3 text-brand-navy/50" /> PROPERTY TYPE
           </label>
           <Select value={type} onValueChange={setType}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
@@ -130,11 +130,11 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
 
         {/* Builder Select */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <HardHat className="w-3 h-3 text-muted-foreground/40" /> BUILDER
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <HardHat className="w-3 h-3 text-brand-navy/50" /> BUILDER
           </label>
           <Select value={builder} onValueChange={setBuilder}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="All Builders" />
             </SelectTrigger>
             <SelectContent>
@@ -153,11 +153,11 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
 
         {/* Configuration Field */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <Layers className="w-3 h-3 text-muted-foreground/40" /> CONFIGURATION
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <Layers className="w-3 h-3 text-brand-navy/50" /> CONFIGURATION
           </label>
           <Select value={config} onValueChange={setConfig}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="Any Configuration" />
             </SelectTrigger>
             <SelectContent>
@@ -176,11 +176,11 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
 
         {/* Budget Field */}
         <div className="space-y-1.5 px-1">
-          <label className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 ml-2">
-            <IndianRupee className="w-3 h-3 text-muted-foreground/40" /> BUDGET
+          <label className="text-[10px] font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5 ml-2">
+            <IndianRupee className="w-3 h-3 text-brand-navy/50" /> BUDGET
           </label>
           <Select value={budget} onValueChange={setBudget}>
-            <SelectTrigger className="w-full bg-white/60 border-slate-200/60 shadow-sm h-[46px] text-sm focus:ring-slate-400 rounded-full px-4 hover:bg-white transition-colors">
+            <SelectTrigger className="w-full bg-white/60 border-brand-slate/60 shadow-sm h-[46px] text-sm focus:ring-brand-navy rounded-full px-4 hover:bg-white transition-colors">
               <SelectValue placeholder="Any Budget" />
             </SelectTrigger>
             <SelectContent>
@@ -198,7 +198,7 @@ export function HeroSearchPanel({ filterOptions }: HeroSearchPanelProps) {
         <div className="px-1 xl:pb-[1px]">
           <Button
             type="submit"
-            className="w-full h-[46px] bg-[#1a1a1a] text-white hover:bg-black text-sm font-semibold group transition-all rounded-full shadow-md mt-6 xl:mt-0"
+            className="w-full h-[46px] bg-brand-red text-white hover:bg-brand-red-hover text-sm font-semibold group transition-all rounded-full shadow-md mt-6 xl:mt-0"
           >
             Search
             <Search className="ml-2 w-4 h-4 group-hover:scale-110 transition-transform" />

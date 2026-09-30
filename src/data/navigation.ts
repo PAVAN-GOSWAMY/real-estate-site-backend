@@ -6,7 +6,7 @@ export interface NavItem {
 
 export const mainNav: NavItem[] = [
   { id: "nav-home", label: "Home", href: "/" },
-  { id: "nav-properties", label: "Properties", href: "/properties" },
+  { id: "nav-properties", label: "Projects", href: "/properties" },
   { id: "nav-blog", label: "Blog", href: "/blog" },
   { id: "nav-about", label: "About", href: "/about" },
   { id: "nav-career", label: "Career", href: "/career" },
@@ -15,7 +15,7 @@ export const mainNav: NavItem[] = [
 
 export const footerQuickLinks: NavItem[] = [
   { id: "fq-home", label: "Home", href: "/" },
-  { id: "fq-properties", label: "Properties", href: "/properties" },
+  { id: "fq-properties", label: "Projects", href: "/properties" },
   { id: "fq-blog", label: "Blog", href: "/blog" },
   { id: "fq-about", label: "About Us", href: "/about" },
   { id: "fq-contact", label: "Contact", href: "/contact" },

@@ -26,7 +26,7 @@ function CarouselControls({ length }: { length: number }) {
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-10 w-10 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-10 w-10 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-red shadow-sm disabled:opacity-50"
         onClick={scrollPrev}
         disabled={!canScrollPrev}
         aria-label="Previous deals"
@@ -36,7 +36,7 @@ function CarouselControls({ length }: { length: number }) {
       <Button 
         variant="outline" 
         size="icon" 
-        className="h-10 w-10 rounded-xl border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-slate-700 shadow-sm disabled:opacity-50"
+        className="h-10 w-10 rounded-xl border-brand-slate text-brand-navy bg-white hover:bg-brand-surface hover:text-brand-red shadow-sm disabled:opacity-50"
         onClick={scrollNext}
         disabled={!canScrollNext}
         aria-label="Next deals"
@@ -71,11 +71,11 @@ export function DealsAndOffers({ banners }: { banners: Banner[] }) {
   return (
     <Section className="bg-white py-12 md:py-16">
       <Container>
-        <div className="mb-8 text-center md:text-left">
-          <p className="text-[13px] font-bold text-primary tracking-wider uppercase mb-1">
+        <div className="mb-8 text-center">
+          <p className="text-[13px] font-bold text-brand-red tracking-wider uppercase mb-1">
             Recent
           </p>
-          <h2 className="text-3xl font-bold text-slate-900">
+          <h2 className="text-3xl font-bold text-brand-navy">
             DEALS & OFFERS
           </h2>
         </div>

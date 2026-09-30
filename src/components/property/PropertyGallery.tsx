@@ -59,7 +59,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
               key={idx}
               onClick={() => setActiveIndex(idx)}
               className={`relative h-24 md:h-32 rounded-xl overflow-hidden cursor-pointer transition-all ${
-                activeIndex === idx ? "ring-2 ring-accent ring-offset-2 ring-offset-background" : "opacity-70 hover:opacity-100"
+                activeIndex === idx ? "ring-2 ring-brand-red ring-offset-2 ring-offset-brand-surface" : "opacity-70 hover:opacity-100"
               }`}
             >
               <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
@@ -91,7 +91,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute top-6 right-6 text-white hover:bg-white/20 z-50 rounded-full h-12 w-12"
+              className="absolute top-6 right-6 text-white hover:text-brand-red hover:bg-white/20 z-50 rounded-full h-12 w-12"
               onClick={() => setIsFullscreen(false)}
             >
               <X className="h-8 w-8" />
@@ -100,7 +100,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 z-50 h-14 w-14 rounded-full"
+              className="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:text-brand-red hover:bg-white/20 z-50 h-14 w-14 rounded-full"
               onClick={prevImage}
             >
               <ChevronLeft className="h-10 w-10" />
@@ -119,7 +119,7 @@ export function PropertyGallery({ images }: PropertyGalleryProps) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-white hover:bg-white/20 z-50 h-14 w-14 rounded-full"
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-white hover:text-brand-red hover:bg-white/20 z-50 h-14 w-14 rounded-full"
               onClick={nextImage}
             >
               <ChevronRight className="h-10 w-10" />
