@@ -23,7 +23,7 @@ export default async function AboutPage() {
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000&auto=format&fit=crop')" }}
         >
-          <div className="absolute inset-0 bg-primary/70 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-brand-navy/70 mix-blend-multiply" />
         </div>
         <div className="container relative z-10 mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
@@ -64,7 +64,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="bg-primary py-20 text-primary-foreground">
+      <section className="bg-brand-navy py-20 text-white">
         <div className="container mx-auto px-4 md:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>

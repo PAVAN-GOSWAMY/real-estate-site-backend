@@ -5,13 +5,13 @@ export default function PropertiesLoading() {
   return (
     <div className="min-h-screen bg-surface">
       {/* Hero Header */}
-      <div className="bg-primary py-12 md:py-16">
+      <div className="bg-brand-surface py-12 md:py-16 text-brand-navy">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
-            <h1 className="font-heading text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
+            <h1 className="font-heading text-4xl md:text-5xl font-bold text-brand-navy mb-6">
               Exclusive <span className="opacity-70 italic">Properties</span>
             </h1>
-            <p className="text-lg text-primary-foreground/90 leading-relaxed">
+            <p className="text-lg text-brand-navy/80 leading-relaxed">
               Find your perfect sanctuary from our curated selection of Noida and Greater Noida&apos;s finest real estate.
             </p>
           </div>

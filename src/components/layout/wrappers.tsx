@@ -90,7 +90,7 @@ SectionDescription.displayName = "SectionDescription";
 // ----------------------------------------------------------------------
 export const PageHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => (
-    <div ref={ref} className={cn("bg-primary py-10 md:py-16", className)} {...props}>
+    <div ref={ref} className={cn("bg-brand-surface py-10 md:py-16 text-brand-navy", className)} {...props}>
       <Container>
         {children}
       </Container>
