@@ -1,13 +1,22 @@
 "use client";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { format } from "date-fns";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { updateApplicationStatusAction, getResumeUrlAction, deleteApplicationAction } from "@/modules/jobs/actions/jobs.actions";
@@ -47,6 +56,7 @@ const STATUS_COLORS: Record<string, string> = {
 export function ApplicationsTable({ applications, total }: ApplicationsTableProps) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [appToDelete, setAppToDelete] = useState<string | null>(null);
 
   const handleStatusChange = async (id: string, newStatus: string) => {
     setLoadingId(id);
@@ -80,9 +90,15 @@ export function ApplicationsTable({ applications, total }: ApplicationsTableProp
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this application? This action cannot be undone.")) return;
-    
+  const handleDelete = (id: string) => {
+    setAppToDelete(id);
+  };
+
+  const confirmDeleteApp = async () => {
+    if (!appToDelete) return;
+    const id = appToDelete;
+    setAppToDelete(null);
+
     setLoadingId(id);
     try {
       const res = await deleteApplicationAction(id);
@@ -169,8 +185,8 @@ export function ApplicationsTable({ applications, total }: ApplicationsTableProp
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       className="h-8"
                       onClick={() => handleViewResume(app.id, app.resume_url)}
@@ -204,12 +220,26 @@ export function ApplicationsTable({ applications, total }: ApplicationsTableProp
           </tbody>
         </table>
       </div>
-      
+
       <div className="bg-muted/20 px-6 py-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground">
         <div>
           Showing <span className="font-medium text-foreground">{applications.length}</span> of <span className="font-medium text-foreground">{total}</span> applications
         </div>
       </div>
+      <AlertDialog open={!!appToDelete} onOpenChange={(open) => !open && setAppToDelete(null)}>
+        <AlertDialogContent className="max-w-md bg-white border border-brand-slate/40 shadow-xl rounded-2xl p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-brand-navy">Delete Application?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-brand-navy/70 leading-relaxed pt-1">
+              Are you sure you want to delete this application? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-5 flex items-center justify-end gap-2.5">
+            <AlertDialogCancel className="h-9 px-4 text-xs font-medium rounded-lg border-brand-slate/40 text-brand-navy hover:bg-brand-surface">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteApp} className="h-9 px-4 text-xs font-semibold rounded-lg bg-brand-red hover:bg-brand-red/90 text-white shadow-xs">Yes, Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

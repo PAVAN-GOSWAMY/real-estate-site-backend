@@ -1,10 +1,13 @@
-import { 
-  PropertyStatus, 
-  PropertyAvailability, 
-  PropertyType, 
+import {
+  PropertyStatus,
+  PropertyAvailability,
+  PropertyType,
   ConstructionStatus,
-  PropertyCategory 
+  PropertyCategory
 } from './enums';
+import { PropertyConfiguration, PropertyConfigurationInput } from './configuration';
+
+export * from './configuration';
 
 /**
  * Represents a complete Property record from the database.
@@ -14,32 +17,33 @@ export interface Property {
   title: string;
   slug: string;
   propertyCode: string;
-  
+
   builderId: string;
-  
-  propertyCategory: PropertyCategory;
+  managedBy?: string | null;
+
+  propertyCategory: PropertyCategory | string;
+  propertyCategories: string[];
   propertyType: PropertyType;
+  configurations?: string[];
+  propertyConfigurations?: PropertyConfiguration[];
   status: PropertyStatus;
   availability: PropertyAvailability;
-  
+
   address: string | null;
   landmark: string | null;
   city_id: string | null;
   location_id: string | null;
-
-
-
 
   country: string | null;
   pincode: string | null;
   googleMapsUrl: string | null;
   latitude: number | null;
   longitude: number | null;
-  
+
   price: number | null;
   currency: string | null;
   pricePerSqft: number | null;
-  
+
   bedrooms: number | null;
   bathrooms: number | null;
   balconies: number | null;
@@ -51,18 +55,18 @@ export interface Property {
   facing: string | null;
   possessionDate: string | null; // ISO Date String
   constructionStatus: ConstructionStatus | null;
-  
+
   shortDescription: string | null;
   description: string | null;
-  
+
   isFeatured: boolean;
   isVerified: boolean;
   isPremium: boolean;
   reraNumber: string | null;
-  
+
   metaTitle: string | null;
   metaDescription: string | null;
-  
+
   createdAt: string;
   updatedAt: string;
   createdBy: string | null;
@@ -76,14 +80,18 @@ export interface CreatePropertyInput {
   title: string;
   slug?: string;
   propertyCode: string;
-  
+
   builderId: string;
-  
-  propertyCategory: PropertyCategory;
+  managedBy?: string | null;
+
+  propertyCategory?: PropertyCategory | string;
+  propertyCategories: string[];
   propertyType: PropertyType;
+  configurations?: string[];
+  propertyConfigurations?: PropertyConfigurationInput[];
   status?: PropertyStatus;
   availability?: PropertyAvailability;
-  
+
   address?: string | null;
   landmark?: string | null;
   city_id?: string | null;
@@ -97,11 +105,11 @@ export interface CreatePropertyInput {
   googleMapsUrl?: string | null;
   latitude?: number | null;
   longitude?: number | null;
-  
+
   price?: number | null;
   currency?: string | null;
   pricePerSqft?: number | null;
-  
+
   bedrooms?: number | null;
   bathrooms?: number | null;
   balconies?: number | null;
@@ -113,15 +121,15 @@ export interface CreatePropertyInput {
   facing?: string | null;
   possessionDate?: string | null;
   constructionStatus?: ConstructionStatus | null;
-  
+
   shortDescription?: string | null;
   description?: string | null;
-  
+
   isFeatured?: boolean;
   isVerified?: boolean;
   isPremium?: boolean;
   reraNumber?: string | null;
-  
+
   metaTitle?: string | null;
   metaDescription?: string | null;
 }
@@ -139,12 +147,14 @@ export interface PropertyListItem {
   title: string;
   slug: string;
   propertyCode: string;
-  propertyCategory: PropertyCategory;
+  propertyCategory: PropertyCategory | string;
+  propertyCategories?: string[];
   propertyType: PropertyType;
+  configurations?: string[];
   status: PropertyStatus;
   availability: PropertyAvailability;
+  managedBy?: string | null;
   price: number | null;
-
 
   isFeatured: boolean;
   isVerified: boolean;
@@ -156,8 +166,10 @@ export interface PropertyListItem {
 export interface PropertyFilters {
   search?: string;
   builderId?: string;
-  propertyCategory?: PropertyCategory;
+  propertyCategory?: PropertyCategory | string;
+  propertyCategories?: string[];
   propertyType?: PropertyType;
+  configurations?: string[];
   status?: PropertyStatus;
   availability?: PropertyAvailability;
   featured?: boolean;

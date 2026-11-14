@@ -1,8 +1,19 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PropertyMedia, MediaType } from "@/modules/properties/types/media";
 import { uploadMediaAction, deleteMediaAction, updateMediaOrderAction, setAsCoverAction } from "@/modules/properties/actions/media.actions";
 import { ImageCard } from "./ImageCard";
@@ -17,8 +28,9 @@ interface GallerySectionProps {
 
 export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: GallerySectionProps) {
   const [isPending, startTransition] = useTransition();
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  
+
   // Drag and drop state
   const [images, setImages] = useState<PropertyMedia[]>(galleryImages);
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
@@ -55,7 +67,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
           errorCount++;
           continue;
         }
-        
+
         const formData = new FormData();
         formData.append("propertyId", propertyId);
         formData.append("mediaType", MediaType.GALLERY_IMAGE);
@@ -70,26 +82,33 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
       }
 
       if (fileInputRef.current) fileInputRef.current.value = "";
-      
+
       if (successCount > 0) {
         showToast(`Uploaded ${successCount} image(s) successfully.` + (errorCount > 0 ? ` ${errorCount} failed.` : ''));
         onMediaUpdated();
       } else if (errorCount > 0) {
-        alert(`Failed to upload ${errorCount} image(s). Check file sizes (max 10MB).`);
+        toast.error(`Failed to upload ${errorCount} image(s). Check file sizes (max 10MB).`);
       }
     });
   };
 
   const handleDelete = (id: string) => {
-    if (!confirm("Are you sure you want to delete this image?")) return;
+    setImageToDelete(id);
+  };
+
+  const confirmDeleteImage = () => {
+    if (!imageToDelete) return;
+    const id = imageToDelete;
+    setImageToDelete(null);
 
     startTransition(async () => {
       const result = await deleteMediaAction(propertyId, id);
       if (result.success) {
+        toast.success("Image deleted successfully.");
         showToast("Image deleted.");
         onMediaUpdated();
       } else {
-        alert(result.error);
+        toast.error(result.error || "Failed to delete image");
       }
     });
   };
@@ -101,7 +120,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
         showToast("Cover image updated.");
         onMediaUpdated();
       } else {
-        alert(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -116,33 +135,33 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
 
   const onDragOver = (index: number) => {
     if (draggedIdx === null || draggedIdx === index) return;
-    
+
     // Reorder array optimistically
     const newImages = [...images];
     const draggedImage = newImages[draggedIdx];
     newImages.splice(draggedIdx, 1);
     newImages.splice(index, 0, draggedImage);
-    
+
     setDraggedIdx(index);
     setImages(newImages);
   };
 
   const onDragEnd = () => {
     setDraggedIdx(null);
-    
+
     // Persist new order to server
     startTransition(async () => {
       const updates = images.map((img, idx) => ({
         id: img.id,
         displayOrder: idx
       }));
-      
+
       const result = await updateMediaOrderAction(propertyId, updates);
       if (result.success) {
         showToast("Gallery order updated.");
         onMediaUpdated();
       } else {
-        alert(result.error);
+        toast.error(result.error);
         setImages(galleryImages); // revert on failure
       }
     });
@@ -160,7 +179,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
   const handleDropzoneDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDraggingOver(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       if (fileInputRef.current) {
@@ -205,7 +224,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
           {images.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, idx) => (
-                <div 
+                <div
                   key={image.id}
                   draggable={!isPending}
                   onDragStart={(e) => onDragStart(e, idx)}
@@ -213,7 +232,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
                   onDragEnd={onDragEnd}
                   className={`transition-all duration-200 ${draggedIdx === idx ? 'opacity-50 scale-95' : 'opacity-100'}`}
                 >
-                  <ImageCard 
+                  <ImageCard
                     media={image}
                     onDelete={handleDelete}
                     onSetCover={handleSetCover}
@@ -224,7 +243,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
               ))}
             </div>
           ) : (
-            <div 
+            <div
               className={`flex flex-col items-center justify-center p-12 border-2 border-dashed rounded-lg transition-colors ${
                 isDraggingOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:bg-muted/50'
               }`}
@@ -245,7 +264,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
               </Button>
             </div>
           )}
-          
+
           {isPending && images.length > 0 && (
             <p className="text-sm text-muted-foreground mt-4 animate-pulse">Syncing changes...</p>
           )}
@@ -254,7 +273,7 @@ export function GallerySection({ propertyId, galleryImages, onMediaUpdated }: Ga
 
       {/* Lightbox Overlay */}
       {lightboxIndex !== null && (
-        <ImageLightbox 
+        <ImageLightbox
           images={images}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}

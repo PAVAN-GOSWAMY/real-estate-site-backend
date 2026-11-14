@@ -2,7 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { PropertyFilterOptions } from '../types/search';
 
 // Reusable select fragments
-export const BASE_PROPERTY_SELECT = `id, title, slug, price, locality, city, sector, city_id, location_id, property_category, property_type, status, bedrooms, bathrooms, carpet_area, possession_date, rera_number, is_featured, is_verified, is_premium, short_description, created_at, updated_at, cities (id, name, slug), locations (id, name, slug, type)`;
+export const BASE_PROPERTY_SELECT = `id, title, slug, price, locality, city, sector, city_id, location_id, property_category, property_categories, property_type, configurations, status, bedrooms, bathrooms, carpet_area, possession_date, rera_number, is_featured, is_verified, is_premium, short_description, managed_by, created_at, updated_at, cities (id, name, slug), locations (id, name, slug, type)`;
 export const BUILDER_SELECT = `builders!inner (name, logo_url)`;
 export const MEDIA_SELECT = `property_media (url, is_featured, display_order)`;
 export const FLOOR_PLAN_SELECT = `property_floor_plans!inner (bedrooms, bathrooms, area, price)`;
@@ -43,9 +43,11 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
     if (lowerSq.includes('residential')) mappedCategory = 'Residential';
     else if (lowerSq.includes('commercial')) mappedCategory = 'Commercial';
     else if (lowerSq.includes('studio')) mappedCategory = 'Studio Apartment';
+    else if (lowerSq.includes('office')) mappedCategory = 'Office Space';
+    else if (lowerSq.includes('retail') || lowerSq.includes('shop')) mappedCategory = 'Retail Shop';
 
     if (mappedCategory) {
-      query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%,property_category.eq.${mappedCategory}`);
+      query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%,property_categories.cs.{"${mappedCategory}"},property_category.eq.${mappedCategory}`);
     } else {
       let mappedType = '';
       if (lowerSq.includes('apartment')) mappedType = 'Apartment';
@@ -53,8 +55,8 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
       else if (lowerSq.includes('plot')) mappedType = 'Plot';
       else if (lowerSq.includes('penthouse')) mappedType = 'Penthouse';
       else if (lowerSq.includes('independent')) mappedType = 'Independent House';
-      else if (lowerSq.includes('retail')) mappedType = 'Retail Shop';
-      else if (lowerSq.includes('office')) mappedType = 'Office Space';
+      else if (lowerSq.includes('retail')) mappedType = 'Retail';
+      else if (lowerSq.includes('office')) mappedType = 'Office';
 
       if (mappedType) {
         query = query.or(`title.ilike.%${sq}%,locality.ilike.%${sq}%,city.ilike.%${sq}%,property_type.eq.${mappedType}`);
@@ -88,34 +90,63 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
     query = query.ilike('builders.name', `%${builderSlug}%`);
   }
 
-  // 4. Property Type and Category
-  if (filters.propertyCategory && filters.propertyCategory !== 'all') {
+  // 4. Property Type and Category (Multiple Categories Support)
+  if (filters.propertyCategories && filters.propertyCategories.length > 0) {
+    const conditions = filters.propertyCategories.map(cat => {
+      const pc = cat.replace(/-/g, ' ');
+      const formatted = pc.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+      return `property_categories.cs.{"${formatted}"},property_category.eq.${formatted}`;
+    }).join(',');
+    query = query.or(conditions);
+  } else if (filters.propertyCategory && filters.propertyCategory !== 'all') {
     const pc = filters.propertyCategory.replace(/-/g, ' ');
     const formattedPc = pc.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-    query = query.eq('property_category', formattedPc);
+    query = query.or(`property_categories.cs.{"${formattedPc}"},property_category.eq.${formattedPc}`);
   }
 
   if (filters.propertyType && filters.propertyType !== 'all') {
     const pt = filters.propertyType.replace(/-/g, ' ');
     const formattedPt = pt.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-    // Use .eq instead of .ilike since property_type is an Enum
     query = query.eq('property_type', formattedPt);
   }
 
-  // 5. Status & Possession
-  if (filters.status && filters.status !== 'all') {
-    const s = filters.status.replace(/-/g, ' ');
-    query = query.ilike('status', `%${s}%`);
-  }
-  if (filters.possessionStatus && filters.possessionStatus !== 'all') {
-    query = query.eq('construction_status', filters.possessionStatus);
+  // 5. Configurations & Bedrooms (Multiple Configurations & BHK Support)
+  if (filters.configurations && filters.configurations.length > 0) {
+    const conditions = filters.configurations.map(c => `configurations.cs.{"${c}"}`).join(',');
+    query = query.or(conditions);
+  } else if (filters.bedrooms && filters.bedrooms !== 'all') {
+    const rawBed = String(filters.bedrooms).trim();
+    const bedMatch = rawBed.match(/(\d+)/);
+    const num = bedMatch ? parseInt(bedMatch[1], 10) : undefined;
+    const formattedBhk = num ? `${num} BHK` : rawBed;
+
+    if (num !== undefined) {
+      query = query.or(`property_floor_plans.bedrooms.eq.${num},configurations.cs.{"${formattedBhk}"},bedrooms.eq.${num}`);
+    } else {
+      query = query.or(`configurations.cs.{"${rawBed}"}`);
+    }
   }
 
-  // 6. Bedrooms / BHK (Uses structured data via floor plans)
-  if (filters.bedrooms && filters.bedrooms !== 'all') {
-    const beds = parseInt(String(filters.bedrooms));
-    if (!isNaN(beds)) {
-      query = query.eq('property_floor_plans.bedrooms', beds);
+  // 6. Status & Possession
+  const VALID_CONSTRUCTION_STATUSES = ['READY_TO_MOVE', 'UNDER_CONSTRUCTION', 'NEW_LAUNCH'];
+  const VALID_PROPERTY_STATUSES = ['ACTIVE', 'INACTIVE', 'SOLD', 'UPCOMING'];
+
+  if (filters.status && filters.status !== 'all') {
+    const rawStatus = filters.status.trim();
+    const upperUnder = rawStatus.toUpperCase().replace(/[\s-]+/g, '_');
+
+    if (VALID_CONSTRUCTION_STATUSES.includes(upperUnder)) {
+      query = query.eq('construction_status', upperUnder);
+    } else if (VALID_PROPERTY_STATUSES.includes(upperUnder)) {
+      query = query.eq('status', upperUnder);
+    }
+  }
+
+  if (filters.possessionStatus && filters.possessionStatus !== 'all') {
+    const rawPossession = filters.possessionStatus.trim();
+    const upperPossession = rawPossession.toUpperCase().replace(/[\s-]+/g, '_');
+    if (VALID_CONSTRUCTION_STATUSES.includes(upperPossession)) {
+      query = query.eq('construction_status', upperPossession);
     }
   }
 
@@ -134,12 +165,8 @@ export function applyPropertyFilters(query: any, filters: PropertyFilterOptions)
     if (b === "above-10") query = query.gt('price', 100000000);
   }
 
-  // 8. Amenities (OR matching by default via PostgREST .in)
-  // To support 'ALL' matching (AND) perfectly in PostgREST without RPC, you'd need multiple joins, 
-  // which is unsupported easily. For now, architecture supports ANY, and we lay groundwork for ALL.
+  // 8. Amenities
   if (filters.amenities && filters.amenities.length > 0) {
-    // If matchMode === "all", ideally we'd use an RPC or array contains if we had an array column.
-    // For now, we apply standard IN which does an OR match.
     query = query.in('property_amenities.amenity_id', filters.amenities);
   }
 

@@ -56,6 +56,13 @@ export async function createProperty(input: Partial<CreatePropertyInput>): Promi
       normalized.slug = generateSlug(normalized.title);
     }
 
+    if ((!normalized.propertyCategories || (Array.isArray(normalized.propertyCategories) && normalized.propertyCategories.length === 0)) && normalized.propertyCategory) {
+      normalized.propertyCategories = [String(normalized.propertyCategory)];
+    }
+    if (Array.isArray(normalized.propertyCategories) && normalized.propertyCategories.length > 0 && !normalized.propertyCategory) {
+      normalized.propertyCategory = normalized.propertyCategories[0];
+    }
+
     const validatedData = validate<CreatePropertyInput>(CreatePropertySchema, normalized);
 
     await checkBuilderExists(validatedData.builderId);
@@ -64,11 +71,11 @@ export async function createProperty(input: Partial<CreatePropertyInput>): Promi
     return await repository.createProperty(validatedData);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    
+
     if (msg.startsWith('Validation Error') || msg.startsWith('Conflict Error')) {
       throw error;
     }
-    
+
     if (msg.includes('properties_slug_unique')) {
       throw new Error(`Conflict Error: A property with this slug already exists.`);
     }
@@ -98,6 +105,12 @@ export async function updateProperty(id: string, input: UpdatePropertyInput): Pr
       normalized.slug = generateSlug(normalized.title);
     }
 
+    if (Array.isArray(normalized.propertyCategories) && normalized.propertyCategories.length > 0 && !normalized.propertyCategory) {
+      normalized.propertyCategory = normalized.propertyCategories[0];
+    } else if (normalized.propertyCategory && (!normalized.propertyCategories || (Array.isArray(normalized.propertyCategories) && normalized.propertyCategories.length === 0))) {
+      normalized.propertyCategories = [String(normalized.propertyCategory)];
+    }
+
     const validatedData = validate<UpdatePropertyInput>(UpdatePropertySchema, normalized);
 
     if (validatedData.builderId && validatedData.builderId !== existing.builderId) {
@@ -111,11 +124,11 @@ export async function updateProperty(id: string, input: UpdatePropertyInput): Pr
     return await repository.updateProperty(id, validatedData);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);
-    
+
     if (msg.startsWith('Validation Error') || msg.startsWith('Conflict Error') || msg.startsWith('Not Found')) {
       throw error;
     }
-    
+
     if (msg.includes('properties_slug_unique')) {
       throw new Error(`Conflict Error: A property with this slug already exists.`);
     }
@@ -190,7 +203,6 @@ export async function generateNextPropertyCode(): Promise<string> {
   try {
     return await repository.getNextPropertyCode();
   } catch (error: unknown) {
-    // Fallback if database lookup fails
     return `PROP-${Date.now().toString().slice(-6)}`;
   }
 }

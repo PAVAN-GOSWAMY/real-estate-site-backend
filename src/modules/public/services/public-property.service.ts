@@ -2,12 +2,13 @@ import { createPublicClient } from '@/lib/supabase/public';
 import { PublicProperty, PublicAmenityGroup } from '../types/property';
 import { PublicFeaturedBuilder } from '../types/builder';
 import { PropertyFilterOptions } from '../types/search';
-import { 
-  buildPropertySelect, 
-  applyPropertyFilters, 
-  applyPropertySort 
+import {
+  buildPropertySelect,
+  applyPropertyFilters,
+  applyPropertySort
 } from './property-filter.helper';
 import { PropertyFloorPlan, PropertyDocument } from '../../properties/types/assets';
+import { PropertyConfiguration } from '../../properties/types/configuration';
 
 function mapToPublicProperty(row: any): PublicProperty {
   const builderName = row.builders?.name || 'Unknown Builder';
@@ -23,7 +24,7 @@ function mapToPublicProperty(row: any): PublicProperty {
 
   const mediaList = row.property_media || [];
   mediaList.sort((a: any, b: any) => a.display_order - b.display_order);
-  
+
   const featuredMedia = mediaList.find((m: any) => m.is_featured);
   const thumbnail = featuredMedia ? featuredMedia.url : (mediaList[0]?.url || null);
   const images = mediaList.map((m: any) => m.url);
@@ -31,7 +32,7 @@ function mapToPublicProperty(row: any): PublicProperty {
   // Group Amenities
   const groupedAmenitiesMap = new Map<string, { name: string; iconKey: string }[]>();
   const rawAmenities = row.property_amenities?.map((pa: any) => pa.amenities) || [];
-  
+
   rawAmenities.forEach((amenity: any) => {
     if (!amenity) return;
     const category = amenity.category || 'General';
@@ -78,19 +79,91 @@ function mapToPublicProperty(row: any): PublicProperty {
     updatedAt: doc.updated_at,
   })).sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  // Formatting price display if price exists
+  // Configurations
+  let propertyConfigurations: PropertyConfiguration[] = (row.property_configurations || []).map((pc: any) => ({
+    id: pc.id,
+    propertyId: pc.property_id,
+    configurationType: pc.configuration_type,
+    bedrooms: pc.bedrooms !== null && pc.bedrooms !== undefined ? Number(pc.bedrooms) : null,
+    bathrooms: pc.bathrooms !== null && pc.bathrooms !== undefined ? Number(pc.bathrooms) : null,
+    balconies: pc.balconies !== null && pc.balconies !== undefined ? Number(pc.balconies) : null,
+    parkingSlots: pc.parking_slots !== null && pc.parking_slots !== undefined ? Number(pc.parking_slots) : null,
+    superBuiltUpArea: pc.super_built_up_area !== null && pc.super_built_up_area !== undefined ? Number(pc.super_built_up_area) : null,
+    carpetArea: pc.carpet_area !== null && pc.carpet_area !== undefined ? Number(pc.carpet_area) : null,
+    floorNumber: pc.floor_number !== null && pc.floor_number !== undefined ? Number(pc.floor_number) : null,
+    totalFloors: pc.total_floors !== null && pc.total_floors !== undefined ? Number(pc.total_floors) : null,
+    facing: pc.facing || null,
+    possessionDate: pc.possession_date || null,
+    constructionStatus: pc.construction_status || null,
+    basePrice: pc.base_price !== null && pc.base_price !== undefined ? Number(pc.base_price) : null,
+    priceDisplay: pc.price_display || null,
+    availability: pc.availability || 'AVAILABLE',
+    displayOrder: pc.display_order ?? 0,
+    createdAt: pc.created_at,
+    updatedAt: pc.updated_at,
+  })).sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+
+  // Formatting price display from minimum basePrice across configurations if present
+  const configPrices = propertyConfigurations
+    .map(pc => Number(pc.basePrice))
+    .filter(p => !isNaN(p) && p > 0);
+  const minPrice = configPrices.length > 0 ? Math.min(...configPrices) : (row.price ? Number(row.price) : null);
+  const maxPrice = configPrices.length > 0 ? Math.max(...configPrices) : minPrice;
+
   let priceDisplay = null;
-  if (row.price) {
-    if (row.price >= 10000000) {
-      const cr = row.price / 10000000;
-      priceDisplay = `₹ ${cr.toFixed(2).replace(/\.00$/, '')} Cr Onwards`;
-    } else if (row.price >= 100000) {
-      const lakhs = row.price / 100000;
-      priceDisplay = `₹ ${lakhs.toFixed(2).replace(/\.00$/, '')} Lakhs Onwards`;
+  if (minPrice) {
+    if (minPrice >= 10000000) {
+      const cr = minPrice / 10000000;
+      priceDisplay = `\u20B9 ${cr.toFixed(2).replace(/\.00$/, '')} Cr Onwards`;
+    } else if (minPrice >= 100000) {
+      const lakhs = minPrice / 100000;
+      priceDisplay = `\u20B9 ${lakhs.toFixed(2).replace(/\.00$/, '')} Lakhs Onwards`;
     } else {
-      priceDisplay = `₹ ${row.price.toLocaleString('en-IN')} Onwards`;
+      priceDisplay = `\u20B9 ${minPrice.toLocaleString('en-IN')} Onwards`;
     }
   }
+
+  // Fallback: If no child configurations found, synthesize from parent configurations array or bedrooms
+  if (propertyConfigurations.length === 0) {
+    const fallbackTypes = Array.isArray(row.configurations) && row.configurations.length > 0
+      ? row.configurations
+      : (row.bedrooms ? [`${row.bedrooms} BHK`] : []);
+
+    if (fallbackTypes.length > 0) {
+      propertyConfigurations = fallbackTypes.map((type: string, idx: number) => ({
+        id: `synth-${idx}`,
+        propertyId: row.id,
+        configurationType: type,
+        bedrooms: row.bedrooms,
+        bathrooms: row.bathrooms,
+        balconies: row.balconies,
+        parkingSlots: row.parking,
+        superBuiltUpArea: row.super_builtup_area ? Number(row.super_builtup_area) : null,
+        carpetArea: row.carpet_area ? Number(row.carpet_area) : null,
+        floorNumber: row.floor_number,
+        totalFloors: row.total_floors,
+        facing: row.facing,
+        possessionDate: row.possession_date,
+        constructionStatus: row.construction_status,
+        basePrice: row.price ? Number(row.price) : null,
+        priceDisplay: priceDisplay,
+        availability: row.availability || 'AVAILABLE',
+        displayOrder: idx,
+      }));
+    }
+  }
+
+  const rawCategories: string[] = Array.isArray(row.property_categories) && row.property_categories.length > 0
+    ? row.property_categories
+    : (row.property_category ? [row.property_category] : ['Residential']);
+  const primaryCategory = rawCategories[0] || row.property_category || 'Residential';
+
+  const configurations: string[] = Array.isArray(row.configurations) && row.configurations.length > 0
+    ? row.configurations
+    : (propertyConfigurations.length > 0
+        ? propertyConfigurations.map(c => c.configurationType)
+        : (row.bedrooms ? [`${row.bedrooms} BHK`] : []));
+
   return {
     id: row.id,
     slug: row.slug,
@@ -99,6 +172,7 @@ function mapToPublicProperty(row: any): PublicProperty {
     builderId: row.builder_id,
     builderName,
     builderLogo,
+    managedBy: row.managed_by || null,
     landmark: row.landmark,
     locality: row.locations ? row.locations.name : row.locality,
     locationSlug: row.locations ? row.locations.slug : null,
@@ -114,10 +188,15 @@ function mapToPublicProperty(row: any): PublicProperty {
     googleMapsUrl: row.google_maps_url,
     latitude: row.latitude ? Number(row.latitude) : null,
     longitude: row.longitude ? Number(row.longitude) : null,
-    price: row.price ? Number(row.price) : null,
+    price: minPrice,
+    minPrice,
+    maxPrice,
     priceDisplay,
-    propertyCategory: row.property_category,
+    propertyCategory: primaryCategory,
+    propertyCategories: rawCategories,
     propertyType: row.property_type,
+    configurations,
+    propertyConfigurations,
     status: row.status,
     bedrooms: row.bedrooms,
     bathrooms: row.bathrooms,
@@ -197,16 +276,15 @@ export async function getPublicProperties(filters: PropertyFilterOptions): Promi
 
   const { data, count, error } = await query;
   if (error) {
-    // Handle invalid enum silently by returning 0 results
-    if (error.message.includes('invalid input value for enum')) {
+    if (error.message.includes('invalid input value for enum') || error.message.includes('operator does not exist')) {
       return { properties: [], totalCount: 0, totalPages: 0 };
     }
     throw new Error(`Database Error: ${error.message}`);
   }
 
   const properties = (data || []).map(mapToPublicProperty);
-  
-  const actualCount = count || 0; 
+
+  const actualCount = count || 0;
   const totalPages = Math.ceil(actualCount / ITEMS_PER_PAGE);
 
   return { properties, totalCount: actualCount, totalPages };
@@ -222,6 +300,7 @@ export async function getPublicPropertyBySlug(slug: string): Promise<PublicPrope
       property_media (url, is_featured, display_order),
       property_floor_plans (*),
       property_documents (*),
+      property_configurations (*),
       property_amenities (
         amenities (name, category, icon)
       ),
@@ -256,8 +335,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
       console.error('Failed to fetch related properties:', error);
       return [];
     }
-    
-    // Filter out already fetched IDs just in case
+
     const newItems = (data || []).filter((item: any) => !fetchedIds.has(item.id));
     newItems.forEach((item: any) => fetchedIds.add(item.id));
     return newItems;
@@ -265,10 +343,6 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
 
   // 1. Same Location
   if (baseProperty.locationId && results.length < limit) {
-    let q = supabase.from('properties').select('*', { count: 'exact', head: true })
-      .eq('location_id', baseProperty.locationId);
-    
-    // Convert to full query but exclude fetched
     let query = supabase.from('properties').select(`
         *,
         builders (name, logo_url),
@@ -278,7 +352,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
       `)
       .eq('location_id', baseProperty.locationId)
       .neq('id', baseProperty.id);
-      
+
     const items = await fetchProperties(query, limit - results.length);
     results.push(...items);
   }
@@ -294,11 +368,11 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
       `)
       .eq('city_id', baseProperty.cityId)
       .neq('id', baseProperty.id);
-    
+
     if (baseProperty.locationId) {
        query = query.neq('location_id', baseProperty.locationId);
     }
-    
+
     const items = await fetchProperties(query, limit - results.length);
     results.push(...items);
   }
@@ -314,11 +388,11 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
       `)
       .eq('builder_id', baseProperty.builderId)
       .neq('id', baseProperty.id);
-      
+
     if (baseProperty.cityId) {
       query = query.neq('city_id', baseProperty.cityId);
     }
-    
+
     const items = await fetchProperties(query, limit - results.length);
     results.push(...items);
   }
@@ -334,14 +408,14 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
       `)
       .eq('property_type', baseProperty.propertyType)
       .neq('id', baseProperty.id);
-      
+
     if (baseProperty.cityId) {
        query = query.neq('city_id', baseProperty.cityId);
     }
     if (baseProperty.builderId) {
        query = query.neq('builder_id', baseProperty.builderId);
     }
-    
+
     const items = await fetchProperties(query, limit - results.length);
     results.push(...items);
   }
@@ -361,9 +435,9 @@ export async function getPublicFilterOptions(): Promise<{
 
   const { data: properties, error: propertiesError } = await supabase
     .from('properties')
-    .select('property_category, property_type, bedrooms, construction_status')
+    .select('property_category, property_categories, property_type, configurations, bedrooms, construction_status')
     .eq('status', 'ACTIVE');
-    
+
   const { data: builders, error: buildersError } = await supabase
     .from('builders')
     .select('name')
@@ -385,21 +459,36 @@ export async function getPublicFilterOptions(): Promise<{
   const configsSet = new Set<string>();
   const statusesSet = new Set<string>();
 
-  (properties || []).forEach(p => {
-    if (p.property_category) categoriesSet.add(p.property_category);
+  (properties || []).forEach((p: any) => {
+    if (Array.isArray(p.property_categories)) {
+      p.property_categories.forEach((cat: string) => {
+        if (cat) categoriesSet.add(cat);
+      });
+    } else if (p.property_category) {
+      categoriesSet.add(p.property_category);
+    }
+
     if (p.property_type) typesSet.add(p.property_type);
-    if (p.bedrooms) configsSet.add(`${p.bedrooms} BHK`);
+
+    if (Array.isArray(p.configurations) && p.configurations.length > 0) {
+      p.configurations.forEach((c: string) => {
+        if (c) configsSet.add(c);
+      });
+    } else if (p.bedrooms) {
+      configsSet.add(`${p.bedrooms} BHK`);
+    }
+
     if (p.construction_status) {
       const statusStr = String(p.construction_status).replace(/_/g, ' ');
       statusesSet.add(
-        statusStr.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+        statusStr.split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
       );
     }
   });
 
   return {
-    cities: (cities || []).map(c => ({ id: c.id, name: c.name, slug: c.slug })),
-    builders: (builders || []).map(b => b.name).sort(),
+    cities: (cities || []).map((c: any) => ({ id: c.id, name: c.name, slug: c.slug })),
+    builders: (builders || []).map((b: any) => b.name).sort(),
     categories: Array.from(categoriesSet).sort(),
     types: Array.from(typesSet).sort(),
     configs: Array.from(configsSet).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })),
@@ -409,7 +498,7 @@ export async function getPublicFilterOptions(): Promise<{
 
 export async function getTopLocations(): Promise<{ name: string; slug: string; image: string; propertyCount: number }[]> {
   const supabase = createPublicClient();
-  
+
   const { data, error } = await supabase
     .from('properties')
     .select('locality, property_media (url, is_featured)')
@@ -419,14 +508,14 @@ export async function getTopLocations(): Promise<{ name: string; slug: string; i
 
   const locMap = new Map<string, { count: number; images: string[] }>();
 
-  data.forEach(p => {
+  data.forEach((p: any) => {
     if (!p.locality) return;
     const loc = p.locality;
     if (!locMap.has(loc)) locMap.set(loc, { count: 0, images: [] });
-    
+
     const stats = locMap.get(loc)!;
     stats.count++;
-    
+
     const featured = p.property_media?.find((m: any) => m.is_featured);
     if (featured) stats.images.push(featured.url);
     else if (p.property_media?.[0]) stats.images.push(p.property_media[0].url);
@@ -445,7 +534,7 @@ export async function getTopLocations(): Promise<{ name: string; slug: string; i
 
 export async function getSiteStats(): Promise<{ propertyCount: number; developerCount: number; happyClients: string; yearsExperience: string }> {
   const supabase = createPublicClient();
-  
+
   const [propertiesResult, buildersResult, settingsResult] = await Promise.all([
     supabase.from('properties').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE'),
     supabase.from('builders').select('*', { count: 'exact', head: true }).eq('is_active', true),
@@ -464,7 +553,7 @@ export async function getSiteStats(): Promise<{ propertyCount: number; developer
 
 export async function getFeaturedBuilders(): Promise<PublicFeaturedBuilder[]> {
   const supabase = createPublicClient();
-  
+
   const { data, error } = await supabase
     .from('builders')
     .select(`

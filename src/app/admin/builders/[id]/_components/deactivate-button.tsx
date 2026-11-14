@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,7 +21,7 @@ export function DeactivateButton({ builderId }: DeactivateButtonProps) {
     startTransition(async () => {
       const result = await deactivateBuilderAction(builderId);
       if (!result.success) {
-        alert(`Error: ${result.error}`);
+        toast.error(result.error);
         setIsOpen(false);
       } else {
         setIsOpen(false);
@@ -31,9 +32,9 @@ export function DeactivateButton({ builderId }: DeactivateButtonProps) {
 
   return (
     <>
-      <Button 
-        variant="destructive" 
-        onClick={() => setIsOpen(true)} 
+      <Button
+        variant="destructive"
+        onClick={() => setIsOpen(true)}
         disabled={isPending}
         data-testid="deactivate-button"
       >

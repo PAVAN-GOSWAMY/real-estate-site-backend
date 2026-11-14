@@ -13,24 +13,60 @@ interface DeveloperProfile {
 
 interface PropertyDeveloperProps {
   profile: DeveloperProfile;
+  propertyTitle?: string;
+  managedBy?: string | null;
 }
 
-export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
+export function PropertyDeveloper({ profile, propertyTitle, managedBy }: PropertyDeveloperProps) {
   if (!profile) return null;
+
+  const hasManagedBy = Boolean(managedBy && typeof managedBy === 'string' && managedBy.trim().length > 0);
 
   return (
     <div className="space-y-6">
-      <h3 className="font-heading text-3xl font-bold text-brand-navy">About the Builder</h3>
-      
+      <h3 className="font-heading text-3xl font-bold text-brand-navy">
+        {hasManagedBy ? "Developer & Management" : "About the Builder"}
+      </h3>
+
+      {/* Developer vs Managed By Distinction Card - STRICTLY hidden if managedBy is empty/not provided */}
+      {hasManagedBy && (
+        <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-brand-slate/50 shadow-sm space-y-6">
+          {propertyTitle && (
+            <div className="flex items-center gap-2 border-b border-brand-slate/20 pb-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-brand-navy/60">Project:</span>
+              <span className="font-heading text-lg md:text-xl font-bold text-brand-navy">{propertyTitle}</span>
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-blue">
+              BUILDER / DEVELOPER
+            </p>
+            <h4 className="font-heading text-2xl font-bold text-brand-navy">{profile.name}</h4>
+            <p className="text-sm text-brand-navy/70">Originally developed the project.</p>
+          </div>
+
+          <div className="border-t border-brand-slate/30" />
+
+          <div className="space-y-1.5">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-red">
+              MANAGED BY
+            </p>
+            <h4 className="font-heading text-2xl font-bold text-brand-navy">{managedBy}</h4>
+            <p className="text-sm text-brand-navy/70">Currently manages or operates the project.</p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-brand-slate/50 shadow-sm">
         <div className="flex flex-col sm:flex-row gap-8 items-start">
-          
+
           <div className="relative h-32 w-32 sm:h-40 sm:w-40 shrink-0 bg-brand-surface rounded-[1.5rem] border border-brand-slate/50 p-4 flex items-center justify-center">
             {profile.logo && profile.logo.trim() !== "" ? (
-              <Image 
-                src={profile.logo} 
-                alt={profile.name} 
-                fill 
+              <Image
+                src={profile.logo}
+                alt={profile.name}
+                fill
                 className="object-contain p-4"
               />
             ) : (
@@ -39,7 +75,7 @@ export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
               </div>
             )}
           </div>
-          
+
           <div className="flex-1 space-y-6 w-full">
             <div>
               <h4 className="font-heading text-2xl font-bold text-brand-navy mb-3">{profile.name}</h4>
@@ -47,7 +83,7 @@ export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
                 <p className="text-brand-navy/70 text-sm leading-relaxed max-w-3xl">{profile.description}</p>
               )}
             </div>
-            
+
             <div className="flex flex-wrap gap-x-12 gap-y-6 py-6 border-y border-brand-slate/40">
               <div className="flex items-start gap-3">
                 <Calendar className="h-6 w-6 text-brand-blue shrink-0 mt-0.5" strokeWidth={1.5} />
@@ -71,7 +107,7 @@ export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
                 </div>
               </div>
             </div>
-            
+
             <div className="pt-2">
               <Link href={`/builders/${profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`}>
                 <Button variant="link" className="text-brand-blue hover:text-brand-red p-0 h-auto font-medium transition-colors">
@@ -80,7 +116,7 @@ export function PropertyDeveloper({ profile }: PropertyDeveloperProps) {
               </Link>
             </div>
           </div>
-          
+
         </div>
       </div>
     </div>

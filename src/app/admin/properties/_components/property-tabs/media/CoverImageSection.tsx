@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +38,7 @@ export function CoverImageSection({ propertyId, coverImage, onMediaUpdated }: Co
         showToast("Cover image uploaded successfully.");
         onMediaUpdated();
       } else {
-        alert(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -51,7 +52,7 @@ export function CoverImageSection({ propertyId, coverImage, onMediaUpdated }: Co
         showToast("Cover image removed.");
         onMediaUpdated();
       } else {
-        alert(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -71,9 +72,9 @@ export function CoverImageSection({ propertyId, coverImage, onMediaUpdated }: Co
                handleUpload(e);
              }
           }}>
-            <ImageUpload 
-              name="coverImageUpload" 
-              defaultValue={coverImage?.url} 
+            <ImageUpload
+              name="coverImageUpload"
+              defaultValue={coverImage?.url}
               onRemove={handleRemove}
               disabled={isPending}
             />

@@ -2,27 +2,81 @@ import { createClient } from '@/lib/supabase/server';
 import { Property, CreatePropertyInput, UpdatePropertyInput, PropertyFilters } from '../types/property';
 import { PropertyStatus } from '../types/enums';
 
+function extractLowestBedroom(configs: string[]): number | undefined {
+  if (!configs || configs.length === 0) return undefined;
+  let minBhk: number | undefined = undefined;
+  for (const c of configs) {
+    const match = c.match(/(\d+)/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num)) {
+        if (minBhk === undefined || num < minBhk) {
+          minBhk = num;
+        }
+      }
+    } else if (c.toLowerCase().includes('studio')) {
+      if (minBhk === undefined || 1 < minBhk) {
+        minBhk = 1;
+      }
+    }
+  }
+  return minBhk;
+}
+
 /**
  * Helper to map the snake_case database row to the camelCase domain model.
  */
 function mapToProperty(row: any): Property {
+  const rawCategories: string[] = Array.isArray(row.property_categories) && row.property_categories.length > 0
+    ? row.property_categories
+    : (row.property_category ? [row.property_category] : ['Residential']);
+  const primaryCategory = rawCategories[0] || row.property_category || 'Residential';
+
+  const configurations: string[] = Array.isArray(row.configurations)
+    ? row.configurations
+    : (row.bedrooms ? [`${row.bedrooms} BHK`] : []);
+
+  const propertyConfigurations = (row.property_configurations || []).map((pc: any) => ({
+    id: pc.id,
+    propertyId: pc.property_id,
+    configurationType: pc.configuration_type,
+    bedrooms: pc.bedrooms !== null && pc.bedrooms !== undefined ? Number(pc.bedrooms) : null,
+    bathrooms: pc.bathrooms !== null && pc.bathrooms !== undefined ? Number(pc.bathrooms) : null,
+    balconies: pc.balconies !== null && pc.balconies !== undefined ? Number(pc.balconies) : null,
+    parkingSlots: pc.parking_slots !== null && pc.parking_slots !== undefined ? Number(pc.parking_slots) : null,
+    superBuiltUpArea: pc.super_built_up_area !== null && pc.super_built_up_area !== undefined ? Number(pc.super_built_up_area) : null,
+    carpetArea: pc.carpet_area !== null && pc.carpet_area !== undefined ? Number(pc.carpet_area) : null,
+    floorNumber: pc.floor_number !== null && pc.floor_number !== undefined ? Number(pc.floor_number) : null,
+    totalFloors: pc.total_floors !== null && pc.total_floors !== undefined ? Number(pc.total_floors) : null,
+    facing: pc.facing || null,
+    possessionDate: pc.possession_date || null,
+    constructionStatus: pc.construction_status || null,
+    basePrice: pc.base_price !== null && pc.base_price !== undefined ? Number(pc.base_price) : null,
+    priceDisplay: pc.price_display || null,
+    availability: pc.availability || 'AVAILABLE',
+    displayOrder: pc.display_order ?? 0,
+    createdAt: pc.created_at,
+    updatedAt: pc.updated_at,
+  })).sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+
   return {
     id: row.id,
     title: row.title,
     slug: row.slug,
     propertyCode: row.property_code,
     builderId: row.builder_id,
-    propertyCategory: row.property_category,
+    managedBy: row.managed_by || null,
+    propertyCategory: primaryCategory,
+    propertyCategories: rawCategories,
     propertyType: row.property_type,
+    configurations,
+    propertyConfigurations,
     status: row.status,
     availability: row.availability,
     address: row.address,
     landmark: row.landmark,
     city_id: row.city_id,
     location_id: row.location_id,
-
-
-
 
     country: row.country,
     pincode: row.pincode,
@@ -63,33 +117,43 @@ function mapToProperty(row: any): Property {
  */
 export async function createProperty(data: CreatePropertyInput): Promise<Property> {
   const supabase = await createClient();
-  
+
+  const categories: string[] = (data.propertyCategories && data.propertyCategories.length > 0)
+    ? data.propertyCategories
+    : (data.propertyCategory ? [String(data.propertyCategory)] : ['Residential']);
+  const primaryCategory = categories[0] || (data.propertyCategory ? String(data.propertyCategory) : 'Residential');
+
+  let bedrooms = data.bedrooms;
+  if (bedrooms === undefined && data.configurations && data.configurations.length > 0) {
+    bedrooms = extractLowestBedroom(data.configurations);
+  }
+
   const payload = {
     title: data.title,
     slug: data.slug,
     property_code: data.propertyCode,
     builder_id: data.builderId,
-    property_category: data.propertyCategory,
+    managed_by: data.managedBy ? String(data.managedBy).trim() : null,
+    property_category: primaryCategory,
+    property_categories: categories,
     property_type: data.propertyType,
-    status: data.status,
+    configurations: data.configurations || [],
+    status: data.status || PropertyStatus.INACTIVE,
     availability: data.availability,
     address: data.address,
     landmark: data.landmark,
     city_id: data.city_id,
     location_id: data.location_id,
 
-
-
-
-    country: data.country,
+    country: data.country || 'India',
     pincode: data.pincode,
     google_maps_url: data.googleMapsUrl,
     latitude: data.latitude,
     longitude: data.longitude,
     price: data.price,
-    currency: data.currency,
+    currency: data.currency || 'INR',
     price_per_sqft: data.pricePerSqft,
-    bedrooms: data.bedrooms,
+    bedrooms: bedrooms,
     bathrooms: data.bathrooms,
     balconies: data.balconies,
     parking: data.parking,
@@ -102,9 +166,9 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
     construction_status: data.constructionStatus,
     short_description: data.shortDescription,
     description: data.description,
-    is_featured: data.isFeatured,
-    is_verified: data.isVerified,
-    is_premium: data.isPremium,
+    is_featured: data.isFeatured ?? false,
+    is_verified: data.isVerified ?? false,
+    is_premium: data.isPremium ?? false,
     meta_title: data.metaTitle,
     meta_description: data.metaDescription,
     rera_number: data.reraNumber,
@@ -113,7 +177,10 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
   const { data: row, error } = await supabase
     .from('properties')
     .insert(payload)
-    .select()
+    .select(`
+      *,
+      property_configurations (*)
+    `)
     .single();
 
   if (error) {
@@ -128,10 +195,13 @@ export async function createProperty(data: CreatePropertyInput): Promise<Propert
  */
 export async function getPropertyById(id: string): Promise<Property | null> {
   const supabase = await createClient();
-  
+
   const { data: row, error } = await supabase
     .from('properties')
-    .select()
+    .select(`
+      *,
+      property_configurations (*)
+    `)
     .eq('id', id)
     .single();
 
@@ -148,10 +218,13 @@ export async function getPropertyById(id: string): Promise<Property | null> {
  */
 export async function getPropertyBySlug(slug: string): Promise<Property | null> {
   const supabase = await createClient();
-  
+
   const { data: row, error } = await supabase
     .from('properties')
-    .select()
+    .select(`
+      *,
+      property_configurations (*)
+    `)
     .eq('slug', slug)
     .single();
 
@@ -164,19 +237,24 @@ export async function getPropertyBySlug(slug: string): Promise<Property | null> 
 }
 
 /**
- * Lists properties based on filters with pagination.
+ * Retrieves properties based on filters and pagination.
  */
-export async function listProperties(
-  filters: PropertyFilters
-): Promise<{ items: Property[]; total: number; page: number; limit: number }> {
+export async function listProperties(filters: PropertyFilters = {}): Promise<{
+  items: Property[];
+  total: number;
+  page: number;
+  limit: number;
+}> {
   const supabase = await createClient();
-  const page = filters.page || 1;
-  const limit = filters.limit || 10;
-  
+
+  const page = Math.max(1, filters.page || 1);
+  const limit = Math.max(1, filters.limit || 10);
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let query = supabase.from('properties').select('*', { count: 'exact' });
+  let query = supabase
+    .from('properties')
+    .select('*, property_configurations (*)', { count: 'exact' });
 
   if (filters.search) {
     query = query.or(`title.ilike.%${filters.search}%,property_code.ilike.%${filters.search}%`);
@@ -184,11 +262,22 @@ export async function listProperties(
   if (filters.builderId) {
     query = query.eq('builder_id', filters.builderId);
   }
-  if (filters.propertyCategory) {
-    query = query.eq('property_category', filters.propertyCategory);
+  if (filters.propertyCategories && filters.propertyCategories.length > 0) {
+    const conditions = filters.propertyCategories
+      .map(cat => `property_categories.cs.{"${cat}"},property_category.eq.${cat}`)
+      .join(',');
+    query = query.or(conditions);
+  } else if (filters.propertyCategory) {
+    query = query.or(`property_categories.cs.{"${filters.propertyCategory}"},property_category.eq.${filters.propertyCategory}`);
   }
   if (filters.propertyType) {
     query = query.eq('property_type', filters.propertyType);
+  }
+  if (filters.configurations && filters.configurations.length > 0) {
+    const conditions = filters.configurations
+      .map(cfg => `configurations.cs.{"${cfg}"}`)
+      .join(',');
+    query = query.or(conditions);
   }
   if (filters.status) {
     query = query.eq('status', filters.status);
@@ -206,8 +295,6 @@ export async function listProperties(
     query = query.eq('is_premium', filters.premium);
   }
   if (filters.city) {
-    // Legacy support: mapping city to city_id is needed if filters.city is passed
-    // For now, we skip or filter by city_id if it's a UUID
     if (filters.city.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
       query = query.eq('city_id', filters.city);
     }
@@ -219,7 +306,7 @@ export async function listProperties(
     query = query.lte('price', filters.maxPrice);
   }
   if (filters.bedrooms !== undefined) {
-    query = query.eq('bedrooms', filters.bedrooms);
+    query = query.or(`bedrooms.eq.${filters.bedrooms},configurations.cs.{"${filters.bedrooms} BHK"}`);
   }
 
   const { data: rows, error, count } = await query
@@ -243,24 +330,43 @@ export async function listProperties(
  */
 export async function updateProperty(id: string, data: UpdatePropertyInput): Promise<Property> {
   const supabase = await createClient();
-  
+
   const payload: any = {};
-  
+
   if (data.title !== undefined) payload.title = data.title;
   if (data.slug !== undefined) payload.slug = data.slug;
   if (data.propertyCode !== undefined) payload.property_code = data.propertyCode;
   if (data.builderId !== undefined) payload.builder_id = data.builderId;
-  if (data.propertyCategory !== undefined) payload.property_category = data.propertyCategory;
+
+  if (data.propertyCategories !== undefined) {
+    payload.property_categories = data.propertyCategories;
+    if (data.propertyCategories.length > 0) {
+      payload.property_category = data.propertyCategories[0];
+    }
+  } else if (data.propertyCategory !== undefined) {
+    payload.property_category = data.propertyCategory;
+    payload.property_categories = [data.propertyCategory];
+  }
+
+  if (data.configurations !== undefined) {
+    payload.configurations = data.configurations;
+    if (data.bedrooms === undefined && data.configurations.length > 0) {
+      const derived = extractLowestBedroom(data.configurations);
+      if (derived !== undefined) {
+        payload.bedrooms = derived;
+      }
+    }
+  }
+
+  if (data.builderId !== undefined) payload.builder_id = data.builderId;
+  if (data.managedBy !== undefined) payload.managed_by = data.managedBy ? String(data.managedBy).trim() : null;
   if (data.propertyType !== undefined) payload.property_type = data.propertyType;
   if (data.status !== undefined) payload.status = data.status;
   if (data.availability !== undefined) payload.availability = data.availability;
   if (data.address !== undefined) payload.address = data.address;
   if (data.landmark !== undefined) payload.landmark = data.landmark;
-
+  if (data.city_id !== undefined) payload.city_id = data.city_id;
   if (data.location_id !== undefined) payload.location_id = data.location_id;
-
-
-
 
   if (data.country !== undefined) payload.country = data.country;
   if (data.pincode !== undefined) payload.pincode = data.pincode;
@@ -302,7 +408,10 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
     .from('properties')
     .update(payload)
     .eq('id', id)
-    .select()
+    .select(`
+      *,
+      property_configurations (*)
+    `)
     .single();
 
   if (error) {
@@ -317,12 +426,15 @@ export async function updateProperty(id: string, data: UpdatePropertyInput): Pro
  */
 export async function togglePropertyStatus(id: string, status: PropertyStatus): Promise<Property> {
   const supabase = await createClient();
-  
+
   const { data: row, error } = await supabase
     .from('properties')
     .update({ status })
     .eq('id', id)
-    .select()
+    .select(`
+      *,
+      property_configurations (*)
+    `)
     .single();
 
   if (error) {
@@ -337,7 +449,7 @@ export async function togglePropertyStatus(id: string, status: PropertyStatus): 
  */
 export async function deleteProperty(id: string): Promise<void> {
   const supabase = await createClient();
-  
+
   const { error } = await supabase
     .from('properties')
     .delete()
@@ -353,8 +465,7 @@ export async function deleteProperty(id: string): Promise<void> {
  */
 export async function getNextPropertyCode(): Promise<string> {
   const supabase = await createClient();
-  
-  // We'll get the highest property code that starts with PROP-
+
   const { data, error } = await supabase
     .from('properties')
     .select('property_code')
@@ -362,25 +473,22 @@ export async function getNextPropertyCode(): Promise<string> {
     .order('property_code', { ascending: false })
     .limit(1)
     .maybeSingle();
-    
+
   if (error && error.code !== 'PGRST116') {
     console.error("Failed to fetch max property code:", error);
-    // Fallback if query fails
     return `PROP-${Date.now().toString().slice(-6)}`;
   }
-  
+
   if (!data || !data.property_code) {
     return 'PROP-000001';
   }
-  
+
   const currentCode = data.property_code;
-  // Extract the number part
   const numMatch = currentCode.match(/PROP-(\d+)/);
   if (numMatch && numMatch[1]) {
     const nextNum = parseInt(numMatch[1], 10) + 1;
     return `PROP-${nextNum.toString().padStart(6, '0')}`;
   }
-  
-  // Fallback if regex fails
+
   return `PROP-${Date.now().toString().slice(-6)}`;
 }

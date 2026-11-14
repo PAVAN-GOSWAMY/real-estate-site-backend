@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -38,18 +39,18 @@ export function PropertyRowActions({ propertyId, status }: PropertyRowActionsPro
 
   const handleStatusToggle = () => {
     const newStatus = isActive ? PropertyStatus.INACTIVE : PropertyStatus.ACTIVE;
-    
+
     startTransition(async () => {
       try {
         const result = await togglePropertyStatusAction(propertyId, newStatus);
-        
+
         if (result.success) {
           showToast(`Property is now ${newStatus.toLowerCase()}.`);
         } else {
-          alert(`Error: ${result.error}`);
+          toast.error(result.error);
         }
       } catch (error) {
-        alert("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.");
       } finally {
         setShowStatusDialog(false);
       }
@@ -67,18 +68,18 @@ export function PropertyRowActions({ propertyId, status }: PropertyRowActionsPro
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          
+
           <DropdownMenuItem asChild>
             <Link href={`/admin/properties/${propertyId}`}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Property
             </Link>
           </DropdownMenuItem>
-          
+
           <DropdownMenuSeparator />
-          
+
           {(isActive || isInactive) && (
-            <DropdownMenuItem 
+            <DropdownMenuItem
               onClick={() => setShowStatusDialog(true)}
               className={isActive ? "text-destructive focus:text-destructive" : "text-primary focus:text-primary"}
             >

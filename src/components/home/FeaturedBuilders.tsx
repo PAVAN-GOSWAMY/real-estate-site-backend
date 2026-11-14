@@ -1,9 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Building2, Calendar, HardHat } from "lucide-react";
-import { Section, Container, SectionHeader, SectionTitle, SectionDescription } from "@/components/layout/wrappers";
+import { ArrowRight, Building2 } from "lucide-react";
 import { getFeaturedBuilders } from "@/modules/public/services/public-property.service";
-import { Button } from "@/components/ui/button";
 
 export async function FeaturedBuilders() {
   const builders = await getFeaturedBuilders();
@@ -12,93 +10,86 @@ export async function FeaturedBuilders() {
     return null;
   }
 
-  const currentYear = new Date().getFullYear();
+  // Duplicate items for continuous seamless infinite marquee scroll
+  const marqueeItems = [...builders, ...builders, ...builders, ...builders];
 
   return (
-    <Section className="bg-muted/30 pt-16">
-      <Container>
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-          <SectionHeader className="mb-0">
-            <SectionTitle className="text-brand-navy">Featured Developers</SectionTitle>
-            <SectionDescription>
-              Discover India&apos;s most trusted and reputed real estate developers shaping the future of urban living.
-            </SectionDescription>
-          </SectionHeader>
-          <Link
-            href="/properties"
-            className="inline-flex items-center text-sm font-bold text-brand-navy hover:text-brand-red transition-colors group whitespace-nowrap mb-1"
-          >
-            Explore All Projects
-            <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
+    <section className="bg-brand-surface border-y border-brand-slate/40 py-12 md:py-16 overflow-hidden relative">
+      {/* Left & Right gradient edge fades */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-28 md:w-40 bg-gradient-to-r from-brand-surface via-brand-surface/85 to-transparent z-10"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-28 md:w-40 bg-gradient-to-l from-brand-surface via-brand-surface/85 to-transparent z-10"
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {builders.map((builder) => (
-            <div 
-              key={builder.id} 
-              className="group bg-card border border-brand-slate/40 rounded-2xl overflow-hidden hover:border-brand-red/50 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col"
-            >
-              <div className="p-6 flex-1 flex flex-col">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-xl border border-border/50 bg-white flex items-center justify-center p-2 shrink-0 overflow-hidden relative">
-                    {builder.logoUrl ? (
-                      <Image
-                        src={builder.logoUrl}
-                        alt={`${builder.name} logo`}
-                        fill
-                        className="object-contain p-2"
-                        sizes="64px"
-                      />
-                    ) : (
-                      <HardHat className="w-8 h-8 text-muted-foreground/50" />
-                    )}
+      <div className="container mx-auto px-4 mb-8 sm:mb-10 text-center">
+        {/* Kicker in Brand Red */}
+        <p className="text-xs sm:text-sm font-extrabold uppercase tracking-widest text-brand-red mb-2.5">
+          Our Elite Partners
+        </p>
+
+        {/* Heading in Brand Navy */}
+        <h2 className="font-heading text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold uppercase tracking-tight text-brand-navy max-w-4xl mx-auto leading-snug sm:leading-tight">
+          Powering Real Estate Success With Trusted Alliances.
+        </h2>
+      </div>
+
+      {/* Marquee Track */}
+      <div className="relative w-full overflow-hidden">
+        <div className="animate-marquee-scroll flex items-center gap-6 sm:gap-8 py-2">
+          {marqueeItems.map((builder, idx) => {
+            const builderLink = builder.slug
+              ? `/properties?builder=${builder.slug}`
+              : "/properties";
+
+            return (
+              <Link
+                key={`${builder.id}-${idx}`}
+                href={builderLink}
+                prefetch={false}
+                className="group/item shrink-0 flex items-center justify-center h-20 sm:h-24 min-w-[200px] sm:min-w-[240px] px-6 sm:px-8 bg-white rounded-2xl border border-brand-slate/40 shadow-xs hover:shadow-md hover:border-brand-red/50 hover:-translate-y-0.5 transition-all duration-300"
+                title={`Explore ${builder.name} projects`}
+              >
+                {builder.logoUrl ? (
+                  <div className="relative w-full h-12 sm:h-14 flex items-center justify-center">
+                    <Image
+                      src={builder.logoUrl}
+                      alt={`${builder.name} logo`}
+                      fill
+                      className="object-contain filter grayscale group-hover/item:grayscale-0 transition-all duration-300"
+                      sizes="240px"
+                    />
                   </div>
-                  <div>
-                    <h3 className="font-heading text-xl font-bold text-brand-navy group-hover:text-brand-red transition-colors">
-                      {builder.name}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-brand-blue">
-                      <span className="flex items-center gap-1">
-                        <Building2 className="w-3.5 h-3.5" />
-                        {builder.activePropertyCount} Projects
-                      </span>
-                      {builder.establishedYear && (
-                        <>
-                          <span className="w-1 h-1 rounded-full bg-border" />
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {currentYear - builder.establishedYear} Yrs Exp
-                          </span>
-                        </>
-                      )}
+                ) : (
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-brand-surface border border-brand-slate/40 flex items-center justify-center shrink-0 group-hover/item:bg-brand-red/10 transition-colors">
+                      <Building2 className="w-4 h-4 text-brand-navy group-hover/item:text-brand-red transition-colors" />
                     </div>
+                    <span className="font-heading text-sm sm:text-base font-bold text-brand-navy tracking-tight group-hover/item:text-brand-red transition-colors whitespace-nowrap">
+                      {builder.name}
+                    </span>
                   </div>
-                </div>
-
-                {builder.description && (
-                  <p className="text-muted-foreground text-sm line-clamp-2 mb-6 flex-1">
-                    {builder.description}
-                  </p>
                 )}
-
-                <div className="mt-auto pt-4 border-t border-brand-slate/40">
-                  <Button 
-                    variant="ghost" 
-                    className="w-full justify-between hover:bg-brand-red hover:text-white group/btn"
-                    asChild
-                  >
-                    <Link href={`/properties?builder=${builder.slug}`}>
-                      View Projects
-                      <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+              </Link>
+            );
+          })}
         </div>
-      </Container>
-    </Section>
+      </div>
+
+      {/* Subtle Link to All Builders */}
+      <div className="text-center mt-8">
+        <Link
+          href="/builders"
+          prefetch={false}
+          className="inline-flex items-center text-xs sm:text-sm font-bold text-brand-navy hover:text-brand-red transition-colors group"
+        >
+          <span>Explore All Developer Partners</span>
+          <ArrowRight className="ml-1.5 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
+    </section>
   );
 }

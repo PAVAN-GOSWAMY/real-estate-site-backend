@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -39,14 +40,14 @@ export function BuilderRowActions({ builderId, isActive }: BuilderRowActionsProp
       if (dialogConfig.action === "deactivate") {
         const result = await deactivateBuilderAction(builderId);
         if (!result.success) {
-          alert(`Error: ${result.error}`);
+          toast.error(result.error);
         } else {
           showToast("Builder deactivated successfully.");
         }
       } else if (dialogConfig.action === "activate") {
         const result = await activateBuilderAction(builderId);
         if (!result.success) {
-          alert(`Error: ${result.error}`);
+          toast.error(result.error);
         } else {
           showToast("Builder activated successfully.");
         }
@@ -79,12 +80,12 @@ export function BuilderRowActions({ builderId, isActive }: BuilderRowActionsProp
               Edit
             </Link>
           </DropdownMenuItem>
-          
+
           <DropdownMenuSeparator />
-          
+
           {isActive ? (
-            <DropdownMenuItem 
-              onClick={() => setDialogConfig({ isOpen: true, action: "deactivate" })} 
+            <DropdownMenuItem
+              onClick={() => setDialogConfig({ isOpen: true, action: "deactivate" })}
               className="text-destructive focus:bg-destructive/10 cursor-pointer"
               data-testid="action-deactivate"
             >
@@ -92,8 +93,8 @@ export function BuilderRowActions({ builderId, isActive }: BuilderRowActionsProp
               Deactivate
             </DropdownMenuItem>
           ) : (
-            <DropdownMenuItem 
-              onClick={() => setDialogConfig({ isOpen: true, action: "activate" })} 
+            <DropdownMenuItem
+              onClick={() => setDialogConfig({ isOpen: true, action: "activate" })}
               className="text-green-600 focus:bg-green-600/10 cursor-pointer"
               data-testid="action-activate"
             >
@@ -110,7 +111,7 @@ export function BuilderRowActions({ builderId, isActive }: BuilderRowActionsProp
         onConfirm={handleConfirm}
         title={dialogConfig.action === "activate" ? "Activate Builder" : "Deactivate Builder"}
         description={
-          dialogConfig.action === "activate" 
+          dialogConfig.action === "activate"
             ? "Are you sure you want to activate this builder?"
             : "Are you sure you want to deactivate this builder?"
         }

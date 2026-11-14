@@ -167,37 +167,37 @@
 .dark {
   --background: #020817;
   --foreground: #F8FAFC;
-  
+
   --card: #0F172A;
   --card-foreground: #F8FAFC;
-  
+
   --popover: #0F172A;
   --popover-foreground: #F8FAFC;
-  
+
   --primary: var(--brand-red);
   --primary-foreground: #FFFFFF;
-  
+
   --secondary: var(--brand-navy);
   --secondary-foreground: #FFFFFF;
-  
+
   --muted: #1E293B;
   --muted-foreground: var(--brand-slate);
-  
+
   --accent: #1E293B;
   --accent-foreground: var(--brand-red-light);
-  
+
   --destructive: oklch(0.704 0.191 22.216);
-  
+
   --border: #1E293B;
   --input: #1E293B;
   --ring: var(--brand-red);
-  
+
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  
+
   --sidebar: #0F172A;
   --sidebar-foreground: #F8FAFC;
   --sidebar-primary: var(--brand-navy);
@@ -209,15 +209,31 @@
 }
 
 /* Phase 9: Admin Theme Overrides */
-.admin-dashboard h1, 
-.admin-dashboard h2, 
-.admin-dashboard h3, 
-.admin-dashboard h4, 
-.admin-dashboard h5, 
+.admin-dashboard h1,
+.admin-dashboard h2,
+.admin-dashboard h3,
+.admin-dashboard h4,
+.admin-dashboard h5,
 .admin-dashboard h6 {
   @apply text-brand-navy;
 }
 
 .admin-dashboard a:not(.no-brand-link):not([class*="text-"]):not([class*="bg-"]) {
   @apply text-brand-red hover:text-brand-red-hover transition-colors;
+}
+/* Partner Marquee Scroll Animation */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee-scroll {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-scroll:hover {
+  animation-play-state: paused;
 }

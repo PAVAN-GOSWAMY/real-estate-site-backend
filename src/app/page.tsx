@@ -22,9 +22,9 @@ type SearchParams = { [key: string]: string | string[] | undefined };
 
 export default async function Home(props: { searchParams: Promise<SearchParams> }) {
   const searchParams = await props.searchParams;
-  
+
   // Check if we are in search mode
-  const isSearchActive = Object.keys(searchParams || {}).some(key => 
+  const isSearchActive = Object.keys(searchParams || {}).some(key =>
     ['q', 'city', 'location', 'type', 'config', 'budget', 'builder'].includes(key)
   );
 
@@ -42,7 +42,7 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
   return (
     <>
       <Hero stats={stats} filterOptions={filterOptions} />
-      
+
       {isSearchActive ? (
         <Section className="bg-muted/10 min-h-[500px]">
           <Container>
@@ -53,14 +53,16 @@ export default async function Home(props: { searchParams: Promise<SearchParams> 
           </Container>
         </Section>
       ) : (
-        <>          <FeaturedProperties properties={featuredData.properties} />
+        <>
+          <FeaturedBuilders />
+          <FeaturedProperties properties={featuredData.properties} />
           <PremiumProjects properties={premiumData.properties} />
           <TopLocations locations={locations} />
           <Testimonials testimonials={activeTestimonials} />
           <BlogSection blogs={latestBlogs.map(b => ({ id: b.id, title: b.title, slug: b.slug, excerpt: b.excerpt || "", date: b.publishedAt ? new Date(b.publishedAt).toLocaleDateString() : "Draft", image: b.coverImage || "/placeholder.jpg" }))} />
         </>
       )}
-      
+
       <WhyChooseUs />
       {!isSearchActive && <DealsAndOffers banners={banners} />}
       <CallToAction />

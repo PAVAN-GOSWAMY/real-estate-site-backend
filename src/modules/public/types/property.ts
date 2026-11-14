@@ -1,4 +1,5 @@
 import { PropertyFloorPlan, PropertyDocument } from "../../properties/types/assets";
+import { PropertyConfiguration } from "../../properties/types/configuration";
 
 export interface PublicAmenityGroup {
   category: string;
@@ -20,6 +21,7 @@ export interface PublicProperty {
   builderId: string;
   builderName: string;
   builderLogo: string | null;
+  managedBy?: string | null;
   landmark: string | null;
   locality: string;
   locationSlug?: string | null;
@@ -38,7 +40,12 @@ export interface PublicProperty {
   price: number | null;
   priceDisplay: string | null;
   propertyCategory: string;
+  propertyCategories?: string[];
   propertyType: string;
+  configurations?: string[];
+  propertyConfigurations?: PropertyConfiguration[];
+  minPrice?: number | null;
+  maxPrice?: number | null;
   status: string;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -51,15 +58,15 @@ export interface PublicProperty {
   description: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
-  
+
   // Joins
   thumbnail: string | null; // Extracted from media where isFeatured=true or first
   images: string[];         // URLs of all images
-  
+
   amenityGroups: PublicAmenityGroup[];
   floorPlans: PropertyFloorPlan[];
   documents: PropertyDocument[];
-  
+
   builderProfile?: {
     name: string;
     slug: string;

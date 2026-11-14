@@ -1,8 +1,12 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { notFound } from "next/navigation";
 import { getPublicPropertyBySlug, getRelatedProperties } from "@/modules/public/services/public-property.service";
 import { PropertyBreadcrumb } from "@/components/property/PropertyBreadcrumb";
 import { PropertyGallery } from "@/components/property/PropertyGallery";
 import { PropertySummary } from "@/components/property/PropertySummary";
+import { PropertyConfigurationsViewer } from "@/components/property/PropertyConfigurationsViewer";
 import { PropertyAmenities } from "@/components/property/PropertyAmenities";
 import { PropertyFloorPlans } from "@/components/property/PropertyFloorPlans";
 import { PropertyInquiryCard } from "@/components/property/PropertyInquiryCard";
@@ -12,10 +16,13 @@ import { StickyCTA } from "@/components/contact/StickyCTA";
 import { PropertyDeveloper } from "@/components/property/PropertyDeveloper";
 import { PropertyCard } from "@/components/properties/PropertyCard";
 import { ScheduleVisitModalContainer } from "@/components/forms/ScheduleVisitModalContainer";
+import Script from "next/script";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string | string[] }> }) {
   const resolvedParams = await params;
-  const property = await getPublicPropertyBySlug(resolvedParams.slug);
+  const rawSlug = resolvedParams.slug;
+  const slug = Array.isArray(rawSlug) ? rawSlug[rawSlug.length - 1] : rawSlug;
+  const property = await getPublicPropertyBySlug(slug);
   if (!property) return { title: "Property Not Found" };
 
   return {
@@ -35,9 +42,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function PropertyDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PropertyDetailsPage({ params }: { params: Promise<{ slug: string | string[] }> }) {
   const resolvedParams = await params;
-  const property = await getPublicPropertyBySlug(resolvedParams.slug);
+  const rawSlug = resolvedParams.slug;
+  const slug = Array.isArray(rawSlug) ? rawSlug[rawSlug.length - 1] : rawSlug;
+  const property = await getPublicPropertyBySlug(slug);
 
   if (!property) {
     notFound();
@@ -49,23 +58,42 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
 
   const relatedProperties = await getRelatedProperties(property, 4);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": property.title,
+    "image": images,
+    "description": property.description || property.metaDescription,
+    "offers": {
+      "@type": "Offer",
+      "price": property.priceDisplay,
+      "priceCurrency": "INR",
+      "url": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://squarearspaces.com'}/properties/${property.slug}`
+    }
+  };
+
   return (
     <main className="min-h-screen bg-brand-surface pb-24">
+      <Script
+        id={`property-schema-${property.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="container mx-auto px-4 md:px-8 py-8 md:py-12">
-        
-        <PropertyBreadcrumb 
-          city={property.city} 
-          locality={property.locality} 
-          title={property.title} 
+
+        <PropertyBreadcrumb
+          city={property.city}
+          locality={property.locality}
+          title={property.title}
           citySlug={property.citySlug}
           locationSlug={property.locationSlug}
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
+
           {/* Main Left Content */}
           <div className="lg:col-span-8 space-y-16">
-            
+
             <section id="gallery">
               <PropertyGallery images={images} />
             </section>
@@ -74,13 +102,20 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
               <PropertySummary property={property} />
             </section>
 
+            {/* Dedicated Available Configurations Section */}
+            {property.propertyConfigurations && property.propertyConfigurations.length > 0 && (
+              <section id="configurations">
+                <PropertyConfigurationsViewer
+                  configurations={property.propertyConfigurations}
+                  floorPlans={property.floorPlans}
+                  propertyTitle={property.title}
+                />
+              </section>
+            )}
+
             <section id="location">
               <PropertyLocation property={property} />
             </section>
-
-            {/* Hidden: Highlights (Future Phase) */}
-            
-            {/* Hidden: Pricing Configurations (Future Phase) */}
 
             {property.documents && property.documents.length > 0 && (
               <section id="brochure">
@@ -100,35 +135,35 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
               </section>
             )}
 
-            {/* Hidden: Location Advantages (Future Phase) */}
-            
             {property.builderProfile && (
               <section id="developer">
-                <PropertyDeveloper profile={{
-                  name: property.builderProfile.name,
-                  logo: property.builderProfile.logoUrl || '',
-                  description: property.builderProfile.description || '',
-                  experience: property.builderProfile.establishedYear ? `${new Date().getFullYear() - property.builderProfile.establishedYear} Years` : 'N/A',
-                  delivered: 'Multiple Projects' // DB fallback
-                }} />
+                <PropertyDeveloper
+                  propertyTitle={property.title}
+                  managedBy={property.managedBy}
+                  profile={{
+                    name: property.builderProfile.name,
+                    logo: property.builderProfile.logoUrl || '',
+                    description: property.builderProfile.description || '',
+                    experience: property.builderProfile.establishedYear ? `${new Date().getFullYear() - property.builderProfile.establishedYear} Years` : 'N/A',
+                    delivered: 'Multiple Projects'
+                  }}
+                />
               </section>
             )}
-            
-            {/* Hidden: FAQs (Future Phase) */}
-            
+
             <PropertyDisclaimer />
           </div>
 
           {/* Sticky Right Sidebar */}
           <div className="lg:col-span-4 relative">
-            <PropertyInquiryCard 
-              title={property.title} 
-              price={priceDisplay} 
+            <PropertyInquiryCard
+              title={property.title}
+              price={priceDisplay}
               propertyId={property.id}
               builderId={property.builderId || undefined}
             />
           </div>
-          
+
         </div>
 
         {relatedProperties.length > 0 && (
@@ -143,8 +178,8 @@ export default async function PropertyDetailsPage({ params }: { params: Promise<
         )}
       </div>
 
-      <ScheduleVisitModalContainer 
-        propertyId={property.id} 
+      <ScheduleVisitModalContainer
+        propertyId={property.id}
         builderId={property.builderId || undefined}
         propertyTitle={property.title}
       />

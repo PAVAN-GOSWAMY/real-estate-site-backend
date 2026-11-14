@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition, useMemo } from "react";
 import { Property } from "@/modules/properties/types/property";
@@ -26,7 +27,7 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
   const [assignedIds, setAssignedIds] = useState<Set<string>>(new Set(initialAssignedIds));
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  
+
   const [isPending, startTransition] = useTransition();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -49,7 +50,7 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
       if (result.success) {
         showToast("Amenities saved successfully.");
       } else {
-        alert(result.error);
+        toast.error(result.error);
       }
     });
   };
@@ -101,7 +102,7 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
 
   return (
     <div className="space-y-6 pb-20">
-      
+
       {/* 1. Selected Amenities Section */}
       <Card>
         <CardHeader>
@@ -114,8 +115,8 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
           {assignedAmenitiesList.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {assignedAmenitiesList.map(a => (
-                <div 
-                  key={a.id} 
+                <div
+                  key={a.id}
                   className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-sm font-medium border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
                   onClick={() => toggleAmenity(a.id)}
                   title="Click to remove"
@@ -144,19 +145,19 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          
+
           {/* Search & Filter */}
           <div className="space-y-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search amenities by name..." 
+              <Input
+                placeholder="Search amenities by name..."
                 className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={categoryFilter === null ? "default" : "outline"}
@@ -201,19 +202,19 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
                       {groupedAvailableAmenities[category].map(amenity => {
                         const isSelected = assignedIds.has(amenity.id);
                         return (
-                          <div 
+                          <div
                             key={amenity.id}
                             className={`flex flex-col p-3 rounded-lg border cursor-pointer transition-all ${
-                              isSelected 
-                                ? 'border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm' 
+                              isSelected
+                                ? 'border-primary bg-primary/5 ring-1 ring-primary/20 shadow-sm'
                                 : 'border-border hover:border-primary/50 hover:bg-muted/50'
                             }`}
                             onClick={() => toggleAmenity(amenity.id)}
                           >
                             <div className="flex justify-between items-start">
-                              <DynamicIcon 
-                                name={amenity.icon} 
-                                className={`h-5 w-5 mb-2 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} 
+                              <DynamicIcon
+                                name={amenity.icon}
+                                className={`h-5 w-5 mb-2 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`}
                               />
                               <div className={`h-5 w-5 rounded-full flex items-center justify-center border ${isSelected ? 'bg-primary border-primary text-primary-foreground' : 'border-muted-foreground/30'}`}>
                                 {isSelected && <Check className="h-3 w-3" />}
@@ -236,7 +237,7 @@ export function AmenitiesTab({ property, allAmenities, initialAssignedIds }: Ame
       </Card>
 
       {/* Save Action Bar (Sticky Bottom) */}
-      <div 
+      <div
         className={`fixed bottom-0 left-0 lg:left-64 right-0 bg-background/80 backdrop-blur-md border-t p-4 z-40 flex items-center justify-between transition-transform duration-300 ${
           hasUnsavedChanges ? 'translate-y-0' : 'translate-y-full'
         }`}

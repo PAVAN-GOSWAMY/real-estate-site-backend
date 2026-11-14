@@ -1,7 +1,18 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +35,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
 
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState<{ id: string; title: string } | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -100,27 +112,27 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
     // Validation
     const parsed = CreatePropertyFloorPlanSchema.safeParse(formData);
     if (!parsed.success) {
-      alert(parsed.error.issues[0].message);
+      toast.error(parsed.error.issues[0].message);
       return;
     }
 
     if (!editingId && !selectedFile) {
-      alert("An image file is required for a new floor plan.");
+      toast.error("An image file is required for a new floor plan.");
       return;
     }
 
     startTransition(async () => {
       let success = false;
-      
+
       if (editingId) {
-        // Edit flow (image replacement not supported in this inline form currently, 
+        // Edit flow (image replacement not supported in this inline form currently,
         // to keep it simple, or we can just update metadata)
         const result = await updateFloorPlanAction(propertyId, editingId, parsed.data);
         if (result.success) {
           showToast("Floor plan updated.");
           success = true;
         } else {
-          alert(result.error);
+          toast.error(result.error);
         }
       } else {
         // Create flow
@@ -139,7 +151,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
           showToast("Floor plan added.");
           success = true;
         } else {
-          alert(result.error);
+          toast.error(result.error);
         }
       }
 
@@ -151,15 +163,23 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
   };
 
   const handleDelete = (id: string) => {
-    if (!confirm("Are you sure you want to delete this floor plan?")) return;
+    const plan = floorPlans.find(p => p.id === id);
+    setPlanToDelete({ id, title: plan ? plan.name : "floor plan" });
+  };
+
+  const confirmDeletePlan = () => {
+    if (!planToDelete) return;
+    const { id, title } = planToDelete;
+    setPlanToDelete(null);
 
     startTransition(async () => {
       const result = await deleteFloorPlanAction(propertyId, id);
       if (result.success) {
+        toast.success(`"${title}" deleted successfully.`);
         showToast("Floor plan deleted.");
         fetchFloorPlans();
       } else {
-        alert(result.error);
+        toast.error(result.error || "Failed to delete floor plan");
       }
     });
   };
@@ -189,7 +209,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
       if (result.success) {
         showToast("Order updated.");
       } else {
-        alert(result.error);
+        toast.error(result.error);
         fetchFloorPlans(); // revert on fail
       }
     });
@@ -260,7 +280,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
                 {!editingId && (
                   <div className="space-y-2">
                     <Label>Floor Plan Image <span className="text-destructive">*</span></Label>
-                    <div 
+                    <div
                       className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg transition-colors ${
                         isDraggingOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:bg-muted/50'
                       }`}
@@ -320,7 +340,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
           floorPlans.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {floorPlans.map((fp, idx) => (
-                <div 
+                <div
                   key={fp.id}
                   draggable={!isPending}
                   onDragStart={(e) => onDragStart(e, idx)}
@@ -328,7 +348,7 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
                   onDragEnd={onDragEnd}
                   className={`transition-all duration-200 ${draggedIdx === idx ? 'opacity-50 scale-95' : 'opacity-100'}`}
                 >
-                  <FloorPlanCard 
+                  <FloorPlanCard
                     floorPlan={fp}
                     onEdit={handleOpenForm}
                     onDelete={handleDelete}
@@ -360,16 +380,16 @@ export function FloorPlansTab({ propertyId }: FloorPlansTabProps) {
 
       {/* Lightbox for floor plans */}
       {lightboxIndex !== null && (
-        <ImageLightbox 
-          images={floorPlans.map(fp => ({ 
-            id: fp.id, 
-            url: fp.imageUrl, 
-            fileName: fp.name, 
-            fileSize: null, 
-            createdAt: fp.createdAt, 
-            propertyId: fp.propertyId, 
-            mediaType: 'GALLERY_IMAGE' as any, 
-            displayOrder: fp.displayOrder, 
+        <ImageLightbox
+          images={floorPlans.map(fp => ({
+            id: fp.id,
+            url: fp.imageUrl,
+            fileName: fp.name,
+            fileSize: null,
+            createdAt: fp.createdAt,
+            propertyId: fp.propertyId,
+            mediaType: 'GALLERY_IMAGE' as any,
+            displayOrder: fp.displayOrder,
             isFeatured: false,
             mimeType: 'image/jpeg',
             updatedAt: fp.updatedAt

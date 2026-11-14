@@ -1,12 +1,21 @@
 "use client";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState, useTransition } from "react";
 import { LeadNote } from "@/modules/leads/types";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -26,17 +35,24 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
 
   // Sort notes newest first (assuming they already are, but just in case)
   const sortedNotes = [...notes].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   // Filter notes based on search query
-  const filteredNotes = sortedNotes.filter(note => 
+  const filteredNotes = sortedNotes.filter(note =>
     note.note.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleDelete = (id: string) => {
-    if (!confirm("Are you sure you want to delete this note?")) return;
+    setNoteToDelete(id);
+  };
+
+  const confirmDeleteNote = () => {
+    if (!noteToDelete) return;
+    const id = noteToDelete;
+    setNoteToDelete(null);
 
     startTransition(async () => {
       const res = await deleteLeadNoteAction(id, leadId);
@@ -65,8 +81,8 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search notes..." 
+          <Input
+            placeholder="Search notes..."
             className="pl-9"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -91,7 +107,7 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
                 <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-background bg-primary/10 text-primary shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
                   <User className="h-4 w-4" />
                 </div>
-                
+
                 {/* Note Card */}
                 <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-card border border-border/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-3">
@@ -108,7 +124,7 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
                         {format(new Date(note.createdAt), "MMM d, yyyy 'at' h:mm a")}
                       </div>
                     </div>
-                    
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 text-muted-foreground hover:text-foreground">
@@ -117,7 +133,7 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {/* <DropdownMenuItem disabled>Edit Note (Coming Soon)</DropdownMenuItem> */}
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                           onClick={() => handleDelete(note.id)}
                           disabled={isPending}
@@ -127,11 +143,11 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  
+
                   <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
                     {note.note}
                   </div>
-                  
+
                   {note.followUpDate && (
                     <div className="mt-4 pt-3 border-t border-border/50 flex items-center text-xs font-medium text-emerald-600 dark:text-emerald-500">
                       <Calendar className="mr-1.5 h-3.5 w-3.5" />
@@ -146,11 +162,25 @@ export function NotesTab({ leadId, notes }: NotesTabProps) {
       </div>
 
       {showCreateModal && (
-        <FollowUpNoteModal 
-          leadId={leadId} 
-          onClose={() => setShowCreateModal(false)} 
+        <FollowUpNoteModal
+          leadId={leadId}
+          onClose={() => setShowCreateModal(false)}
         />
       )}
+      <AlertDialog open={!!noteToDelete} onOpenChange={(open) => !open && setNoteToDelete(null)}>
+        <AlertDialogContent className="max-w-md bg-white border border-brand-slate/40 shadow-xl rounded-2xl p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-brand-navy">Delete Lead Note?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-brand-navy/70 leading-relaxed pt-1">
+              Are you sure you want to delete this note?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-5 flex items-center justify-end gap-2.5">
+            <AlertDialogCancel className="h-9 px-4 text-xs font-medium rounded-lg border-brand-slate/40 text-brand-navy hover:bg-brand-surface">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteNote} className="h-9 px-4 text-xs font-semibold rounded-lg bg-brand-red hover:bg-brand-red/90 text-white shadow-xs">Yes, Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

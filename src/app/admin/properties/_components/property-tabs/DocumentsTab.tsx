@@ -1,7 +1,18 @@
 "use client";
+import { toast } from "sonner";
 
 import { useState, useTransition, useRef, useEffect, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,13 +44,14 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
 
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [docToDelete, setDocToDelete] = useState<{ id: string; name: string } | null>(null);
   const [replacingId, setReplacingId] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     documentType: "",
   });
-  
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
@@ -96,13 +108,13 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
         payload.append("propertyId", propertyId);
         payload.append("documentId", replacingId);
         payload.append("file", selectedFile);
-        
+
         const result = await replaceDocumentAction(payload);
         if (result.success) {
           showToast("Document replaced successfully.");
           fetchDocuments();
         } else {
-          alert(result.error);
+          toast.error(result.error);
         }
         handleCloseForm();
       });
@@ -114,13 +126,13 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
     e.preventDefault();
 
     if (!selectedFile) {
-      alert("A file is required.");
+      toast.error("A file is required.");
       return;
     }
 
     const parsed = CreatePropertyDocumentSchema.safeParse(formData);
     if (!parsed.success) {
-      alert(parsed.error.issues[0].message);
+      toast.error(parsed.error.issues[0].message);
       return;
     }
 
@@ -137,21 +149,29 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
         handleCloseForm();
         fetchDocuments();
       } else {
-        alert(result.error);
+        toast.error(result.error);
       }
     });
   };
 
   const handleDelete = (id: string) => {
-    if (!confirm("Are you sure you want to delete this document?")) return;
+    const doc = documents.find(d => d.id === id);
+    setDocToDelete({ id, name: doc ? doc.name : "document" });
+  };
+
+  const confirmDeleteDoc = () => {
+    if (!docToDelete) return;
+    const { id, name } = docToDelete;
+    setDocToDelete(null);
 
     startTransition(async () => {
       const result = await deleteDocumentAction(propertyId, id);
       if (result.success) {
+        toast.success(`"${name}" deleted successfully.`);
         showToast("Document deleted.");
         fetchDocuments();
       } else {
-        alert(result.error);
+        toast.error(result.error || "Failed to delete document");
       }
     });
   };
@@ -182,14 +202,14 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
             <h3 className="text-lg font-medium">Documents</h3>
             <p className="text-sm text-muted-foreground">Manage brochures, legal approvals, and layouts.</p>
           </div>
-          
+
           <div className="flex w-full sm:w-auto items-center gap-3">
             {!isFormOpen && (
               <>
                 <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Search documents..." 
+                  <Input
+                    placeholder="Search documents..."
                     className="pl-9"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -259,7 +279,7 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
 
                 <div className="space-y-2 mt-4">
                   <Label>File <span className="text-destructive">*</span></Label>
-                  <div 
+                  <div
                     className={`flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg transition-colors ${
                       isDraggingOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:bg-muted/50'
                     }`}
@@ -306,7 +326,7 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
           filteredDocs.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredDocs.map((doc) => (
-                <DocumentCard 
+                <DocumentCard
                   key={doc.id}
                   document={doc}
                   onReplace={handleOpenReplace}
@@ -323,8 +343,8 @@ export function DocumentsTab({ propertyId }: DocumentsTabProps) {
                 </div>
                 <h3 className="text-lg font-medium">No documents found</h3>
                 <p className="text-sm text-muted-foreground mt-1 mb-4 max-w-sm">
-                  {searchQuery || (typeFilter && typeFilter !== 'ALL') 
-                    ? "Try adjusting your search or filters." 
+                  {searchQuery || (typeFilter && typeFilter !== 'ALL')
+                    ? "Try adjusting your search or filters."
                     : "Upload brochures, payment plans, and legal documents here."}
                 </p>
                 <Button onClick={handleOpenForm} disabled={isPending}>

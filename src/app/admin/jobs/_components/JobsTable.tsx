@@ -1,5 +1,14 @@
-"use client"
-
+"use client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react"
 import { Job } from "@/modules/jobs/models/job.model"
 import { deleteJobAction } from "@/modules/jobs/actions/jobs.actions"
@@ -37,9 +46,16 @@ interface JobsTableProps {
 export function JobsTable({ jobs, total, currentPage, pageSize }: JobsTableProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [jobToDelete, setJobToDelete] = useState<string | null>(null)
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this job?")) return
+  const handleDelete = (id: string) => {
+    setJobToDelete(id)
+  }
+
+  const confirmDeleteJob = async () => {
+    if (!jobToDelete) return
+    const id = jobToDelete
+    setJobToDelete(null)
     setIsDeleting(id)
     try {
       const res = await deleteJobAction(id)
@@ -139,7 +155,7 @@ export function JobsTable({ jobs, total, currentPage, pageSize }: JobsTableProps
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => handleDelete(job.id)}
                       disabled={isDeleting === job.id}
                       className="text-destructive focus:text-destructive"
@@ -154,6 +170,20 @@ export function JobsTable({ jobs, total, currentPage, pageSize }: JobsTableProps
           ))}
         </TableBody>
       </Table>
+      <AlertDialog open={!!jobToDelete} onOpenChange={(open) => !open && setJobToDelete(null)}>
+        <AlertDialogContent className="max-w-md bg-white border border-brand-slate/40 shadow-xl rounded-2xl p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-lg font-bold text-brand-navy">Delete Job Opening?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-brand-navy/70 leading-relaxed pt-1">
+              Are you sure you want to delete this job listing?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-5 flex items-center justify-end gap-2.5">
+            <AlertDialogCancel className="h-9 px-4 text-xs font-medium rounded-lg border-brand-slate/40 text-brand-navy hover:bg-brand-surface">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteJob} className="h-9 px-4 text-xs font-semibold rounded-lg bg-brand-red hover:bg-brand-red/90 text-white shadow-xs">Yes, Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
