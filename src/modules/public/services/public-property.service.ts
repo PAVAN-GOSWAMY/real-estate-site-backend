@@ -347,6 +347,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
         *,
         builders (name, logo_url),
         property_media (url, is_featured, display_order),
+        property_configurations (*),
         cities (id, name, slug, state),
         locations (id, name, slug, type)
       `)
@@ -363,6 +364,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
         *,
         builders (name, logo_url),
         property_media (url, is_featured, display_order),
+        property_configurations (*),
         cities (id, name, slug, state),
         locations (id, name, slug, type)
       `)
@@ -383,6 +385,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
         *,
         builders (name, logo_url),
         property_media (url, is_featured, display_order),
+        property_configurations (*),
         cities (id, name, slug, state),
         locations (id, name, slug, type)
       `)
@@ -403,6 +406,7 @@ export async function getRelatedProperties(baseProperty: PublicProperty, limit: 
         *,
         builders (name, logo_url),
         property_media (url, is_featured, display_order),
+        property_configurations (*),
         cities (id, name, slug, state),
         locations (id, name, slug, type)
       `)

@@ -5,6 +5,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MessageSquarePlus } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "@/components/ui/dialog";
+import { FeedbackForm } from "@/components/testimonials/FeedbackForm";
 
 export const metadata: Metadata = {
   title: "Client Testimonials | Square AR",
@@ -27,12 +29,18 @@ export default async function TestimonialsPage() {
             </p>
           </SectionHeader>
           <div className="md:absolute md:right-0 md:bottom-0 text-center">
-            <Link href="/feedback">
-              <Button className="rounded-full bg-brand-red hover:bg-brand-red-hover text-white px-6">
-                <MessageSquarePlus className="w-4 h-4 mr-2" />
-                Share Your Experience
-              </Button>
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="rounded-full bg-brand-red hover:bg-brand-red-hover text-white px-6 cursor-pointer">
+                  <MessageSquarePlus className="w-4 h-4 mr-2" />
+                  Share Your Experience
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none shadow-none max-h-[90vh] overflow-y-auto">
+                <DialogTitle className="sr-only">Share Your Experience</DialogTitle>
+                <FeedbackForm />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -45,11 +53,17 @@ export default async function TestimonialsPage() {
             <p className="text-[15px] text-brand-navy/70 mb-6">
               We&apos;d love to hear about your journey with us. Be the first to share your story!
             </p>
-            <Link href="/feedback">
-              <Button className="rounded-full bg-brand-red hover:bg-brand-red-hover text-white px-8 h-12 text-[15px]">
-                Submit Feedback
-              </Button>
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="rounded-full bg-brand-red hover:bg-brand-red-hover text-white px-8 h-12 text-[15px] cursor-pointer">
+                  Submit Feedback
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg p-0 bg-transparent border-none shadow-none max-h-[90vh] overflow-y-auto">
+                <DialogTitle className="sr-only">Share Your Experience</DialogTitle>
+                <FeedbackForm />
+              </DialogContent>
+            </Dialog>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-8">

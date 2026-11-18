@@ -7,6 +7,7 @@ export const BUILDER_SELECT = `builders!inner (name, logo_url)`;
 export const MEDIA_SELECT = `property_media (url, is_featured, display_order)`;
 export const FLOOR_PLAN_SELECT = `property_floor_plans!inner (bedrooms, bathrooms, area, price)`;
 export const AMENITIES_SELECT = `property_amenities!inner (amenity_id)`;
+export const CONFIGURATIONS_SELECT = `property_configurations (*)`;
 
 /**
  * Builds the dynamic select string based on required joins
@@ -15,7 +16,8 @@ export function buildPropertySelect(filters: PropertyFilterOptions): string {
   const selectParts = [
     BASE_PROPERTY_SELECT,
     BUILDER_SELECT,
-    MEDIA_SELECT
+    MEDIA_SELECT,
+    CONFIGURATIONS_SELECT
   ];
 
   if (filters.bedrooms !== undefined) {

@@ -3,10 +3,11 @@
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Maximize2, CalendarDays } from "lucide-react";
+import { MapPin, Maximize2, CalendarDays, Bed, IndianRupee } from "lucide-react";
 import { PublicProperty } from "@/modules/public/types/property";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getPropertyCardData } from "./property-card.utils";
 
 interface PropertyCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "property"> {
   property: PublicProperty;
@@ -23,27 +24,10 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
     ? `RERA ID : ${property.reraNumber}`
     : (property.isVerified ? "RERA Approved" : "RERA ID : Available on Request");
 
-  // 3. Area Text: if carpet area mentioned -> show in numbers + Sq.ft, otherwise "Area on Req"
-  const areaNumber = property.carpetArea || (property.floorPlans?.[0]?.area ? Number(property.floorPlans[0].area) : null);
-  const areaText = areaNumber && areaNumber > 0
-    ? `${Number(areaNumber).toLocaleString('en-IN')} Sq.ft`
-    : "Area on Req";
+  // 3. Dynamic values from property_configurations (Area, Configuration, Starting Price)
+  const { areaText, configText, basePrice, hasOnwards, isPriceOnRequest, displayPrice } = getPropertyCardData(property);
 
-  // 4. Configuration Text (e.g. "1, 2, 3 BHK")
-  let configText = (property.configurations && property.configurations.length > 0)
-    ? property.configurations.join(', ')
-    : (property.bedrooms ? `${property.bedrooms} BHK` : property.propertyType);
-
-  if (property.floorPlans && property.floorPlans.length > 0 && (!property.configurations || property.configurations.length === 0)) {
-    const configs = Array.from(
-      new Set(property.floorPlans.map((f) => f.configuration).filter(Boolean))
-    );
-    if (configs.length > 0) {
-      configText = configs.join(', ');
-    }
-  }
-
-  // 5. Possession Date formatting (displayed below location)
+  // 4. Possession Date formatting (displayed below location)
   let possessionDateDisplay = "Ready to Move";
   if (property.possessionDate && property.possessionDate.trim()) {
     const rawDate = property.possessionDate.trim();
@@ -67,26 +51,6 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
       ? "Ready to Move"
       : property.status.replace(/_/g, " ");
   }
-
-
-
-  // 6. Price formatting ("price onwards *")
-  let basePrice = "";
-  if (property.priceDisplay) {
-    basePrice = property.priceDisplay
-      .replace(/\s*onwards\s*/gi, "")
-      .replace(/\s*\*+\s*/g, "")
-      .trim();
-  } else if (property.price && property.price > 0) {
-    basePrice =
-      property.price >= 10000000
-        ? `₹ ${(property.price / 10000000).toFixed(2).replace(/\.00$/, "")} Cr`
-        : `₹ ${(property.price / 100000).toFixed(2).replace(/\.00$/, "")} Lakhs`;
-  }
-
-  const isPriceOnRequest = !basePrice || basePrice.toLowerCase().includes("request");
-  const hasOnwards = !isPriceOnRequest;
-  const displayPrice = isPriceOnRequest ? "Price on Request" : `${basePrice} onwards *`;
 
   const locationStr = [property.locality, property.city].filter(Boolean).join(', ') || "Location on Request";
 
@@ -170,22 +134,29 @@ export function PropertyCard({ property, className, ...props }: PropertyCardProp
             </div>
 
             {/* BHK / Configuration */}
-            <div className="flex items-center justify-center px-2 min-w-0">
+            <div className="flex items-center justify-center gap-1.5 px-2 min-w-0">
+              <Bed className="w-3.5 h-3.5 text-brand-navy shrink-0" />
               <span className="text-xs sm:text-sm font-bold text-brand-navy truncate">
                 {configText}
               </span>
             </div>
           </div>
 
-          {/* Price */}
-          <p className="text-base sm:text-lg md:text-xl font-extrabold text-brand-red mb-3 tracking-tight flex items-baseline flex-wrap gap-1">
+          {/* Starting Price presentation */}
+          <div className="mb-3">
+            <div className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-brand-navy/60 uppercase tracking-wider mb-0.5">
+              <IndianRupee className="w-3.5 h-3.5 text-brand-red shrink-0" />
+              <span>Starting Price</span>
+            </div>
+            <p className="text-base sm:text-lg md:text-xl font-extrabold text-brand-red tracking-tight flex items-baseline flex-wrap gap-1">
             <span>{isPriceOnRequest ? displayPrice : basePrice}</span>
             {hasOnwards && (
               <span className="text-xs sm:text-sm font-semibold tracking-normal text-brand-red">
                 onwards *
               </span>
             )}
-          </p>
+            </p>
+          </div>
         </div>
 
         {/* CTA Button */}

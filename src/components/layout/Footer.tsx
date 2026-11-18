@@ -145,176 +145,184 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
   ];
 
   return (
-    <footer className="bg-[linear-gradient(135deg,#870404_0%,#042C74_100%)] text-white border-t border-brand-slate/20">
-      <Container className="pt-12 pb-8 md:pt-16 md:pb-10">
-
-        {/* Hot Spots Top Row */}
-        <div className="flex flex-wrap items-center justify-start gap-3 pb-8 mb-10 border-b border-white/10 text-xs">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white font-bold text-[11px] uppercase tracking-wider border border-white/15">
-            <Flame className="w-3.5 h-3.5 text-brand-soft-red fill-brand-soft-red" />
-            HOT - SPOTS:
-          </span>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-white/80">
-            {footerLocations.map((loc) => (
-              <Link
-                key={loc.id}
-                href={loc.href}
-                className="inline-flex items-center gap-1.5 hover:text-white transition-colors duration-200 group text-xs uppercase tracking-wider font-medium"
-              >
-                <MapPin className="w-3 h-3 text-brand-soft-red group-hover:text-white transition-colors" />
-                <span>{loc.label}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Four Responsive Link Columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-
-          {/* Column 1: Property Categories */}
-          <div>
-            <h3 className="font-bold text-white text-sm md:text-base tracking-wider uppercase mb-5 pb-1">
-              Property Categories
-            </h3>
-            <ul className="space-y-1.5">
-              {propertyCategories.map((item) => (
-                <li key={item.label} className="border-b border-dashed border-white/10 pb-2">
+    <footer className="w-full flex flex-col">
+      {/* Box 1 – Top Gradient Section */}
+      <div className="w-full bg-[linear-gradient(135deg,#870404_0%,#042C74_100%)] text-white border-t border-brand-slate/20">
+        <Container className="pt-8 pb-6 md:pt-10 md:pb-8">
+          {/* Hotspots Bar */}
+          <div className="border-b border-white/10 pb-5 mb-8">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-brand-red-light bg-black/30 px-2.5 py-1 rounded-full border border-white/10 shadow-sm">
+                <Flame className="w-3.5 h-3.5 fill-brand-red text-brand-red animate-pulse" />
+                HOT SPOTS:
+              </span>
+              {footerLocations.map((loc, idx) => (
+                <React.Fragment key={loc.id}>
                   <Link
-                    href={item.href}
-                    className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block"
+                    href={loc.href}
+                    className="hover:text-brand-red-light transition-colors duration-200 font-medium inline-flex items-center gap-1"
                   >
-                    {item.label}
+                    <MapPin className="w-3 h-3 text-brand-red opacity-80" />
+                    <span>{loc.label}</span>
                   </Link>
-                </li>
+                  {idx < footerLocations.length - 1 && (
+                    <span className="text-white/20 select-none">•</span>
+                  )}
+                </React.Fragment>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Column 2: Projects */}
-          <div>
-            <h3 className="font-bold text-white text-sm md:text-base tracking-wider uppercase mb-5 pb-1">
-              Projects
-            </h3>
-            <ul className="space-y-1.5">
-              {projects.map((item) => (
-                <li key={item.label} className="border-b border-dashed border-white/10 pb-2">
-                  <Link
-                    href={item.href}
-                    className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Four Link Columns */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+            {/* Column 1: Popular Properties */}
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-3 text-white flex items-center gap-2">
+                <span className="w-1.5 h-3.5 bg-brand-red rounded-sm" />
+                POPULAR PROPERTIES
+              </h4>
+              <ul className="space-y-1">
+                {propertyCategories.map((item) => (
+                  <li key={item.label} className="border-b border-dashed border-white/10 pb-1.5">
+                    <Link
+                      href={item.href}
+                      className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block truncate"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 2: Quick Links */}
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-3 text-white flex items-center gap-2">
+                <span className="w-1.5 h-3.5 bg-brand-red rounded-sm" />
+                QUICK LINKS
+              </h4>
+              <ul className="space-y-1">
+                {projects.map((item) => (
+                  <li key={item.label} className="border-b border-dashed border-white/10 pb-1.5">
+                    <Link
+                      href={item.href}
+                      className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block truncate"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3: About Us */}
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-3 text-white flex items-center gap-2">
+                <span className="w-1.5 h-3.5 bg-brand-red rounded-sm" />
+                ABOUT US
+              </h4>
+              <ul className="space-y-1">
+                {aboutUs.map((item) => (
+                  <li key={item.label} className="border-b border-dashed border-white/10 pb-1.5">
+                    <Link
+                      href={item.href}
+                      className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block truncate"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 4: Explore More / Contact & Support */}
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold tracking-wider uppercase mb-3 text-white flex items-center gap-2">
+                <span className="w-1.5 h-3.5 bg-brand-red rounded-sm" />
+                EXPLORE MORE
+              </h4>
+              <ul className="space-y-1">
+                {exploreMore.map((item) => (
+                  <li key={item.label} className="border-b border-dashed border-white/10 pb-1.5">
+                    <Link
+                      href={item.href}
+                      className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block truncate"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Column 3: About Us */}
-          <div>
-            <h3 className="font-bold text-white text-sm md:text-base tracking-wider uppercase mb-5 pb-1">
-              About Us
-            </h3>
-            <ul className="space-y-1.5">
-              {aboutUs.map((item) => (
-                <li key={item.label} className="border-b border-dashed border-white/10 pb-2">
-                  <Link
-                    href={item.href}
-                    className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Enquiry Strip */}
+          <div className="mt-6 p-3 sm:p-4 rounded-xl bg-black/25 backdrop-blur-md border border-white/10 shadow-xl">
+            <form onSubmit={handleEnquirySubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] gap-3 items-center">
+              <div>
+                <input
+                  type="text"
+                  name="fullName"
+                  required
+                  placeholder="YOUR NAME"
+                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
+                />
+              </div>
+              <div>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  placeholder="YOUR CONTACT NUMBER"
+                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
+                />
+              </div>
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="YOUR EMAIL"
+                  className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
+                />
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full lg:w-auto h-full min-h-[42px] px-6 py-2.5 rounded-lg bg-brand-red hover:bg-brand-red-hover text-white font-bold text-xs uppercase tracking-widest shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 transition-all duration-200 active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  <span>{isSubmitting ? "SENDING..." : "GET MORE INFO."}</span>
+                </button>
+              </div>
+            </form>
           </div>
+        </Container>
+      </div>
 
-          {/* Column 4: Explore More */}
-          <div>
-            <h3 className="font-bold text-white text-sm md:text-base tracking-wider uppercase mb-5 pb-1">
-              Explore More
-            </h3>
-            <ul className="space-y-1.5">
-              {exploreMore.map((item) => (
-                <li key={item.label} className="border-b border-dashed border-white/10 pb-2">
-                  <Link
-                    href={item.href}
-                    className="text-xs text-white/75 hover:text-white transition-colors duration-200 uppercase tracking-wider font-medium block truncate"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-        </div>
-
-        {/* Enquiry Strip */}
-        <div className="my-10 p-3 sm:p-4 md:p-5 rounded-2xl bg-black/25 backdrop-blur-md border border-white/10 shadow-xl">
-          <form onSubmit={handleEnquirySubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] gap-3 items-center">
-            <div>
-              <input
-                type="text"
-                name="fullName"
-                required
-                placeholder="YOUR NAME"
-                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
-              />
-            </div>
-            <div>
-              <input
-                type="tel"
-                name="phone"
-                required
-                placeholder="YOUR CONTACT NUMBER"
-                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
-              />
-            </div>
-            <div>
-              <input
-                type="email"
-                name="email"
-                placeholder="YOUR EMAIL"
-                className="w-full bg-white/10 hover:bg-white/15 focus:bg-white/20 border border-white/20 rounded-lg px-4 py-3 text-xs md:text-sm text-white placeholder:text-white/60 placeholder:text-xs placeholder:uppercase placeholder:tracking-wider focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
-              />
-            </div>
-            <div>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full lg:w-auto h-full min-h-[46px] px-8 py-3 rounded-lg bg-brand-red hover:bg-brand-red-hover text-white font-bold text-xs uppercase tracking-widest shadow-lg shadow-brand-red/30 hover:shadow-brand-red/50 transition-all duration-200 active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-                <span>{isSubmitting ? "SENDING..." : "GET MORE INFO."}</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Bottom Section: Logo Left, Social Media Right */}
-        <div className="pt-2 pb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      {/* Box 2 – Full-Width White Section */}
+      <div className="w-full bg-white py-4 sm:py-5">
+        <Container className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           {/* Logo & Description */}
           <div className="flex flex-col items-start gap-2 max-w-sm">
             <Link href="/" className="inline-block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-xl">
               <span className="sr-only">{siteConfig.name}</span>
-              <div className="bg-white px-3.5 py-2 rounded-xl inline-flex items-center shadow-md">
-                <Image
-                  src="/logo.jpg"
-                  alt={siteConfig.name}
-                  width={150}
-                  height={45}
-                  className="object-contain"
-                />
-              </div>
+              <Image
+                src="/logo.jpg"
+                alt={siteConfig.name}
+                width={150}
+                height={45}
+                className="object-contain"
+              />
             </Link>
-            <p className="text-xs text-white/70 leading-relaxed mt-1">
+            <p className="text-xs text-brand-navy/70 leading-relaxed mt-0.5">
               {siteConfig.description}
             </p>
           </div>
 
           {/* Social Links & Explore More */}
           <div className="flex flex-col items-start md:items-end gap-2.5">
-            <span className="text-xs font-bold text-white tracking-widest uppercase">
+            <span className="text-xs font-bold text-brand-navy tracking-widest uppercase">
               EXPLORE MORE
             </span>
             <div className="flex items-center gap-2.5 sm:gap-3">
@@ -324,9 +332,9 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
               >
-                <FacebookIcon className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+                <FacebookIcon className="w-4 h-4 fill-current" />
               </a>
 
               {/* Instagram */}
@@ -335,9 +343,9 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
               >
-                <InstagramIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                <InstagramIcon className="w-4 h-4 text-white" />
               </a>
 
               {/* LinkedIn */}
@@ -346,9 +354,9 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0A66C2] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#0A66C2] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
               >
-                <LinkedInIcon className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
+                <LinkedInIcon className="w-4 h-4 fill-current" />
               </a>
 
               {/* WhatsApp */}
@@ -357,19 +365,18 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:scale-110 hover:shadow-lg transition-transform duration-200"
               >
-                <WhatsAppIcon className="w-4 h-4 sm:w-5 sm:h-5 fill-current text-white" />
+                <WhatsAppIcon className="w-4 h-4 fill-current text-white" />
               </a>
             </div>
           </div>
-        </div>
+        </Container>
+      </div>
 
-        {/* Clean Divider */}
-        <div className="border-t border-white/10 my-6" />
-
-        {/* Copyright Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+      {/* Box 3 – Bottom Gradient Section */}
+      <div className="w-full bg-[linear-gradient(135deg,#870404_0%,#042C74_100%)] text-white py-3 sm:py-4">
+        <Container className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/60">
           <div className="flex items-center gap-2 text-center sm:text-left">
             <span className="w-4 h-4 rounded-full border border-white/40 flex items-center justify-center text-[10px] font-bold">
               ©
@@ -400,9 +407,8 @@ export function Footer({ settings }: { settings?: SiteStatsSettings }) {
               <ChevronUp className="w-4 h-4" />
             </button>
           </div>
-        </div>
-
-      </Container>
+        </Container>
+      </div>
     </footer>
   );
 }
